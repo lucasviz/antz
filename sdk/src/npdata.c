@@ -61,7 +61,7 @@ void* npInitData (int argc, char** argv)
 
 	// initialize data
 	npInitDataMap (data);
-	npInitDataIO (argc, argv, data);	//stores the command line arguements
+	npInitDataIO (argc, argv, data);	//stores the command line arguments
 	npInitDataCtrl (data);
 
 	return gData;

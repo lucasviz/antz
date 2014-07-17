@@ -377,9 +377,13 @@ void npCtrlFile (int command, void* dataRef)
 		case kNPfileNew : npFileDialog (NULL, kNPfileDialogNew, dataRef); break;
 
 		//navigate folders, files and DBs
-		case kNPcmdViewer :
+		case kNPcmdViewer : 
 			if (data->io.key.modShift)
+			{
+				printf("\nUpdating");
+				//npdbUpdateAntzStateFromDatabase(dataRef);
 				npdbSaveAntzStateToDatabase(dataRef);				//zzsql //zz dbz
+			}
 			else
 				npViewer (dataRef);
 			break;
@@ -1659,7 +1663,7 @@ void npCtrlGlobal (int command, void* dataRef)
 				npPostMsg( "Background Black", kNPmsgCtrl, dataRef );
 			
 				testOSC[0] = toggle = &data->io.clear.a;
-				npOscTx( 0, "/3/toggle3 ", "f", testOSC, dataRef );
+			//	npOscTx( 0, "/3/toggle3 ", "f", testOSC, dataRef );
 			
 			//	cppTx (0, "/3/xy", "f", &data->io.clear.r, dataRef );
 			}
@@ -1674,10 +1678,12 @@ void npCtrlGlobal (int command, void* dataRef)
 				npPostMsg( "Background White", kNPmsgCtrl, dataRef );
 			
 				//npTxOSC (0, "/3/toggle1", "f", (void*)&data->io.clear.a, dataRef );
-			
-				testOSC[0] = toggle = &data->io.clear.a;
-				npOscTx( 0, "/3/toggle3 ", "f", testOSC, dataRef );
 
+
+				testOSC[0] = toggle = &data->io.clear.a;
+	
+	//			npOscTx( 0, "/3/toggle3 ", "f", testOSC[0], dataRef ); // Contributing to crash on 'b'	
+	
 			//	cppTx (0, "/3/xy", "ff", &data->io.clear, dataRef );
 			
 			}

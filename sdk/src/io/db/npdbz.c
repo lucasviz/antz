@@ -10,6 +10,178 @@
 char* npMysqlCreateStatement(char* dbname);
 char* npMysqlUseStatement(char* dbname);
 
+// This is for a single node
+// void (*nodeAction)(int id, void* dataRef), 
+
+void assignNodePropertiesFromArray(char** row, pNPnode node)
+{
+	pNPnode nodeParent;
+	if(node->type == 1)
+	{
+		return;
+	}
+
+	node->selected = atoi(row[3]);
+	node->childIndex = atoi(row[7]);
+	
+	node->chInputID		= atoi(row[9]);
+	node->chOutputID	= atoi(row[10]);
+	node->chLastUpdated	= atoi(row[11]);
+		
+	node->average		= atoi(row[12]);
+	node->interval		= atoi(row[13]); // Samples???
+		
+	node->auxA.x		= atoi(row[14]);
+	node->auxA.y		= atoi(row[15]);
+	node->auxA.z		= atoi(row[16]);
+	node->auxB.x		= atoi(row[17]);
+	node->auxB.y		= atoi(row[18]);
+	node->auxB.z		= atoi(row[19]);
+		
+	node->colorShift	= npatof(row[20]);
+		
+	node->rotateVec.x		= npatof(row[21]);		//was rotate
+	node->rotateVec.y		= npatof(row[22]);
+	node->rotateVec.z		= npatof(row[23]);
+	node->rotateVec.angle	= npatof(row[24]);	
+		
+	node->scale.x		= npatof(row[25]);
+	node->scale.y		= npatof(row[26]);
+	node->scale.z		= npatof(row[27]);
+		
+	node->translate.x	= npatof(row[28]);
+	node->translate.y	= npatof(row[29]);
+	node->translate.z	= npatof(row[30]);
+		
+	node->tagOffset.x	= npatof(row[31]);
+	node->tagOffset.y	= npatof(row[32]);
+	node->tagOffset.z	= npatof(row[33]);
+		
+	node->rotateRate.x	= npatof(row[34]);
+	node->rotateRate.y	= npatof(row[35]);
+	node->rotateRate.z	= npatof(row[36]);
+		
+	node->rotate.x		= npatof(row[37]);					//was rotateRad
+	node->rotate.y		= npatof(row[38]);
+	node->rotate.z		= npatof(row[39]);
+		
+	node->scaleRate.x	= npatof(row[40]);
+	node->scaleRate.y	= npatof(row[41]);
+	node->scaleRate.z	= npatof(row[42]);
+		
+	node->translateRate.x = npatof(row[43]);
+	node->translateRate.y = npatof(row[44]);
+	node->translateRate.z = npatof(row[45]);
+		
+	node->translateVec.x = npatof(row[46]);
+	node->translateVec.y = npatof(row[47]);
+	node->translateVec.z = npatof(row[48]);
+		
+	node->shader		= atoi(row[49]);
+	node->geometry		= atoi(row[50]);
+		
+	node->lineWidth		= npatof(row[51]);
+	node->pointSize		= npatof(row[52]);
+	node->ratio			= npatof(row[53]);
+		
+	node->colorIndex	= atoi(row[54]);
+		
+	node->color.r		= atoi(row[55]);
+	node->color.g		= atoi(row[56]);
+	node->color.b		= atoi(row[57]);
+	node->color.a		= atoi(row[58]);
+		
+	node->colorFade		= atoi(row[59]);
+	node->textureID		= atoi(row[60]);
+		
+	node->hide			= atoi(row[61]);
+	node->freeze		= atoi(row[62]);
+		
+	//	node->center		= center;		//removed	
+		
+	node->topo			= atoi(row[63]);			//moved topo
+	node->facet			= atoi(row[64]);		//added topo facet number
+		
+	node->autoZoom.x	= atoi(row[65]);	//moved down a slot
+	node->autoZoom.y	= atoi(row[66]);
+	node->autoZoom.z	= atoi(row[67]);
+		
+	//	node->scroll		= scroll;		//removed made space for facet, zz debug
+		
+	node->triggerHi.x	= atoi(row[68]);
+	node->triggerHi.y	= atoi(row[69]);
+	node->triggerHi.z	= atoi(row[70]);
+		
+	node->triggerLo.x	= atoi(row[71]);
+	node->triggerLo.y	= atoi(row[72]);
+	node->triggerLo.z	= atoi(row[73]);
+		
+	node->setHi.x		= npatof(row[74]);
+	node->setHi.y		= npatof(row[75]);
+	node->setHi.z		= npatof(row[76]);
+		
+	node->setLo.x		= npatof(row[77]);
+	node->setLo.y		= npatof(row[78]);
+	node->setLo.z		= npatof(row[79]);
+		
+	node->proximity.x	= npatof(row[80]);
+	node->proximity.y	= npatof(row[81]);
+	node->proximity.z	= npatof(row[82]);
+		
+	node->proximityMode.x = atoi(row[83]);			//int cast supports 1st ver CSV
+	node->proximityMode.y = atoi(row[84]);
+	node->proximityMode.z = atoi(row[85]);
+		
+	node->segments.x	= atoi(row[86]);		//grid segments were stored in node->data,
+	node->segments.y	= atoi(row[87]);		//was node->data->segments.x
+	node->segments.z	= atoi(row[88]);		//now node->segments.x
+		
+	node->tagMode		= atoi(row[89]);
+	node->formatID		= atoi(row[90]);
+	node->tableID		= atoi(row[91]);
+	node->recordID		= atoi(row[92]);
+
+	if (node->topo == 0 && node->type == kNodePin)
+	{
+		////zzdb printf ("topo = 0   id: %d\n", node->id);
+		if (node->branchLevel == 0)
+			node->topo = kNPtopoPin;	//set root topo to a pin
+		else if (node->parent != NULL)  //orhpan child methods in npMapSort
+		{
+			nodeParent = node->parent;
+			if ( nodeParent->topo == kNPtopoPin || nodeParent->topo == 0
+				|| nodeParent->topo == kNPtopoTorus )
+				node->topo = kNPtopoTorus;
+			else
+				node->topo = kNPtopoPin;
+		}	
+	}
+
+
+}
+
+void updateNodeFromMysqlRow (MYSQL_ROW *row, void* dataRef) // Generalize here
+{
+//	MYSQL_ROW row;
+	pData data = (pData) dataRef;
+	pNPnode node = NULL;
+	pNPnode nodeParent = NULL;
+	int id = 0, type = 0, branchLevel = 0, parentID = 0, x = 0, count = 0;
+
+	id = atoi(row[0]);
+	node = npGetNodeByID(data->io.dbs->myDatabase[0].idMap[id], dataRef);
+	assignNodePropertiesFromArray(row, node);
+}
+
+void updateNodesFromMysqlResult(MYSQL_RES *result, void* dataRef)
+{
+	MYSQL_ROW row;
+	while( row = mysql_fetch_row(result) )
+	{
+		updateNodeFromMysqlRow(row, dataRef);
+	}
+}
+
 
 
 void npLoadNodeStateResultIntoAntz(MYSQL_RES *result, void* dataRef)
@@ -47,8 +219,9 @@ void npLoadNodeStateResultIntoAntz(MYSQL_RES *result, void* dataRef)
 		branchLevel = atoi(row[5]);
 		parentID = atoi(row[4]);
 		node = npMapNodeAdd (id, type, branchLevel, parentID, kNPmapNodeCSV, dataRef); // kNPmapNodeCSVvTwo is format		
-		
-		
+		data->io.dbs->myDatabase[0].idMap[id] = node->id;
+		assignNodePropertiesFromArray(row, node);
+		/*
 		node->selected = atoi(row[3]);
 		node->childIndex = atoi(row[7]);
 		
@@ -193,6 +366,7 @@ void npLoadNodeStateResultIntoAntz(MYSQL_RES *result, void* dataRef)
 			
 			
 		}
+		*/
 		
 	}
 	//buffer[count] = '\0';
@@ -905,7 +1079,7 @@ int npSelect(int connid, struct dbFunction *db, char* tblname) //Add field(s) ch
 	char* statement = (*db->createSelectStatement)(tblname);
 	error = (*db->query)(connid, statement); //Create a function to process mysql error codes
 	//printf("\nreturned value : %d\n", queryReturnValue);
-	printf("\nnpSelect error : %d", error);
+	//printf("\nnpSelect error : %d", error);
 	free(statement);
 	return error; //Zero for success, nonzero if error occurred
 }
@@ -1223,6 +1397,7 @@ int npdbLoadNodeTbl(int menuItem, void* dataRef)
 	printf("\n-----YOU SELECTED %s-----\n", selectedItem);
 	
 	success = npUseDatabase2(myConnid, myDbFuncs, selectedItem);
+	strcpy(myDb->currentlyUsedDatabase, selectedItem);
 
 	npSelect(myConnid, myDbFuncs, "node_tbl");
 
@@ -1243,6 +1418,205 @@ int npdbLoadNodeTbl(int menuItem, void* dataRef)
 	return 0;
 }
 
+void npdbUpdateAntzStateFromDatabase(void* dataRef)
+{
+	pData data = (pData) dataRef;
+	MYSQL_RES *myResult;
+	MYSQL_ROW row;
+	pNPnode node = NULL;
+	pNPnode nodeParent = NULL;
+	int dbNodeID = 0;
+	int i = 0;
+//	int **idMap = data->io.dbs->myDatabase[0].idMap;
+
+//	printf("\nnpdbUpdateAntzStateFromDatabase");
+//	getch();
+	/*
+	for(i = 0; i < kNPnodeMax; i++) // First index is database id, second index is antz id
+	{
+		printf("\n%d : %d", data->io.dbs->myDatabase[0].idMap[i][0], data->io.dbs->myDatabase[0].idMap[i][1]);
+		if(data->io.dbs->myDatabase[0].idMap[i][0] == -1 && data->io.dbs->myDatabase[0].idMap[i][1] == -1)
+		{
+			break;
+		}
+
+	}
+	*/
+	// Index is database id, box contains antz id
+	// Do a select, iterate against idMap, perform updates CATMANDO
+//	printf("\nBefore Select : %s", data->io.dbs->myDatabase[0].currentlyUsedDatabase);
+	if(data->io.dbs->myDatabase[0].currentlyUsedDatabase[0] != '\0')
+	{
+		npSelect(data->io.dbs->myDatabase[0].connid, data->io.dbs->myDatabase[0].db, "node_tbl");
+	
+//	printf("\nAfter Select");
+
+	if( (myResult = (*data->io.dbs->myDatabase[0].db->storeResult)(data->io.dbs->myDatabase[0].connid)) == NULL )
+		printf("\nError storing result");
+
+	updateNodesFromMysqlResult(myResult, dataRef);
+	}
+	/*
+	while( row = mysql_fetch_row(myResult) )
+	{
+		dbNodeID = atoi(row[0]);
+		node = npGetNodeByID(data->io.dbs->myDatabase[0].idMap[dbNodeID], dataRef);
+		printf("\nThe dbNodeID is %d", dbNodeID);
+		printf("\nThe internal antz node id is %d", node->id);
+		
+		node->type = atoi(row[1]);
+		node->branchLevel = atoi(row[5]);
+		//parentID = atoi(row[4]);
+
+		node->selected = atoi(row[3]);
+		node->childIndex = atoi(row[7]);
+		
+		node->chInputID		= atoi(row[9]);
+		node->chOutputID	= atoi(row[10]);
+		node->chLastUpdated	= atoi(row[11]);
+		
+		node->average		= atoi(row[12]);
+		node->interval		= atoi(row[13]); // Samples???
+		
+		node->auxA.x		= atoi(row[14]);
+		node->auxA.y		= atoi(row[15]);
+		node->auxA.z		= atoi(row[16]);
+		node->auxB.x		= atoi(row[17]);
+		node->auxB.y		= atoi(row[18]);
+		node->auxB.z		= atoi(row[19]);
+		
+		node->colorShift	= npatof(row[20]);
+		
+		node->rotateVec.x		= npatof(row[21]);		//was rotate
+		node->rotateVec.y		= npatof(row[22]);
+		node->rotateVec.z		= npatof(row[23]);
+		node->rotateVec.angle	= npatof(row[24]);	
+		
+		node->scale.x		= npatof(row[25]);
+		node->scale.y		= npatof(row[26]);
+		node->scale.z		= npatof(row[27]);
+		
+		node->translate.x	= npatof(row[28]);
+		node->translate.y	= npatof(row[29]);
+		node->translate.z	= npatof(row[30]);
+		
+		node->tagOffset.x	= npatof(row[31]);
+		node->tagOffset.y	= npatof(row[32]);
+		node->tagOffset.z	= npatof(row[33]);
+		
+		node->rotateRate.x	= npatof(row[34]);
+		node->rotateRate.y	= npatof(row[35]);
+		node->rotateRate.z	= npatof(row[36]);
+		
+		node->rotate.x		= npatof(row[37]);					//was rotateRad
+		node->rotate.y		= npatof(row[38]);
+		node->rotate.z		= npatof(row[39]);
+		
+		node->scaleRate.x	= npatof(row[40]);
+		node->scaleRate.y	= npatof(row[41]);
+		node->scaleRate.z	= npatof(row[42]);
+		
+		node->translateRate.x = npatof(row[43]);
+		node->translateRate.y = npatof(row[44]);
+		node->translateRate.z = npatof(row[45]);
+		
+		node->translateVec.x = npatof(row[46]);
+		node->translateVec.y = npatof(row[47]);
+		node->translateVec.z = npatof(row[48]);
+		
+		node->shader		= atoi(row[49]);
+		node->geometry		= atoi(row[50]);
+		
+		node->lineWidth		= npatof(row[51]);
+		node->pointSize		= npatof(row[52]);
+		node->ratio			= npatof(row[53]);
+		
+		node->colorIndex	= atoi(row[54]);
+		
+		node->color.r		= atoi(row[55]);
+		node->color.g		= atoi(row[56]);
+		node->color.b		= atoi(row[57]);
+		node->color.a		= atoi(row[58]);
+		
+		node->colorFade		= atoi(row[59]);
+		node->textureID		= atoi(row[60]);
+		
+		node->hide			= atoi(row[61]);
+		node->freeze		= atoi(row[62]);
+		
+		//	node->center		= center;		//removed	
+		
+		node->topo			= atoi(row[63]);			//moved topo
+		node->facet			= atoi(row[64]);		//added topo facet number
+		
+		node->autoZoom.x	= atoi(row[65]);	//moved down a slot
+		node->autoZoom.y	= atoi(row[66]);
+		node->autoZoom.z	= atoi(row[67]);
+		
+		//	node->scroll		= scroll;		//removed made space for facet, zz debug
+		
+		node->triggerHi.x	= atoi(row[68]);
+		node->triggerHi.y	= atoi(row[69]);
+		node->triggerHi.z	= atoi(row[70]);
+		
+		node->triggerLo.x	= atoi(row[71]);
+		node->triggerLo.y	= atoi(row[72]);
+		node->triggerLo.z	= atoi(row[73]);
+		
+		node->setHi.x		= npatof(row[74]);
+		node->setHi.y		= npatof(row[75]);
+		node->setHi.z		= npatof(row[76]);
+		
+		node->setLo.x		= npatof(row[77]);
+		node->setLo.y		= npatof(row[78]);
+		node->setLo.z		= npatof(row[79]);
+		
+		node->proximity.x	= npatof(row[80]);
+		node->proximity.y	= npatof(row[81]);
+		node->proximity.z	= npatof(row[82]);
+		
+		node->proximityMode.x = atoi(row[83]);			//int cast supports 1st ver CSV
+		node->proximityMode.y = atoi(row[84]);
+		node->proximityMode.z = atoi(row[85]);
+		
+		node->segments.x	= atoi(row[86]);		//grid segments were stored in node->data,
+		node->segments.y	= atoi(row[87]);		//was node->data->segments.x
+		node->segments.z	= atoi(row[88]);		//now node->segments.x
+		
+		node->tagMode		= atoi(row[89]);
+		node->formatID		= atoi(row[90]);
+		node->tableID		= atoi(row[91]);
+		node->recordID		= atoi(row[92]);
+		//node->size		= lineSize;				// handled during node creation
+		
+		//support for first version CSV
+		//	if (format == kNPmapNodeCSVvOne)
+		//	npMapCSVvOne (node);
+		
+		//file compatability prior to 2012-04-22
+		if (node->topo == 0 && node->type == kNodePin)
+		{
+			////zzdb printf ("topo = 0   id: %d\n", node->id);
+			if (node->branchLevel == 0)
+				node->topo = kNPtopoPin;	//set root topo to a pin
+			else if (node->parent != NULL)  //orhpan child methods in npMapSort
+			{
+				nodeParent = node->parent;
+				if ( nodeParent->topo == kNPtopoPin || nodeParent->topo == 0
+					|| nodeParent->topo == kNPtopoTorus )
+					node->topo = kNPtopoTorus;
+				else
+					node->topo = kNPtopoPin;
+			}
+			
+			
+			
+		}
+
+	}
+	*/
+}
+
 void npdbSaveAntzStateToDatabase(void* dataRef)
 {
 	char* nodetblFields;
@@ -1260,11 +1634,14 @@ void npdbSaveAntzStateToDatabase(void* dataRef)
 	struct dbFunction *myDbFuncs = data->io.dbs->myDatabase[0].db;
 
 
-	nposTimeStampCSV(databaseName);
-	
+	nposTimeStampCSV(databaseName); //This function should be renamed, debug db
+	printf("\ndatabase name : %s\n", databaseName);
+
+	// The nposTimeStampCSV function has been rewritten, this is no longer necessary, debug db
+/*
 	while(databaseName[i] != '.'){i++;}
 	databaseName[i] = '\0';					//zzsql	trunkating .csv
-	
+*/
 	npCreateDatabase2(myConnid, myDbFuncs, databaseName);
 	
 	success = npUseDatabase2(myConnid, myDbFuncs, databaseName);
@@ -1326,6 +1703,7 @@ int npOpenDb(struct database *db)
 
 	sqlinit = (*db->db->init)(NULL); //db->db could be confusing....change to db->dbFunc
 	db->connid = (*db->db->connect)(sqlinit, db->hostIP, db->user, db->password, "", db->port, NULL, 0);
+	db->currentlyUsedDatabase[0] = '\0';
 	printf("\ndb->connid == %d", db->connid);
 	printf("dbFunc %p", db->db);
 //	getch();
@@ -1336,10 +1714,16 @@ int npOpenDb(struct database *db)
 //zz db2
 int npAddDb(struct databases *dbs, char* dbType, char* hostIP, char* user, char* pass, char* dbname, void* dataRef)
 {
+	int i = 0;
 	if( dbs->numberOfDatabases == 0 )
 	{
 		dbs->myDatabase = malloc(sizeof(struct database) * 1);
 		dbs->myDatabase[0].db = malloc(sizeof(struct dbFunction));
+		
+		for(i = 0; i < kNPnodeMax; i++)
+		{
+			dbs->myDatabase[0].idMap[i] = -1;
+		}
 	
 		strcpy( dbs->myDatabase[0].hostIP, hostIP );
 		strcpy( dbs->myDatabase[0].user, user );

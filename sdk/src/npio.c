@@ -81,6 +81,11 @@ void npUpdateIO (void* dataRef)
 	npUpdateConsole (dataRef);
 
 	npUpdateCh (dataRef);	//zz-JJ
+
+	if(data->io.cycleCount % 300 == 0)
+	{
+		npdbUpdateAntzStateFromDatabase(dataRef);
+	}
 }
 
 

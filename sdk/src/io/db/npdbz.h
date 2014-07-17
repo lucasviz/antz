@@ -66,9 +66,11 @@ struct database {
 	char user[kNPurlMax];     // root
 	char password[kNPurlMax]; // admin 
 	char currentlyUsedDatabase[kNPurlMax];
+	int idMap[kNPnodeMax];
 
 	struct dbFunction *db;
 };
+
 
 struct databases //This should be renamed as struct server ...or not
 {
