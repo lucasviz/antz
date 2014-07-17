@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -59,28 +59,28 @@
 
 //--- Functions ----------------------------------------------------------------
 
-void* npInitData (int argc, char** argv);		// inits global data map
-void npCloseData();
-void npUpdateData (void* dataRef);
+void* npInitData( int argc, char** argv );		// inits global data map
+void npCloseData( void* dataRef );
+void npUpdateData( void* dataRef );
 
-void npSystemConsoleHelp (int argc, char** argv);
+void npSystemConsoleHelp( int argc, char** argv );
 
 void* npGetDataRef();
 
-char* npGetDataTypeName (int type);
-char* npGetDataTypeDesc (int type);
+char* npGetDataTypeName( int type );
+char* npGetDataTypeDesc( int type );
 
-void npDataPreset (int preset, void* dataRef);
+void npDataPreset( int preset, void* dataRef );
 
-void npDataCameraPreset (int preset, pNPnode node, void* dataRef);
+void npDataCameraPreset( int preset, pNPnode node, void* dataRef );
 
-void npInitDataTags (pNPtags tags, void* dataRef);
-void npInitTextTag (pNPtag tag, void* dataRef);
-void npInitDataRecordTag (pNPrecordTag recordTag, void* dataRef);
+void npInitDataTags( pNPtags tags, void* dataRef );
+void npInitTextTag( pNPtag tag, void* dataRef );
+void npInitDataRecordTag( pNPrecordTag recordTag, void* dataRef );
 
-void npPostMsg (char* message, int type, void* dataRef);
+void npPostMsg( char* message, int type, void* dataRef );
 
-void npInitPropertyTracks (pNPnodePropertyTracks propertyTracks); //JJ - added, is this right place?
+void npInitPropertyTracks( pNPnodePropertyTracks propertyTracks ); //JJ - added, is this right place?
 
 
 #ifdef __cplusplus

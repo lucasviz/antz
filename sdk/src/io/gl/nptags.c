@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -130,7 +130,8 @@ void npSetNodeTag (pNPnode node, void* dataRef)
 	//this procedure is fast when nodes processed in order of record_id
 	//and tags are pre-sorted by record_id and rouped by table_id
 	//method is very slow for missing tags... loops entire list looking	//zz debug
-	for (i = tagsIndex; i < tags->recordCount; i++)
+	for (i = 0; i < tags->recordCount; i++)
+//	for (i = tagsIndex; i < tags->recordCount; i++)
 	//	for (i=count; i < data->io.gl.hud.tags.recordCount; i++)
 	{
 		recordTag = tags->recordList[i];
@@ -191,7 +192,7 @@ void npSetNodeTag (pNPnode node, void* dataRef)
 	//if no tag matches the recordID and tableID
 	if (recordTag == NULL)
 	{
-		node->tag->titleSize = sprintf (node->tag->title, "record_id: %d", 
+		node->tag->titleSize = sprintf (node->tag->title, "record: %d", 
 										node->recordID);
 		node->tag->desc[0] = '\0';
 		node->tag->descSize = 0;
@@ -215,7 +216,7 @@ void npTagNode (pNPnode node, void* dataRef)
 	else
 		npSetNodeTag (node, dataRef);
 
-	npUpdateTextTag (node->tag); 
+	npUpdateTag (node->tag); 
 }
 
 //------------------------------------------------------------------------------
@@ -241,14 +242,14 @@ void npNodeTraverseTree ( void (*nodeFunc)(pNPnode node, void* dataRef),
 //upgrade to calculate live values such as channel mapped attributes, zz
 //for example coordinates of a moving object
 //------------------------------------------------------------------------------
-void npUpdateTextTag (pNPtag tag)
+void npUpdateTag (pNPtag tag)
 {
 	int lineCount = 1;
 	float charWidth = 9.0f;		//add procedure based on font type
 	float charHeight = 15.0f;
 
 //	if(tag->titleSize == 0)											//zz debug
-		tag->titleSize = strlen(tag->title);
+	tag->titleSize = strnlen(tag->title, kNPtagTitleMax);
 
 	//add procedure to count lines and width length
 	//strlen(tag->desc);
@@ -344,6 +345,7 @@ void npSyncTags (void* dataRef)
 	int i = 0, j = 0;
 	int count = 0;
 	void** nodes;
+	pNPnode node;
 
 	data->map.syncNodes = false;		//reset sync flags
 	data->map.syncTagsReady = false;
@@ -369,8 +371,11 @@ void npSyncTags (void* dataRef)
 	//loop through all nodes and update with tag
 	tagsIndex = 0;	//reset the index, takes advantage of sorted lists, zzhp
 	for (i=0; i < j; i++)
-		npTagNode(nodes[i], data);
-
+	{	npTagNode(nodes[i], data);
+	node = (pNPnode)nodes[i];
+	printf("id: %d  tag: %s\n",  node->id, node->tag->title);
+	}
+	printf("tag count J: %d\n", j);
 	//loop through all nodes and attach tagPtr based on recordID and tableID
 //	for (i=0; i < data->map.nodeRootCount; i++)
 //		npNodeTraverseTree (npTagNode, data->map.node[i], dataRef);

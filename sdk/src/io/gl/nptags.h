@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -52,7 +52,7 @@ pNPtag npGetTag (int recordID, int tableID, void* dataRef);
 void npTagNode (pNPnode node, void* dataRef);
 
 //called after loading a new state file or tag list file
-void npUpdateTextTag (pNPtag tag);
+void npUpdateTag (pNPtag tag);
 void npSyncTags (void* dataRef);
 
 void npDrawNodeTextTag (pNPnode node, void* dataRef);

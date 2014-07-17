@@ -887,7 +887,7 @@ char* npNewGenMysqlFields(int count, int type, void* dataRef)
 	int itemCount = 0;
 
 	pData data = (pData) dataRef;
-	NPmapTypePtr map = NULL;
+	pNPmapType map = NULL;
 	char* fields = malloc(2000);
 	char msg[128];
 	

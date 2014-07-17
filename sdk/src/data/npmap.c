@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -146,7 +146,7 @@ void npInitMap (void* dataRef)
 
 	{ kNPtagMode,			kNPint,			"tag_mode",			"text tag display mode" },
 	{ kNPformatID,			kNPint,			"format_id",		"translates values, used for labels" },
-	{ kNPtableID,			kNPint,			"table_id",			"location of the records source table" },
+	{ kNPmapID,			kNPint,			"table_id",			"location of the records source table" },
 	{ kNPrecordID,			kNPint,			"record_id",		"record ID in the source table" },	//debug zz
 
 	{ kNPsize,				kNPint,			"size",				"node size in bytes" }
@@ -160,7 +160,7 @@ void npInitMap (void* dataRef)
 		
 	{ kNPformat,			kNPint,			"format",			"320p, 480i, 720p, 4K full app" },
 	{ kNPinterlaced,		kNPint,			"interlaced",		"interlaced field order" },
-	{ kNPstereo,			kNPint,			"stereo",			"stereoscopic 3D" },
+	{ kNPstereo,			kNPint,			"stereo_3d",		"stereoscopic 3D" },
 	{ kNPaspectRatio,		kNPfloat,		"aspect_ratio",		"1.0, 1.333, 1.777, 1.85, 2.25... " },
 	{ kNPfps,				kNPfloat,		"fps",				"15, 24, 29.97, 30, 59.94, 60, 119.88" },
 	{ kNPcolorSpace,		kNPint,			"color_space",		"8, 12bit, YUV, RGBA, XYZ, CMYK..." },
@@ -213,7 +213,7 @@ void npInitMap (void* dataRef)
 
 		{ kNPid,				kNPint,			"id",				"tag ID" },
 		{ kNPrecordID,			kNPint,			"record_id",		"Record ID" },
-		{ kNPtableID,			kNPint,			"table_id",			"Table ID" },
+		{ kNPmapID,				kNPint,			"table_id",			"Table ID" },
 		{ kNPtitle,				kNPcharArray,	"title",			"Title" },
 		{ kNPdesc,				kNPcharArray,	"description",		"Description" }
 	}; // debug db
@@ -229,11 +229,24 @@ void npInitMap (void* dataRef)
 		{ kNPrecordID,			kNPint,			"record_id",		"Record ID"		}
 	}; // debug db //zzsql
 	
+	//zz color
+	static NPmapType palette[] = {
+
+		{ kNPid,				kNPint,			"id",			"Color Palette Index" },
+		{ kNPrecordID,			kNPint,			"red",			"Red" },
+		{ kNPmapID,				kNPint,			"green",		"Green" },
+		{ kNPtitle,				kNPint,			"blue",			"Blue" },
+		{ kNPdesc,				kNPint,			"alpha",		"Alpha Transparency" }
+	};
+	
 
 	//-------
 	//-------
 //	npMapTypeInit(data);						//zz debug, move this from npcsv.h
 	//-------
+
+	for (i=0; i < kNPpaletteMax; i++)
+		data->map.color[i] = NULL;
 
 	//-------
 	// clear the typeMap
@@ -247,9 +260,14 @@ void npInitMap (void* dataRef)
 	data->map.typeMapGrid		= grid;
 	data->map.typeMapTag		= tag;		// debug db //zzsql
 	data->map.typeMapChMap		= ChMap;	// debug db //zzsql
+	
+	data->map.typeMapPalette	= palette;
 
 	data->map.typeMapGlobals	= NULL;		//zz debug
 	
+	data->map.mapTypeList = NULL;
+	data->map.mapTypeCount = 0;
+
 	// populate the typeMap
 	data->map.typeMap[kNPbase]	= base;
 	data->map.typeMap[kNPnode]	= node;
@@ -259,9 +277,9 @@ void npInitMap (void* dataRef)
 	data->map.typeMap[kNPgrid]	= grid;
 
 
-	data->map.selectSet.x	= false;
-	data->map.selectSet.y	= false;
-	data->map.selectSet.z	= false;
+	data->map.selectSet.x		= false;
+	data->map.selectSet.y		= false;
+	data->map.selectSet.z		= false;
 	data->map.selectAll			= false;
 
 	//setup the root node array and the nodeID lookup table
@@ -278,8 +296,11 @@ void npInitMap (void* dataRef)
 	data->map.selectedPinIndex	= 0;
 	data->map.selectedHUD		= NULL;
 
-	data->map.sortSwap = 0;											//zzhp debug
-	data->map.sortSwapFlag = 0;										//zzhp debug
+	data->map.syncNodes			= false;
+	data->map.syncTagsReady		= false;
+		
+	data->map.sortSwap			= 0;						//zzhp debug
+	data->map.sortSwapFlag		= 0;						//zzhp debug
 
 	//clear the node ID array
 	data->map.node = (void*) malloc (kNPnodeRootMax * sizeof(void*));
@@ -771,7 +792,7 @@ void npNodeUpdateBranchLevel (pNPnode node)
 		npNodeUpdateBranchLevel (node->child[i]);	// recursive call
 	}
 
-//	printf ("id: %d  updated branchLevel: %d\n", node->id, node->branchLevel);
+//	printf ("id: %d  updated level: %d\n", node->id, node->branchLevel);
 }
 
 
@@ -799,7 +820,7 @@ void npNodeMoveBranch (pNPnode node, pNPnode newParent, void* dataRef)
 	}
 
 	//remove node from parent old parent
-	npNodeRemove (false, node, data);
+	npNodeRemove (false, node, data);			//npCutBranch()
 
 	//attach to new parent
 	node->parent = newParent;
@@ -810,7 +831,7 @@ void npNodeMoveBranch (pNPnode node, pNPnode newParent, void* dataRef)
 	//updates branchLevel for child and any sub child nodes in the tree
 	npNodeUpdateBranchLevel (node);
 
-//	printf ("node id: %d  branchLevel: %d  parent id: %d\n", 
+//	printf ("node id: %d  level: %d  parent id: %d\n", 
 //			node->id, node->branchLevel, newParent->id );
 }
 
@@ -1056,9 +1077,9 @@ void npTagSortAdd (pNPrecordTag recordTag, void* dataRef)
 	pNPtags tags = &data->io.gl.hud.tags;
 
 	//check max
-	if (tags->recordCount >= kNPrecordTagListMax - 1)
+	if (tags->recordCount >= kNPtagMax - 1)
 	{
-		npPostMsg ("error 4834 - kNPrecordTagListMax exceeded", kNPmsgErr, data);
+		npPostMsg ("error 4834 - kNPtagMax exceeded", kNPmsgErr, data);
 		return;
 	}
 
@@ -1066,7 +1087,7 @@ void npTagSortAdd (pNPrecordTag recordTag, void* dataRef)
 	tags->sort[tags->sortCount++] = recordTag;
 
 	//if identical recordID && tableID then replace existing
-	for (i=data->io.gl.hud.tags.recordCount; i < kNPrecordTagListMax; i++)
+	for (i=data->io.gl.hud.tags.recordCount; i < kNPtagMax; i++)
 //	for (i=data->io.gl.hud.tags.recordCount; i >= 0; i--)
 	{
 		searchTag = data->io.gl.hud.tags.recordList[i];
@@ -1079,7 +1100,7 @@ void npTagSortAdd (pNPrecordTag recordTag, void* dataRef)
 			data->io.gl.hud.tags.recordCount++;
 
 //zz debug		printf("record_id: %d  tag imported %d \n", recordTag->recordID, i);
-			i = kNPrecordTagListMax;// -1; //exit loop
+			i = kNPtagMax;// -1; //exit loop
 		}		//if identical record then update it
 		else if ( searchTag->recordID == recordTag->recordID
 				&& searchTag->tableID == recordTag->tableID )
@@ -1089,7 +1110,7 @@ void npTagSortAdd (pNPrecordTag recordTag, void* dataRef)
 			free(searchTag);						//zz debug make sure this okay
 
 //zz debug		printf("record_id: %d  tag updated\n", recordTag->recordID);
-			i = kNPrecordTagListMax;// -1; //exit loop
+			i = kNPtagMax;// -1; //exit loop
 		}
 	}
 }

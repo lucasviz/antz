@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -151,7 +151,7 @@ int npWriteMapHeader (char* bufferIndex, int count, int type, void* dataRef)
 	int i = 0;
 	int itemCount = 0;
 
-	NPmapTypePtr map = NULL;
+	pNPmapType map = NULL;
 
 	pData data = (pData) dataRef;
 	
@@ -354,7 +354,7 @@ void npMapCSVvOne(pNPnode node)
 		//rotate.x is converted to translate.x
 		if (node->branchLevel >= 2)	//child node rotation different from root
 		{
-			node->translate.z = node->translate.x;
+			node->translate.z = node->translate.x;		// z = x
 
 			if (node->branchLevel == 2)	//map orientation, 0 deg is N y-axis
 				node->translate.x = node->rotate.x * kRADtoDEG - 90.0f;
@@ -668,14 +668,14 @@ void npLoadMapFile (char* buffer, int wordSize, int size, void* dataRef)
 	// CSV ver 2 starts with field names and data on 2nd line
 	format = npFileFormat (buffer, wordSize, size);
 	if ( format == kNPmapNodeCSVvOne )							
-		count += curs = npSeekToNextLine( buffer ); buffer = &buffer[curs];	//skip blank line
+		count += curs = npNextLine( buffer ); buffer = &buffer[curs];	//skip blank line
 
 	// print first two lines
 	printf ("File Version %d Contents:\n", format);	
 	for( i = 0; i < 80; i++ )			//first 80 chars of line one
 		printf( "%c", buffer[i]);
 
-	curs = npSeekToNextLine( buffer );	//find next line, but dont advance buffer
+	curs = npNextLine( buffer );	//find next line, but dont advance buffer
 	for( i = 0; i < 80; i++ )			//second line
 		printf( "%c", buffer[curs+i]);
 
@@ -688,7 +688,7 @@ void npLoadMapFile (char* buffer, int wordSize, int size, void* dataRef)
 	while( scanNumRet != -1 )
 	{
 		//advance buffer to next line
-		count += curs = npSeekToNextLine (buffer); buffer = &buffer[curs];
+		count += curs = npNextLine (buffer); buffer = &buffer[curs];
 
 		// if end of buffer then exit loop
 		if (count >= size)
@@ -709,7 +709,7 @@ void npLoadMapFile (char* buffer, int wordSize, int size, void* dataRef)
 			//print part of the first few lines of data
 			if ( nodeCount <= 3)
 			{
-				printf("id: %d   type: %d   branchLevel: %d   colorIndex: %d   recordID: %d\n", 
+				printf("id: %d   type: %d   level: %d   colorIndex: %d   recordID: %d\n", 
 					node->id, node->type, node->branchLevel,  node->colorIndex, node->recordID);
 	
 				if ( nodeCount == 3)
@@ -726,7 +726,7 @@ void npLoadMapFile (char* buffer, int wordSize, int size, void* dataRef)
 	// print last node info
 	if (node != NULL )
 	{
-		printf("\nid: %d   type: %d   branchLevel: %d   colorIndex: %d   recordID: %d\n", 
+		printf("\nid: %d   type: %d   level: %d   colorIndex: %d   recordID: %d\n", 
 			node->id, node->type, node->branchLevel,  node->colorIndex, node->recordID);
 	}
 	else
@@ -922,7 +922,7 @@ int npGetMapFileAttrib (int attrib, void* dataRef)
 	switch (attrib)
 	{
 	case kNPversion: ; break;
-	case kNPtableCount: ; break;	// number of struct equivalent data tables 
+	case kNPmapCount: ; break;	// number of struct equivalent data tables 
 	case kNPrecordCount: ; break;	// total number of records
 	case kNPnodeRootCount: ; break;
 	case kNPsize: ; break;			// RAM used by map file
@@ -991,7 +991,7 @@ int npWriteNodeNewest (const char* buffer, pNPnode node, int format, void* dataR
 		
 		node->selected,
 		parentID,					// parent id replaces pointer to parent
-		node->branchLevel,
+		node->branchLevel,													//zz debug level
 		childID,					// either same as the node or id of link end B
 		node->childIndex,
 		node->childCount,
@@ -1228,7 +1228,8 @@ int npCSVstrncpy(char* cstrout, char** csvstr, int size)
 	}
 
 	//next character should be the beginning double quote of the title field
-	if (csvPtr[curs] != '\"')		//upgrade to allow for a number or no title, debug zz
+	//zz csv string does not require quotes
+	if (0)//csvPtr[curs] != '\"')		//upgrade to allow for a number or no title, debug zz
 	{
 		//if (csvstr[curs++] != ',')
 			//skip any white space
@@ -1238,22 +1239,55 @@ int npCSVstrncpy(char* cstrout, char** csvstr, int size)
 		//we support line returns only in fields that are encapsulated in quotes
 	}
 	else
-	{
-		curs++;	//	csvstr++;
-			
-		//advance past white space
-
+	{		//advance past white space
 		//while (csvstr[curs++] != '\"' && curs < (size - 1){}
 
 		//iterate through char and copy to cstr
 		//if '\"' followed by ',' then exit
 		//if '\"' followed by '\"' then convert to single quote
-
-		while (csvPtr[curs] != '\"' && curs < size)
+	
+		if ( csvPtr[curs] == '\"')		//upgrade to allow for a number or no title, debug zz
 		{
-			cstrout[i++] = csvPtr[curs++];
-		}
+			curs += 1;//depth = 1;	//	csvstr++;	
 
+			while ( i < size )
+			{
+				if ( csvPtr[curs] == '\"' && csvPtr[curs+1] == ',' )
+					break;
+
+				if ( csvPtr[curs] == '\n' )
+				{
+					curs++;
+					cstrout[i++] = '\r';
+				//	printf( "\nTEST newline TEST\n\n" );
+				}
+				else if ( csvPtr[curs] == '\r' )
+				{
+					curs++;
+					cstrout[i++] = '\r';
+				}
+				else
+					cstrout[i++] = csvPtr[curs++];
+			}
+		}
+		else
+		{
+			while ( i < size )
+			{
+				if ( csvPtr[curs+1] == ',' )
+						break;
+
+		//		if ( csvPtr[curs] == '\n' )
+		//			cstrout[i++] = '\n';
+		//		else
+		/*		if ( csvPtr[curs] == '\n' )
+					cstrout[i++] = '\n';
+				else if ( csvPtr[curs] == '\r' )
+					cstrout[i++] = '\n';
+				else
+		*/			cstrout[i++] = csvPtr[curs++];
+			}
+		}
 		//terminate the cstr
 		cstrout[i] = '\0';
 
@@ -1311,20 +1345,21 @@ pNPrecordTag npCSVtoTag (char** read, int size, int* scanNumRet, void* dataRef)
 	tag->recordID	= npstrtoi(&curs);
 	tag->tableID	= npstrtoi(&curs);
 	
-	//copy title to tag as cstr with '\0', concatenated if >= kNPtitleSizeMax
+	//copy title to tag as cstr with '\0', concatenated if >= kNPtagTitleMax
 	strLength = size - (curs - *read);
-	if (strLength >= kNPtitleSizeMax)
-		strLength = kNPtitleSizeMax;
+	if (strLength >= kNPtagTitleMax)
+		strLength = kNPtagTitleMax;
 
 	tag->titleSize = npCSVstrncpy(tag->title, &curs, strLength);
 
+
 	//copy desc
-	strLength = size - (curs - *read);
-	if (strLength >= kNPdescSizeMax)
-		strLength = kNPdescSizeMax;
+/*	strLength = size - (curs - *read);
+	if (strLength >= kNPtagDescMax)
+		strLength = kNPtagDescMax;
 
 	tag->descSize = npCSVstrncpy(tag->desc, &curs, strLength);
-
+*/
 	//update our passed by ref params
 	*scanNumRet = curs - *read;
 	*read = curs;
@@ -1371,7 +1406,7 @@ int npLoadNodesCSV (const char* buffer, int size, int type, void* dataRef)
 	//if exists, skip over leading line return
 	if (*buffer == '\r' || *buffer == '\n')
 	{
-		count += curs = npSeekToNextLineLimit(buffer, size);
+		count += curs = npNextLineLimit(buffer, size);
 		buffer = &buffer[curs];
 	}
 
@@ -1392,7 +1427,7 @@ int npLoadNodesCSV (const char* buffer, int size, int type, void* dataRef)
 								format, &scanNumRet, &endPtr, dataRef);
 
 		//advance buffer to next line
-		count += curs = npSeekToNextLineLimit (buffer, (size - count));
+		count += curs = npNextLineLimit (buffer, (size - count));
 		buffer = &buffer[curs];
 
 		//print out the first few records
@@ -1404,7 +1439,7 @@ int npLoadNodesCSV (const char* buffer, int size, int type, void* dataRef)
 			if ( nodeCount <= 3)
 			{
 //				printf("count: %d   size: %d\n",count,size);				//zzhp
-				printf("id: %d   type: %d   branchLevel: %d   colorIndex: %d   recordID: %d\n", 
+				printf("id: %d   type: %d   level: %d   colorIndex: %d   recordID: %d\n", 
 					node->id, node->type, node->branchLevel,  node->colorIndex, node->recordID);
 	
 				if ( nodeCount == 3)
@@ -1425,7 +1460,7 @@ int npLoadNodesCSV (const char* buffer, int size, int type, void* dataRef)
 	if (node != NULL)
 	{
 		if(nodeCount > 3)
-			printf("\nid: %d   type: %d   branchLevel: %d   colorIndex: %d   recordID: %d\n", 
+			printf("\nid: %d   type: %d   level: %d   colorIndex: %d   recordID: %d\n", 
 				node->id, node->type, node->branchLevel,  node->colorIndex, node->recordID);
 	}
 	else
@@ -1443,10 +1478,10 @@ int npCSVtoC (pNPrecordSet recSet, const char* read, int size, void* dataRef)
 
 	switch(recSet->type)
 	{
-		case kNPtableTag :
+		case kNPmapTag :
 			recordCount = npLoadTags (read, size, dataRef);
 			break;
-		case kNPtableNode :
+		case kNPmapNode :
 			recordCount = npLoadNodesCSV (read, size, recSet->type, dataRef);
 			break;
 		default : break;
@@ -1479,7 +1514,7 @@ int npLoadTags (const char* buffer, int size, void* dataRef)
 
 	if (*read == '\r' || *read == '\n')
 	{
-		count += curs = npSeekToNextLineLimit(read, size);
+		count += curs = npNextLineLimit(read, size);
 		read = &read[curs];
 	}
 
@@ -1494,15 +1529,15 @@ int npLoadTags (const char* buffer, int size, void* dataRef)
 
 		//update count and set read ptr to beginning of next line
 		count += scanNumRet;	
-		count += curs = npSeekToNextLineLimit(read, size - count);
+		count += curs = npNextLineLimit(read, size - count);
 		read = &read[curs];
 
 		//print part of the first few lines of data
 		recordCount++;
 		if ( recordCount <= 3)
 		{
-			printf("id: %d  record_id: %d table_id: %d title: %.12s desc: %.8s\n",
-				tag->id, tag->recordID, tag->tableID, tag->title, tag->desc);
+			printf("id: %d  record_id: %d table_id: %d tag: %.12s \n", //desc: %.8s\n",
+				tag->id, tag->recordID, tag->tableID, tag->title );//tag->desc);
 			//printf("countDown: %d  curs: %d  scanNumRet: %d  recordCount: %d  size: %d\n", countDown, curs, scanNumRet, recordCount, size);
 			if ( recordCount == 3) printf("... ");
 		}
@@ -1513,7 +1548,7 @@ int npLoadTags (const char* buffer, int size, void* dataRef)
 
 	// print last record if more then 11 records
 	if (tag != NULL && recordCount > 3)
-		printf("id: %d  record_id: %d table_id: %d title: %.12s desc: %.8s\n",
+		printf("id: %d  record_id: %d table_id: %d tag: %.12s desc: %.8s\n",
 				tag->id, tag->recordID, tag->tableID, tag->title, tag->desc);
 
 	printf ("Tag Count: %d\n", recordCount);
@@ -1529,42 +1564,6 @@ int npLoadTags (const char* buffer, int size, void* dataRef)
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
-
-//zz debug
-//zz debug
-enum{
-	kNPfileNull = 0,
-
-	kNPfileTIFF,	//image formats
-	kNPfileRAW,
-	kNPfileJ2K,		//JPEG 2000
-	kNPfileJPG,
-
-	kNPfileCSV,		//data table formats
-	kNPfileTXT,
-	kNPfileXML,
-	kNPfileJSON,	//data tree schema
-
-	kNPfileKML,		//GIS standard
-	kNPfileCollada,	//3D model inter-change
-
-	kNPfileAIFF,	//audio
-	kNPfileWAV,
-
-	kNPfileMP3,
-	kNPfileM4A,
-
-	kNPfileMPG,		//MPEG 1 and 2 video
-	kNPfileMP4,		//MPEG 4
-
-	kNPfileMJ2,		//Motion JPEG 2000
-	kNPfileDCP,		//Digital Cinema Package
-
-	kNPfileMXF,		//AV formats, open standard and proprietary
-	kNPfileDNX,
-	kNPfileAVI,
-	kNPfileMOV
-};
 
 //currently based soley on extension name
 //zz debug, add checking header contents
@@ -1641,6 +1640,7 @@ int npGetFileFormat(const char* buffer, void* dataRef)
 	return format;
 }
 
+/*
 //------------------------------------------------------------------------------
 void npThreadImportCSV(const char* buffer, int size, void* dataRef)
 {
@@ -1664,7 +1664,7 @@ format = npGetFileFormat(buffer, dataRef);
 
 //	free (buffer);
 }
-
+*/
 
 //-----------------------------------------------------------------------------
 int npFileReadBlocks (const char* filePath, char* buffer, void* dataRef)
@@ -1786,18 +1786,18 @@ char* npGetType(int* type, int* format, const char* str, int size, void* dataRef
 		printf ("CSV Tag File Ver: 1\n");
 		printf( "%.39s\n", str);
 		*type = kNPfileCSV;
-		*format = kNPtableTag;
+		*format = kNPmapTag;
 	}
 	else if (strncmp(str, "id", 2) != 0)
 	{
 		//add checking for CSV ver 1
-		curs = npSeekToNextLineLimit(str, size);
+		curs = npNextLineLimit(str, size);
 		if (strncmp(&str[curs], "id,type,data,selected,parent_id,branch_level", 44) == 0)
 		{
 			printf ("CSV Node File Ver: 2\n");	//add file version, debug zz
 			printf( "%.39s\n", str);
 			*type = kNPfileCSV;
-			*format = kNPtableNode;
+			*format = kNPmapNode;
 		}
 		else
 		{
@@ -1810,28 +1810,28 @@ char* npGetType(int* type, int* format, const char* str, int size, void* dataRef
 		printf ("CSV Node File Ver: 2\n");
 		printf( "%.39s\n", str);
 		*type = kNPfileCSV;
-		*format = kNPtableNode;
+		*format = kNPmapNode;
 	}
 	else if (strncmp(str, "id,channel_id,track_id,attribute,track_table_id", 47) == 0)
 	{
 		printf ("CSV Channel Map File Ver: 1\n");
 		printf( "%.39s\n", str);
 		*type = kNPfileCSV;
-		*format = kNPtableChMap;
+		*format = kNPmapChannel;
 	}
 	else if (strncmp(str, "track_id,", 9) == 0)
 	{
 		printf ("CSV Tracks File Ver: 1\n");
 		printf( "%.39s\n", str);
 		*type = kNPfileCSV;
-		*format = kNPtableTracks;
+		*format = kNPmapTrack;
 	}
 	else
 		return (char*)str;
 
-	//add kNPtableGlobals, kNPtablePathMap, kNPtable...						//zz debug
+	//add kNPmapGlobals, kNPmapPathMap, kNPmap...						//zz debug
 
-	curs = npSeekToNextLineLimit(str, size);		
+	curs = npNextLineLimit(str, size);		
 	return (char*)&str[curs];
 }
 
@@ -1866,7 +1866,7 @@ void npPreLoadInit(pNPrecordSet recSet, void* dataRef)
 	pData data = (pData) dataRef;
 
 //for sorting parent and child nodes that are out of order in the file	//zz debug
-	if (recSet->type == kNPtableNode)
+	if (recSet->type == kNPmapNode)
 		npMapSortInit (data->map.sortID, data);
 }
 
@@ -1879,7 +1879,7 @@ void npPostMap (pNPrecordSet recSet, void* dataRef)
 	//npMapSync(data);
 
 	//post process for node attachment and selection
-	if (recSet->type == kNPtableNode)
+	if (recSet->type == kNPmapNode)
 	{
 		//update the selected and active node to be root of last node created
 		npSelectNode (data->map.node[data->map.nodeRootCount - 1], data);
@@ -1901,12 +1901,26 @@ void npPostMap (pNPrecordSet recSet, void* dataRef)
 		data->map.syncNodes = true;	//flag that nodes are ready for tag sync
 
 		printf ("Sync Channel Map...\n");
-		npSyncChMap (data);							//zz-JJ
+		npSyncChMap (data);
+		
+		if( data->map.syncTagsReady )//recSet->count)
+		{
+			printf ("Tags are READY before nodes...\n");
+			npSyncRecords(recSet, data);//zz-JJ
+		}
 	}
+	else if (recSet->type == kNPmapTag)
+	{
+		data->map.syncTagsReady = true;
+		//sync the nodes and tags
+		if(data->map.syncNodes == true)
+			npSyncRecords( recSet, data );
+		else
+			data->map.syncTagsReady = true;
+	}
+//	if (recSet->count)
+//			npSyncRecords(recSet, data);
 
-	//sync the nodes and tags
-	if (recSet->count)
-		npSyncRecords(recSet, data);
 }
 
 //zz debug, read loop with circular buffer, separate str parsing threads
@@ -1943,6 +1957,7 @@ void npFileOpenThread (void* threadData)
 	double startTime = nposGetTime();
 
 	//recordSet stores a list of the new records created
+	//used for processing the file blocks, attaching records, orphans...
 	recordSet = npMalloc(0, sizeof(NPrecordSet), data);
 	if (!recordSet) goto postProcess;
 
@@ -1981,12 +1996,12 @@ void npFileOpenThread (void* threadData)
 	
 	npPreLoadInit(recordSet, data);
 
-	if (type == kNPtableNode)												//zzhp
+	if (type == kNPmapNode)												//zzhp
 		data->io.file.loading = true;
 
 //start csv format specific methods, agnostic to table data type
 	//search from end of buffer to find end of the last complete row
-	lastEOL = npSeekLastEOL(read, count);
+	lastEOL = npLastEOL(read, count);
 	tailSize = count - lastEOL;
 
 	//zz debug, currently copying the line returns to the top of splitbuffer, fix this
@@ -1996,7 +2011,7 @@ void npFileOpenThread (void* threadData)
 	strncpy(splitBlock, &read[lastEOL], tailSize);
 
 	//skip over the header row, possibly remove limit ver if tail handled
-	firstRow = npSeekToNextLineLimit(read, count);
+	firstRow = npNextLineLimit(read, count);
 
 	//load records for current read block, passes in start of first row
 	cropSize = lastEOL - firstRow;
@@ -2014,7 +2029,7 @@ void npFileOpenThread (void* threadData)
 
 		//if splitBlock then find start of first complete record row
 		if (tailSize > 0)
-			firstRow = npSeekToNextLineLimit(read, count);
+			firstRow = npNextLineLimit(read, count);
 		else
 			firstRow = 0;	//else set to 0
 
@@ -2033,7 +2048,7 @@ void npFileOpenThread (void* threadData)
 		}
 
 		//search buffer starting from the end and find last complete row EOL
-		lastEOL = npSeekLastEOL(read, count);
+		lastEOL = npLastEOL(read, count);
 
 		//update tailSize and copy the nex 1st half of packet splitBuffer row
 		tailSize = count - lastEOL;
@@ -2057,8 +2072,8 @@ postProcess:
 	printf("\nTotal Bytes: %d\n", total);
 	switch (type)
 	{
-		case kNPtableNode : printf("Total Nodes: %d\n", records); break;		
-		case kNPtableTag : printf("Total Tags: %d\n", records); break;
+		case kNPmapNode : printf("Total Nodes: %d\n", records); break;		
+		case kNPmapTag : printf("Total Tags: %d\n", records); break;
 		default : printf("Total Rows: %d\n", records); break;
 	}
 	sprintf(msg, "load time: %f secs", (nposGetTime() - startTime) );
@@ -2071,11 +2086,12 @@ postProcess:
 	sprintf(msg, "sync time: %f secs", (nposGetTime() - startTime) );
 	npPostMsg(msg,kNPmsgCtrl,data);
 
-	npPostTool( NULL, data );
+//	npPostTool( NULL, data );
+	npMenuRefresh( NULL, data );
 
 endPoint:
 	//flag other processess that loading is done, resume z-sort draw
-	if (type == kNPtableNode)												//zzhp
+	if (type == kNPmapNode)												//zzhp
 		data->io.file.loading = false;
 
 	//free read buffers and threadFile structure
@@ -2101,6 +2117,57 @@ endPoint:
 		int workerCount;		//number of threads to divide up task 
 	}
 */
+
+//------------------------------------------------------------------------------
+int npTableAlreadyLoaded(const char* filePath, void* dataRef)
+{
+	pData data = (pData) dataRef;
+
+	//update the table_map for load, merge and/or update
+	if( 0 )//npAlreadyLoaded( filePath, data ) )
+		return 1;
+	else
+		return 0;
+}
+
+//------------------------------------------------------------------------------
+int npGetTableID(const char* filePath, void* dataRef)
+{
+	int tableID = 0;
+	pData data = (pData) dataRef;
+
+	if( npTableAlreadyLoaded( filePath, data ) )
+	{
+		return 1;
+	}
+	else
+	{
+		//generate a table id or return 0?	//zz debug
+	}
+
+	return tableID;
+}
+
+
+//------------------------------------------------------------------------------
+int npTableMapUpdate (const char* filePath, FILE* file, void* dataRef)
+{
+	int tableID = 1;
+	pData data = (pData) dataRef;
+
+	//update the table_map for load, merge and/or update
+	tableID = npGetTableID( filePath, data );
+	if( !tableID )
+	{
+	//	tableID = npTableNew( filePath, file, data );
+		printf( "table_map insert: %s\n", filePath );
+	}
+	else
+		printf( "table_map update: %s\n", filePath );
+
+	return tableID;
+}
+
 //------------------------------------------------------------------------------
 int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 {
@@ -2110,6 +2177,7 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 	pNPthreadFile threadFile = NULL;
 
 	threadFile = npMalloc (0, sizeof(NPthreadFile), dataRef);
+	if( !threadFile ) return 1;
 
 	threadFile->filePath = npNewStrcpy(filePath, dataRef);
 	threadFile->file = file;
@@ -2119,11 +2187,17 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 //	while (gThreadTagFileLock) sleep(0.001);
 //	gThreadTagFileLock = true;
 //	gThreadFilePath = filePath;
-	
-	//thread the file block read process
-	// npFileOpenThread(dataRef);
+
+
+	//update the table_map for load, merge and/or update
+	npTableMapUpdate( filePath, file, data );
+
+	//now load the file from a new thread
 	nposBeginThread(npFileOpenThread, threadFile);
 
+	// npFileOpenThread(dataRef);
+
+// npFileOpenThread(threadFile);
 //	read->buffer = buffer;
 
 //	read->index = 0;
@@ -2168,7 +2242,7 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 	}
 */
 
-	return 1;
+	return 0;
 }
 
 
@@ -2302,7 +2376,7 @@ int npWriteNode (const char* buffer, pNPnode node, int format, void* dataRef)
 		
 		node->selected,
 		parentID,					// parent id replaces pointer to parent
-		node->branchLevel,
+		node->branchLevel,													//zz debug level
 		childID,					// either same as the node or id of link end B
 		node->childIndex,
 		node->childCount,

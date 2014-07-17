@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -62,6 +62,11 @@ void npConsoleCmd( pNPconsole console, void* dataRef );
 void npConsoleCmdText( pNPconsole console, void* dataRef );
 
 void npConsolePrompt(pNPconsole console, void* dataRef);
+
+//pass in question to ask user with which user (consoleRef)
+//once user enters response, will call pAskCallback with answer
+void npConsoleAsk( void (*pAskCallback)(const char* answer, void* dataRef),
+				   const char* askUser, pNPconsole console, void* dataRef);
 
 #endif
 

@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -23,6 +23,11 @@
 * --------------------------------------------------------------------------- */
 
 #include "npstr.h"
+
+
+// some of the np...() string methods are SAFE, some are NOT!
+// for agood discussion on null '\0' string safety issues see:
+// http://stackoverflow.com/questions/1258550/why-should-you-use-strncpy-instead-of-strcpy
 
 
 //string to 32bit float conversion
@@ -415,7 +420,7 @@ char* npNewStrcpy (const char* str, void* dataRef)
 }
 
 //------------------------------------------------------------------------------
-int npSeekToNextField(const char* buffer)	//does NOT Check Max
+int npNextField(const char* buffer)	//does NOT Check Max
 {
 	char ch = 0;
 	int curs = 0;
@@ -433,7 +438,7 @@ int npSeekToNextField(const char* buffer)	//does NOT Check Max
 //MB//
 // seeks to next line, accepts cr and or nl to be compatible with Mac, Unix, MS
 //------------------------------------------------------------------------------
-int npSeekToNextLine(const char* buffer )	//does NOT Check Max
+int npNextLine(const char* buffer )	//does NOT Check Max
 {
 	char ch = 0;
 	int curs = 0;
@@ -450,6 +455,26 @@ int npSeekToNextLine(const char* buffer )	//does NOT Check Max
 
 	return curs;	//the index of the first char of the next line
 }
+
+
+//------------------------------------------------------------------------------
+char* npNextWhiteSpace (const char* buffer, int size)
+{
+	char* curs = (char*)buffer;
+	char* endPtr = curs + size;
+
+	//skip white space in case of blank lines at top of file
+    while( *curs != ' ' || *curs != '\t' || *curs != '\r' || *curs != '\n' )
+	{
+		if (curs >= endPtr)
+			return NULL;		//return NULL if we reach the end of buffer
+		else
+			curs++;
+	}
+
+	return curs;
+}
+
 
 //------------------------------------------------------------------------------
 char* npSkipWhiteSpace (const char* buffer, int size)
@@ -470,7 +495,7 @@ char* npSkipWhiteSpace (const char* buffer, int size)
 }
 
 //------------------------------------------------------------------------------
-int npSeekToNextLineLimit(const char* buffer, int size )	//Checks Max
+int npNextLineLimit(const char* buffer, int size )	//Checks Max
 {
 	char ch = 0;
 	int curs = 0;
@@ -496,7 +521,7 @@ int npSeekToNextLineLimit(const char* buffer, int size )	//Checks Max
 //search from end of buffer and return index of the last line end, '\r' or '\n'
 //return 0 if not found
 //------------------------------------------------------------------------------
-int npSeekLastEOL(const char* buffer, int size)
+int npLastEOL(const char* buffer, int size)
 {
 	//pre-decrement index since last array index is size - 1
 	while (--size >= 0)
@@ -529,4 +554,89 @@ int npStrDigitIsNext( const char* str, int size )
 	return 0;
 }
 
+
+//------------------------------------------------------------------------------
+int npStrToRange( int* lower, int* upper, const char* str, int size )
+{
+	int curs = 0;
+
+	//convert first number string to int
+	*lower = npatoi( str );
+
+	//search for separator
+	while( !( str[curs] == ':' || str[curs] == '-' ) && curs < size ) curs++;	//zz debug add better exception handling
+
+	if (curs < (size - 1) )
+		*upper = npatoi( str + curs + 1 );
+	else
+		*upper = *lower;	//test
+
+	return (*upper - *lower + 1);	
+}
+
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+
+//passed in ptr to the CSV buffer and converts it to a string struct that is
+//compatible with MySQL query struct... 
+//conversion overwrites the comma deliminators with null terminators '\0'
+//which turns the CSV file into a series of C strings... ta da!
+//pads all deliminators with '\0' such as quotes, commas and line returns
+//and creates separate ptr array to the start of each string with additional
+//array for string length
+//buffer with str map struct is returned to npmapstr which converts the strings 
+//to the target data structure member types, primarily int, float and string
+//then the buffer clear flag is set to allow re-use for next file chunk
+//-----------------------------------------------------------------------------
+void npCSVtoStr (char** str, const char* csv, int type, int size, void* dataRef)
+{
+	int i = 0;
+//	pNProwFormat row = NULL;	//based on type
+
+//	for (i=0; i < row->count; i++)
+	{
+
+	}
+}
+
+//hard coded optimization for our native data structs
+//npStrToNode
+
+//converts any table structure to a dynamically defined generic C container
+//low-level on a per table type or per record bases
+//separate JSON compatible shema can be used to define the data tree structure
+//supporst plugins to define and work with any arbitrary data structure
+//efficiency is almost as good as the structure specific hard coded routines
+//some light processing overhead to for the loop and pointer math, etc...
+//-----------------------------------------------------------------------------
+void npMapStrToC (void** dest, const char* str, int type, int size, void* dataRef)
+{
+	int i = 0, j = 0;
+/*
+	int elementSize = npGetElementSize(type);
+	int rowColumnCount = npGetColumnCount(type);
+
+	//convert rows till we reach the defined endpoint size
+	for (i < size)
+	{
+		//convert a row (strings) to C data type
+		for (j=0; j < rowColumnCount; j++)
+		{
+			switch (typeElement[j])
+			{
+				case kNPint : dest[i] = npatoi(str[j]); break;
+				case kNPfloat : dest[i] = npatof(str[j]); break;
+				case kNPcstr : dest[i] = npstrncpy(str[j], strLen[j]); break;
+			}
+		}
+		dest[i]
+		i += elementSize
+	}
+*/
+}
 

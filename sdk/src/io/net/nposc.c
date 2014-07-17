@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -96,32 +96,34 @@ NPfloatRGBA npHSLtoRGBA( float H, float S, float L, float alpha )
 void npInitOSC (void* dataRef )
 {
 	int i = 0;
+	char msg[128];
+
 	pData data = (pData) dataRef;
+
+	pNPconnect connect = NULL;
+
 //	pNPoscItem oscItem = NULL;
 	pNPoscPackListener oscItem = NULL;										//zz debug
 
-	//JJ-zz this is right place...
-	// start any UDP listeners based on data->io.osc[oscID]
-	//npStartListeners( , dataRef );
-
-	// start a listener thread for each connection pair in data->io.osc[oscID]
-	for (i = 0; i < data->io.osc.count; i++)		//zz-JJ
+	//JJ - start any UDP listeners specified on command line
+	// or in globals (CSV) file, was npStartListeners()					//zz-JJ
+	for( i = 0; i < data->io.connectCount; i++ )		
 	{
-//		oscItem = data->io.osc.list[i];
+		oscItem = &data->io.connect[i]->oscListener;
 
-		npPostMsg( "starting a UDP listener!", kNPmsgDebug, data );
-		
-													//zz need to figure out osc->id!!!
-		// initialize then start listener in another thread
-	//zz	npInitOscPackListener( oscItem->rxPort, oscItem->txPort, data );
-		npInitOscPackListener( oscItem, oscItem->txPort, oscItem->rxPort, data );
+		npInitOscPackListener( oscItem, data );
 		nposBeginThread( npOscListenerThread, oscItem );
+
+		sprintf( msg, "OSC listener port RX: %d  TX: %d", 
+						oscItem->rxPort, oscItem->txPort );
+		// printf(msg);
+		npPostMsg(msg, kNPmsgOSC, data );	//zz debug
 	}
 }
 
 // ---------------------------------------------------------------------------
-//
-// this only works for type tags 'i' 'f' 's' and 'ff'
+//zz osc
+//zz currently only works for type tags 'i' 'f' 's' and 'ff'
 void npOscRx (int oscID, const char* addr, const char* tag, void** arguments, void* dataRef )
 {
 	static float prevX = 0.5, prevY = 0.5;

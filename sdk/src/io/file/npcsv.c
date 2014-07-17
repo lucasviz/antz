@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -31,6 +31,8 @@
 #include "../db/npdbz.h"			//zz db2 added to access member elements
 
 #include "../gl/nptags.h"
+#include "../npgl.h"
+#include "../../npctrl.h"
 
 //-----------------------------------------------------------------------------
 void npInitCSV (void* dataRef)
@@ -245,19 +247,6 @@ void npCSVtoMap (FILE* file, int type, void*dataRef)
 
 	return;
 }
-/*
-enum
-{
-	kNPtableGlobals,			//global settings
-	kNPtableNode,				//entire node scene state
-	kNPtableTag,				//node record_id based text tags
-	kNPtableChMap,				//maps nodes to tracks
-	kNPtableTrack,				//raw channel track data
-	kNPtableOSC,				//maps OSC commands and node data
-	kNPtableKeyMap,				//maps keyboard functions
-	kNPtableCount			
-};
-*/
 
 //zz debug, need a table similar to npmap.c generates for node header with ptrs like chmap
 //need arrays for sub elements to, color = black, white...
@@ -560,8 +549,8 @@ void* npMapElementToPtr (const char* str, void* dataRef)
 	itemCount = data->map.globalsCount;
 
 	//scan map using the ID and if found return a pointer to the data
-	for (i=0; i < itemCount; i++)
-	{
+	for( i=1; i <= itemCount; i++ )		//zz debug, why i=1 and <= works
+	{									//instead of i=0 and <
 		if (strncmp(str, (const char*)mapType[i].elementA, kNPnameMax) == 0)
 			return mapType[i].mapPtr;
 	}
@@ -571,11 +560,41 @@ void* npMapElementToPtr (const char* str, void* dataRef)
 	itemCount = data->map.oscCount;
 
 	//scan map using the ID and if found return a pointer to the data
-	for (i=0; i <= itemCount; i++)
+	for (i=1; i <= itemCount; i++)
 	{
 		if (strncmp(str, (const char*)mapType[i].elementA, kNPnameMax) == 0)
 			return mapType[i].mapPtr;
 	}
+
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+char* npMapTypeName (int mapType, void* dataRef)
+{
+	//quick implementation... not efficient, make direct like others..
+//	return nMapIDtoPtr ( npMapStrToID (str, dataRef), dataRef );
+
+	int i = 0;
+	int itemCount = 0;
+
+	pData data = (pData) dataRef;
+
+	pNPmapType mapTypeList = NULL;
+
+	//get the map and itemCount
+	mapTypeList = data->map.mapTypeList;
+	itemCount = data->map.mapTypeCount;
+
+	//scan map using the ID and if found return a pointer to the data
+	for( i=1; i <= itemCount; i++ )		//zz debug, why i=1 and <= works
+	{									//instead of i=0 and <
+		if( mapTypeList[i].type == mapType )
+			return mapTypeList[i].name;
+	}
+
+	//if not found
+	npPostMsg( " err 4427 - unknown mapType", kNPmsgErr, data );
 
 	return NULL;
 }
@@ -653,6 +672,8 @@ pNPmapLink npMapAddressToMapTypeItem (const char* str, void* dataRef)
 		if (strncmp(str, (const char*)mapType[i].elementB, kNPnameMax) == 0)
 			return &mapType[i];
 	}
+
+	printf( "OSC Address: %s\n", str ); //zz osc debug
 
 	return NULL;
 }
@@ -769,7 +790,7 @@ void npMapTypeInit (void* dataRef)
 		// URL for external Browser record retrieval
 		{ data->io.url,				kNPcstrPtr,		kNPgBrowserURL,		0, "np_browser",	1,	"url",				"s",	"Browser URL" },
 
-		{ &data->map.globalsCount,	kNPint,			kNPitemCount,		1, "np_globals",	1,	"item_count",		"i",	}	//end
+		{ &data->map.globalsCount,	kNPint,			kNPitemCount,		1, "np_globals",	1,	"item_count",		"i",	"Item count for this table"}	//end
 	};
 
 	// antz native csv table field 'elementB' name matches the 'elementA' name
@@ -926,10 +947,69 @@ void npMapTypeInit (void* dataRef)
 	{ &data->io.clear.g,		kNPfloat,		kNPgBackgroundG,	0, "np_gl",	1,	"back_color_g",			"f",	"osc",  0,	"/1/fader2",				"f" },
 	{ &data->io.clear.b,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_b",			"f",	"osc",  0,	"/1/fader3",				"f" },
 //	{ &data->io.clear.a,		kNPfloat,		kNPgBackgroundA,	0, "np_gl",	1,	"back_color_a",			"f",	"osc",  0,	"/1/fader4",				"f" },
-					
+
+/*
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/NEUTRAL",				"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/PUSH",				"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/PULL",				"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/LIFT",				"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/DROP",				"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/LEFT",				"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/RIGHT",				"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/ROTATE_LEFT",			"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/ROTATE_RIGHT",		"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/ROTATE_CLOCKWISE",	"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/ROTATE_COUNTER_CLOCKWISE", "f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/ROTATE_FORWARDS",		"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/ROTATE_REVERSE",		"f" },
+	{ &data->,		kNPfloat,		kNP,	0, "np_",	1,	"",			"f",	"osc",  0,	"/COG/DISAPPEAR",			"f" },
+*/
+	{ &data->io.clear.b,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_b",			"f",	"osc",  0,	"/AFF/Frustration",			"f" },
+	{ &data->io.clear.b,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_b",			"f",	"osc",  0,	"/AFF/Engaged/Bored",		"f" },
+	{ &data->io.clear.g,		kNPfloat,		kNPgBackgroundG,	0, "np_gl",	1,	"back_color_g",			"f",	"osc",  0,	"/AFF/Excitement",			"f" },
+	{ &data->io.clear.b,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_b",			"f",	"osc",  0,	"/AFF/Excitement Long Term","f" },
+	{ &data->io.clear.r,		kNPfloat,		kNPgBackgroundR,	0, "np_gl",	1,	"back_color_r",			"f",	"osc",  0,	"/AFF/Meditation",			"f" },
+
+	{ &data->io.clear.r,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_r",			"f",	"osc",  0,	"/EXP/WINK_LEFT",			"f" },
+	{ &data->io.clear.g,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_g",			"f",	"osc",  0,	"/EXP/WINK_RIGHT",			"f" },
+	{ &data->io.clear.b,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_b",			"f",	"osc",  0,	"/EXP/BLINK",				"f" },
+	{ &data->io.clear.r,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_r",			"f",	"osc",  0,	"/EXP/LEFT_LID",			"f" },
+	{ &data->io.clear.g,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_g",			"f",	"osc",  0,	"/EXP/RIGHT_LID",			"f" },
+	{ &data->io.clear.r,		kNPfloat,		kNPgBackgroundR,	0, "np_gl",	1,	"back_color_r",			"f",	"osc",  0,	"/EXP/HORIEYE",				"f" },
+	{ &data->io.clear.g,		kNPfloat,		kNPgBackgroundG,	0, "np_gl",	1,	"back_color_g",			"f",	"osc",  0,	"/EXP/VERTEYE",				"f" },
+	{ &data->io.clear.b,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_b",			"f",	"osc",  0,	"/EXP/SMILE",				"f" },
+	{ &data->io.clear.r,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_r",			"f",	"osc",  0,	"/EXP/CLENCH",				"f" },
+	{ &data->io.clear.g,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_g",			"f",	"osc",  0,	"/EXP/LAUGH",				"f" },
+	{ &data->io.clear.b,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_b",			"f",	"osc",  0,	"/EXP/SMIRK_LEFT",			"f" },
+	{ &data->io.clear.r,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_r",			"f",	"osc",  0,	"/EXP/SMIRK_RIGHT",			"f" },
+	{ &data->io.clear.g,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_g",			"f",	"osc",  0,	"/EXP/FURROW",				"f" },
+	{ &data->io.clear.b,		kNPfloat,		kNPgBackgroundB,	0, "np_gl",	1,	"back_color_b",			"f",	"osc",  0,	"/EXP/EYEBROW",				"f" },
+
 	{ &data->map.oscCount,		kNPint,			kNPitemCount,	    1, "osc",	0,	"item_count",			"i",	"osc",  0,	"/np/map/osc/item_count",	"i", "Map item count", "designates end of list" }
 	
 	}; //end of list
+
+	//add pointer element to the map descriptor
+	NPmapType mapTypeList[] = {
+	{ 0,	kNPmapNull,		"null",			"" },
+	{ 0,	kNPmapGlobals,	"globals",		"Accesses global map elements" },
+	{ 0,	kNPmapNode,		"node",			"Scene Graph tree Node element" },
+	{ 0,	kNPmapTag,		"tag",			"Text Tag" },
+	{ 0,	kNPmapChannel,	"channel",		"Channel maps tracks to nodes, globals & commands" },
+	{ 0,	kNPmapTrack,	"track",		"Tracks animate the scene using files or live IO" },
+	{ 0,	kNPmapGL,		"gl",			"OpenGL context specific parameters" },
+	{ 0,	kNPmapCSV,		"csv",			"CSV table descriptor" },
+	{ 0,	kNPmapJSON,		"json",			"JSON data descriptor" },
+	{ 0,	kNPmapCount,	"count",		"Item count for this list" }
+	};
+
+	//scan the list looking for kNPitemCount to dynamically set the list size
+	i = 0; while (mapTypeList[i++].type != kNPmapCount) data->map.mapTypeCount++;
+
+	// copy the structure to newly allocated RAM	
+	size = sizeof(mapTypeList);
+	data->map.mapTypeList = npMalloc(0, size, data);
+	memcpy(data->map.mapTypeList, (const void*)mapTypeList, size);
 
 	//scan the list looking for kNPitemCount to dynamically set the list size	//zz debug probably a simpler way to do this?
 	i = 0; while (mapGlobals[i++].elementID != kNPitemCount) data->map.globalsCount++;
@@ -976,7 +1056,7 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef);
 //-----------------------------------------------------------------------------
 int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 {
-	int id = 0;
+	int id = 1;				//first id should start at 1
 	int itemCount = 0;
 
 	int n = 0;				//curs byte count offset
@@ -998,7 +1078,7 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 
 //zz-JJ		itemCount = data->map.globalsCount;
 
-	if ( mapType == kNPtableMapOSC )
+	if ( mapType == kNPmapOSC )
 	{
 		// write the first row header, includes CRLF line ending
 		// ---
@@ -1017,14 +1097,14 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 	//	includes CRLF line ending
 		n += sprintf (curs, "np_osc_id");	//npGetMapName(mapType, dataRef); //zz debug
 	}
-	else if ( mapType == kNPtableGlobals )
+	else if ( mapType == kNPmapGlobals )
 	{
 		mapList = data->map.typeMapGlobals;
 		itemCount = data->map.globalsCount;
 	
 		n += sprintf (curs, "np_globals_id");
 	}
-	else if ( mapType == kNPtableTag )
+	else if ( mapType == kNPmapTag )
 	{
 		//mapList = data->map.typeMapTag;
 		itemCount = kNPnodeRootPin;	//data->map.tagsCount;					//zz debug
@@ -1034,7 +1114,7 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 		if (!nodes) return 0;
 
 		//populate the sort lists, skip over null nodes
-		for (i=0; i < kNPnodeMax; i++)	//data->map.nodeCount; i++)
+		for (i = kNPnodeRootPin ; i < kNPnodeMax; i++)	//data->map.nodeCount; i++)
 			if (data->map.nodeID[i] != NULL)
 				nodes[j++] = data->map.nodeID[i];
 
@@ -1045,6 +1125,7 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 		//sort nodes and tags grouped first by table_id and second by record_id
 	//	npSort(nodes, j, sizeof(void*), npCompareNodes, data);
 
+		//zz debug change to np_tag_id,map_path,record_id,title,description
 		n += sprintf (curs, "np_tag_id,record_id,table_id,title,description\n");
 		//for (id = 1; id <= itemCount; id++)
 		for (i=0; i < j; i++)
@@ -1102,7 +1183,7 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 				 );
 	}
 /*	}
-	else if ( mapType == kNPtableGlobals )
+	else if ( mapType == kNPmapGlobals )
 	{
 	//		npMapTypeInit(data);
 		mapTypePtr = data->map.typeMapGlobals;
@@ -1234,12 +1315,57 @@ void* npMapItemPtr (char* mapPath, char* item, char* element, char* typeTag, voi
 	return npMapElementToPtr (element, dataRef);
 }
 
-void npUpdateGlobals(void* dataRef);
+void npUpdateGlobals( void* dataRef );
 // update global states at startup and after loading datasets with globals
 //-----------------------------------------------------------------------------
-void npUpdateGlobals(void* dataRef)
+void npUpdateGlobals( void* dataRef )
 {
 	pData data = (pData) dataRef;
+
+	pNPgl gl = &data->io.gl;
+
+	//don't sync if this is the startup load, gl context does NOT yet exist!
+	if ( data->ctrl.startup )
+		return;
+
+	printf( "full: %d  pos_x: %d  pos_y: %d  size_x: %d  size_y: %d\n",
+			gl->fullscreen,
+			gl->position.x,
+			gl->position.y,
+			gl->windowSize.x,
+			gl->windowSize.y );
+
+	//queries current window mode
+	if ( glutGet( GLUT_FULL_SCREEN ) != gl->fullscreen )
+	{
+	//	gl->fullscreen = 1 - gl->fullscreen;
+		npCtrlCommand( kNPcmdFullscreen, data );
+	}
+	
+	if ( glutGet( GLUT_WINDOW_X ) != gl->position.x 
+		|| glutGet( GLUT_WINDOW_Y ) != gl->position.y
+		|| glutGet( GLUT_WINDOW_WIDTH ) != gl->windowSize.x
+		|| glutGet( GLUT_WINDOW_HEIGHT ) != gl->windowSize.y )
+	{
+
+		gl->width = gl->windowSize.x;
+		gl->height = gl->windowSize.y;
+
+		npGLResizeScene(gl->windowSize.x, gl->windowSize.y);
+			
+		gl->width = gl->windowSize.x;
+		gl->height = gl->windowSize.y;
+		glutReshapeWindow (gl->windowSize.x, gl->windowSize.y);
+		glutPositionWindow (gl->position.x, gl->position.y);
+	}
+
+
+/*				
+	if ( glutGet( GLUT_WINDOW_WIDTH ) != data->io.gl.width
+		 || glutGet( GLUT_WINDOW_HEIGHT ) != data->io.gl.height )
+		npGLResizeScene( data->io.gl.width, data->io.gl.height );
+*/
+
 /*
 	// if needed set fullscreen mode, size and position can be ignored
 	if ( data->io.gl.fullscreen != npGetFullscreenMode(data) )
@@ -1363,7 +1489,7 @@ int npOpenMapCSV (char* filePath, int mapType, void* dataRef)
 	//start processing items (CSV/table rows)
 
 	//find the chunk endpoint of the last record	//zz debug, add handling for record size > chunk size
-	endPoint = npSeekLastEOL( buffer, size );
+	endPoint = npLastEOL( buffer, size );
 	if (!endPoint){ printf(" err 8312 - no EOL in file chunk"); goto finish;}
 
 /* //zz
@@ -1384,28 +1510,28 @@ int npOpenMapCSV (char* filePath, int mapType, void* dataRef)
 		intPtr = (int*)npMapItemPtr (NULL, NULL, curs, NULL, data);
 */	
 	//goto start of first record, typically starts with its id
-	count += i = npSeekToNextLineLimit(curs, endPoint - count); curs = &curs[i];
+	count += i = npNextLineLimit(curs, endPoint - count); curs = &curs[i];
 
 	while( endPoint > (int)count )
 	{
 		id = curs;															//id
 
-		count += i = npSeekToNextField(curs); mapPathA	= curs = &curs[i];	//array or element ptr
-		count += i = npSeekToNextField(curs); itemA		= curs = &curs[i];	//array index int, 0 if element such as np_globals
+		count += i = npNextField(curs); mapPathA	= curs = &curs[i];	//array or element ptr
+		count += i = npNextField(curs); itemA		= curs = &curs[i];	//array index int, 0 if element such as np_globals
 
-		count += i = npSeekToNextField(curs); elementA	= curs = &curs[i];	//element ptr
-		count += i = npSeekToNextField(curs); typeTagA	= curs = &curs[i];	//type_tag_a descriptor
+		count += i = npNextField(curs); elementA	= curs = &curs[i];	//element ptr
+		count += i = npNextField(curs); typeTagA	= curs = &curs[i];	//type_tag_a descriptor
 		curs -= 2; *curs = '\0'; curs+=2; 	//zz debug, i-2 to convert ending quote ...", to cstr for element ptr
 
-		count += i = npSeekToNextField(curs); permissions = curs = &curs[i];	//direction
+		count += i = npNextField(curs); permissions = curs = &curs[i];	//direction
 
-		count += i = npSeekToNextField(curs); name		= curs = &curs[i];	//UI name
-		count += i = npSeekToNextField(curs); desc		= curs = &curs[i];	//UI description
+		count += i = npNextField(curs); name		= curs = &curs[i];	//UI name
+		count += i = npNextField(curs); desc		= curs = &curs[i];	//UI description
 
-		count += i = npSeekToNextField(curs); valueStr	= curs = &curs[i];	//value
+		count += i = npNextField(curs); valueStr	= curs = &curs[i];	//value
 
 		//seek next record
-		count += i = npSeekToNextLineLimit( curs, endPoint - count ); curs = &curs[i];
+		count += i = npNextLineLimit( curs, endPoint - count ); curs = &curs[i];
 
 		//set the element value ptr, (at this time) type tags must match
 		//zz add custom type transcoding and a generic defualt handler
@@ -1440,7 +1566,7 @@ int npOpenMapCSV (char* filePath, int mapType, void* dataRef)
 					if (*typeTagA == 'i')	//goto next field if more then one element
 					{
 						(int*)elementRef += 1;
-						i = npSeekToNextField(valueStr); valueStr = &valueStr[i];
+						i = npNextField(valueStr); valueStr = &valueStr[i];
 					}
 				}
 			}
@@ -1454,7 +1580,7 @@ int npOpenMapCSV (char* filePath, int mapType, void* dataRef)
 					if (*typeTagA == 'f')	//goto next field if more then one element
 					{
 						(float*)elementRef += 1;
-						i = npSeekToNextField( valueStr ); valueStr = &valueStr[i];	//zz debug, what if no more fields... mem violation?
+						i = npNextField( valueStr ); valueStr = &valueStr[i];	//zz debug, what if no more fields... mem violation?
 					}
 				}
 			}
@@ -1475,7 +1601,7 @@ int npOpenMapCSV (char* filePath, int mapType, void* dataRef)
 					if (*typeTagA == 's')	//goto next field if more then one element
 					{
 						(char*)elementRef += 1;
-						i = npSeekToNextField( valueStr ); valueStr = &valueStr[i];	//zz debug, what if no more fields... mem violation?
+						i = npNextField( valueStr ); valueStr = &valueStr[i];	//zz debug, what if no more fields... mem violation?
 					}
 				}
 //				printf( " strings not yet supports: %3s...\n", *(char*)elementRef );
@@ -1580,13 +1706,16 @@ int npSaveGlobalsCSV (char* fileName, void* dataRef)
 //-----------------------------------------------------------------------------
 int npOpenGlobalsCSV (char* filePath, int wordSize, int size, void* dataRef)
 {
-	return npOpenMapCSV(filePath, kNPtableGlobals, dataRef);
+	return npOpenMapCSV(filePath, kNPmapGlobals, dataRef);
 }
 
-//
+
+// appends map table name to filePath and adds '.csv' extension
 //-----------------------------------------------------------------------------
-int npSaveMapToCSV (char* filePath, int mapType, void* dataRef)
+int npSaveMapToCSV( char* datasetName, int mapTypeID, void* dataRef )
 {
+	pData data = (pData) dataRef;
+
 	int i = 0;
 	int err = 0;
 	int size = 0;
@@ -1596,16 +1725,29 @@ int npSaveMapToCSV (char* filePath, int mapType, void* dataRef)
 	size_t count = 0;
 	FILE* file = NULL;
 
-	pData data = (pData) dataRef;
+	char* path = data->io.file.csvPath;
+	char* name = NULL;
+	char* mapTypeName = NULL;
+		
+	char* buffer = NULL;
+	char msg[kNPurlMax];
+	char filePath[kNPurlMax];
 	pNPnode node = NULL;
 
-	char* buffer = (char*) malloc(kNPfileBlockSize);
-	if (buffer == NULL)
-	{
-		printf ("4214 error - malloc failed, cannot write file\n");
-		free (buffer);
-		return 0;
-	}
+
+	//convert lookup table
+	mapTypeName = npMapTypeName( mapTypeID, data );
+
+	//construct the file path name for this map type using passed in dataset name
+	sprintf( filePath, "%s%s%s%s", path, datasetName, mapTypeName, ".csv" );
+	sprintf( msg, "Saving: %s",  filePath);
+	npPostMsg (msg, kNPmsgCtrl, data );
+
+	if( mapTypeID == kNPmapNode )
+		return npFileSaveMap( filePath, 1, strlen( filePath ), data );
+
+	buffer = (char*) npMalloc(0, kNPfileBlockSize, data);
+	if( !buffer ) return 0;
 
 	// open the file, "w+" overwrites existing files
 	printf ("\nSave File: %s\n", filePath);
@@ -1621,7 +1763,7 @@ int npSaveMapToCSV (char* filePath, int mapType, void* dataRef)
 	// copies current state to the write buffer, formats as CSV
 	// file buffer needs to be larger then kNPfileBlockSize
 	printf("Writing CSV...\n");
-	count = npMapToCSV( buffer, mapType, kNPmapFileBufferMax, &index, data );
+	count = npMapToCSV( buffer, mapTypeID, kNPmapFileBufferMax, &index, data );
 
 	while (count > 0)
 	{
@@ -1631,7 +1773,7 @@ int npSaveMapToCSV (char* filePath, int mapType, void* dataRef)
 		if (count >= kNPfileBlockSize) //0)//zz debug file block methods //
 		{
 			printf("-");
-			count = npMapToCSV( buffer, mapType, kNPmapFileBufferMax, &index, data );
+			count = npMapToCSV( buffer, mapTypeID, kNPmapFileBufferMax, &index, data );
 		}
 		else
 			count = 0;
@@ -1650,7 +1792,7 @@ int npSaveMapToCSV (char* filePath, int mapType, void* dataRef)
 		printf("\n");
 	}
 	else
-		printf("err 4216 - file write failure, zero bytes written\n");
+		printf("err 4316 - file write failure, zero bytes written\n");
 
 	err = npFileClose(file, dataRef);
 

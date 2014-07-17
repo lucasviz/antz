@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -170,20 +170,21 @@ void npCtrlCommand (int command, void* dataRef)
 		// kCmdGlobal... global commands, draw indicators/HUD, quit
 //		case kQuit : npCtrlGlobal (command, dataRef); break;
 
-		case kNPfileNew : npCtrlFile (command, dataRef); break;
-		case kNPfileOpen : npCtrlFile (command, dataRef); break;
-		case kNPfileClose : npCtrlFile (command, dataRef); break;
-		case kNPfileSave : npCtrlFile (command, dataRef); break;
-		case kNPfileSaveAs : npCtrlFile (command, dataRef); break;
-		case kNPfileImport : npCtrlFile (command, dataRef); break;
-		case kNPfileExport : npCtrlFile (command, dataRef); break;
-		case kNPfileMapOne : npCtrlFile (command, dataRef); break;
-		case kNPfileMapTwo : npCtrlFile (command, dataRef); break;
-		case kNPfileMapThree : npCtrlFile (command, dataRef); break;
+		case kNPcmdFileNew : npCtrlFile (command, dataRef); break;
+		case kNPcmdFileOpen : npCtrlFile (command, dataRef); break;
+		case kNPcmdFileClose : npCtrlFile (command, dataRef); break;
+		case kNPcmdFileSave : npCtrlFile (command, dataRef); break;
+		case kNPcmdFileSaveAs : npCtrlFile (command, dataRef); break;
+		case kNPcmdFileImport : npCtrlFile (command, dataRef); break;
+		case kNPcmdFileExport : npCtrlFile (command, dataRef); break;
+		case kNPcmdScreenGrab : npCtrlFile (command, dataRef); break;
+		case kNPcmdFileMapOne : npCtrlFile (command, dataRef); break;
+		case kNPcmdFileMapTwo : npCtrlFile (command, dataRef); break;
+		case kNPcmdFileMapThree : npCtrlFile (command, dataRef); break;
 
-		case kNPopenURL : npCtrlFile (command, dataRef); break;
-		case kNPopenApp : npCtrlFile (command, dataRef); break;
-		case kNPopenAntz : npCtrlFile (command, dataRef); break;
+		case kNPcmdOpenURL : npCtrlFile (command, dataRef); break;
+		case kNPcmdOpenApp : npCtrlFile (command, dataRef); break;
+		case kNPcmdOpenAntz : npCtrlFile (command, dataRef); break;
 
 		case kNPcmdViewer : npCtrlFile (command, dataRef); break;
 		case kNPcmdConsole : npCtrlGlobal (command, dataRef); break;
@@ -208,8 +209,14 @@ void npCtrlCommand (int command, void* dataRef)
 		case kNPcmdCamera : npCtrlSelect (command, dataRef); break;
 		case kNPcmdPin : npCtrlSelect (command, dataRef); break;
 
+		case kNPcmdNext : npCtrlSelect (command, dataRef); break;
+		case kNPcmdNextOff : npCtrlSelect (command, dataRef); break;
+		case kNPcmdPrev : npCtrlSelect (command, dataRef); break;
+		case kNPcmdPrevOff : npCtrlSelect (command, dataRef); break;
 		case kNPcmdNextBranch : npCtrlSelect (command, dataRef); break;
+		case kNPcmdNextBranchOff : npCtrlSelect (command, dataRef); break;
 		case kNPcmdPrevBranch : npCtrlSelect (command, dataRef); break;
+		case kNPcmdPrevBranchOff : npCtrlSelect (command, dataRef); break;
 
 		case kNPcmdNew : npCtrlSelect (command, dataRef); break;
 		case kNPcmdDelete : npCtrlSelect (command, dataRef); break;
@@ -242,11 +249,11 @@ void npCtrlCommand (int command, void* dataRef)
 		default :
 				//add proper key handling for modifier keys to map to any command, //zz debug
 				//the command should not be handling the modifier, vice versa
-			if (data->io.key.modAlt)
-			{
-				npCtrlSelect (command, dataRef);
-				break;
-			}
+	//		if (data->io.key.modAlt)
+	//		{
+	//			npCtrlSelect (command, dataRef);
+	//			break;
+	//		}
 
 			// not a global command
 			// exclude global commands or only 1 selected node from applying to all nodes
@@ -361,215 +368,95 @@ void npCtrlFile (int command, void* dataRef)
 {
 	int result = 0;
 	static char msg[kNPmaxPath];
-	static char fileName[512];
-	static char filePath[kNPmaxPath];
+	static char name[kNPmaxPath];
 
 	FILE* file = NULL;
 
 	pData data = (pData) dataRef;
 
-	fileName[0] = '\0';
-	filePath[0] = '\0';
-
+	name[0] = '\0';
 
 	switch (command)
 	{
-		case kNPfileNew : npFileDialog (NULL, kNPfileDialogNew, dataRef); break;
+		case kNPcmdFileNew :
+			npFileDialog (NULL, kNPfileDialogNew, dataRef);
+			break;
 
 		//navigate folders, files and DBs
-		case kNPcmdViewer : 
+		case kNPcmdViewer :
 			if (data->io.key.modShift)
 			{
 				printf("\nUpdating");
 				//npdbUpdateAntzStateFromDatabase(dataRef);
-				npdbSaveAntzStateToDatabase(dataRef);				//zzsql //zz dbz
+				npdbSaveAntzStateToDatabase(dataRef);				//zzsql
 			}
 			else
 				npViewer (dataRef);
 			break;
-//		case kNPcmdFileOpen : npFileOpen (dataRef); break;
-		case kNPfileOpen : npFileBrowser (dataRef); break;
-		case kNPfileClose : npFileDialog (NULL, kNPfileDialogClose, dataRef);	
-			break;
-		case kNPfileSave :
-			nposTimeStampCSV (fileName);
-			strcpy (filePath, data->io.file.csvPath);
-			sprintf(msg, "Saving: %s%s", filePath, fileName);
-			npPostMsg (msg, kNPmsgCtrl, dataRef);
 
-			sprintf (filePath, "%s%s%s", data->io.file.csvPath, fileName, "globals.csv" );
-			result = npSaveMapToCSV (filePath, kNPtableGlobals, dataRef);
-			if (result) npPostMsg ("Globals Done!", kNPmsgCtrl, dataRef);
-			
-			sprintf (filePath, "%s%s%s", data->io.file.csvPath, fileName, "node.csv" );
-			result = npFileSaveMap (filePath , 1, (int)strlen(filePath), dataRef);
-			if (result) npPostMsg ("Nodes Done!", kNPmsgCtrl, dataRef);
-			
-			sprintf (filePath, "%s%s%s", data->io.file.csvPath, fileName, "tag.csv" );
-			result = npSaveMapToCSV (filePath, kNPtableTag, dataRef);
-			if (result) npPostMsg ("Tags Done!", kNPmsgCtrl, dataRef);
+		case kNPcmdFileOpen :
+			npFileBrowser (dataRef);
+			break;
+		case kNPcmdFileClose :
+			npFileDialog (NULL, kNPfileDialogClose, dataRef);
+			break;
+		case kNPcmdFileSave :
+			nposTimeStampCSV( name );
+			npSaveScene( kNPmapCSV, name, data );
+			break;
+		case kNPcmdFileSaveAs :
+			npFileDialog (NULL, kNPfileDialogSaveAs, dataRef);
+			break;
 
+		case kNPcmdScreenGrab :
+			data->io.gl.screenGrab = 1; //kNPscreenGrabWindow ...Full ..Thumb
 			break;
-		case kNPfileSaveAs : npFileDialog (NULL, kNPfileDialogSaveAs, dataRef);
+
+		case kNPcmdFileMapOne :
+			strcpy( name, "antz0001" );			//file set root name
+			if (data->io.key.modShift)
+				npSaveScene( kNPmapCSV, name, data );
+			else
+				npLoadScene( kNPmapCSV, name, data );
 			break;
-		case kNPfileMapOne :
-	
+
+		case kNPcmdFileMapTwo :
+			strcpy( name, "antz0002" );			//file set root name
+			if (data->io.key.modShift)
+				npSaveScene(kNPmapCSV, name, data);
+			else
+				npLoadScene(kNPmapCSV, name, data);
+			break;
+
+		case kNPcmdFileMapThree :
+			strcpy( name, "antz0003" );			//file set root name
+			if (data->io.key.modShift)
+				npSaveScene(kNPmapCSV, name, data);
+			else
+				//npLoadScene(kNPmapCSV, name, data);
+				npNewDirTree(data->io.file.appPath, NULL, dataRef);		//zz file tree
+			break;
+
+		case kNPcmdFileImport :
+			strcpy (name, data->io.file.csvPath);
 			if (data->io.key.modShift)
 			{
-				sprintf (filePath, "%s%s", data->io.file.csvPath, "antz0001.csv");
-
-				sprintf (msg, "Saving: %s", filePath);
-				npPostMsg (msg, kNPmsgCtrl, dataRef);
-				result = npFileSaveMap (filePath, 1, strlen(filePath), dataRef);
-
-				//Save entire scene state and all tables to CSV
-				// antz0001.zip and/or '/antz0001/scene/csv/*'... scene/json/*' ...images/jpg/*.jpg
-			//	result = npFileSaveMapSet (dirPath, setName, kNPformatCSV, dataRef);
-		
-				//save the globals csv file
-				strcpy (filePath, data->io.file.csvPath);
-				strcat (filePath, "antzglobals0001.csv");
-				result = npSaveMapToCSV (filePath, kNPtableGlobals, dataRef);
-
-				//if no globals csv file then create one
-				strcpy (filePath, data->io.file.csvPath);
-				strcat (filePath, "antzosc0001.csv");		
-//zz debug		result = npSaveMapToCSV (filePath, kNPtableMapOSC, dataRef);
-
-				strcpy (filePath, data->io.file.csvPath);
-				strcat (filePath, "antztag0001.csv");		
-				result = npSaveMapToCSV (filePath, kNPtableTag, dataRef);
-			}
-			else
-			{
-				if (!data->io.key.modAlt)	// if alt held then skip nodes and load only tags //zz debug remove this test feature
-				{					
-					// first load globals to get background, alphaMode, camera target...
-				//	sprintf (filePath, "%s%s", data->io.file.csvPath, "antzoscmap0001.csv");
-				//	result = npOpenGlobalsCSV (filePath, 1, 15, dataRef);
-					// add routine to set global->cameraID during node loading	//zz debug
-	
-					// next load node state (thread) sets global->cameraID on load
-					sprintf (filePath, "%s%s", data->io.file.csvPath, "antz0001.csv");
-					sprintf(msg, "Loading: %s", filePath);
-					npPostMsg (msg, kNPmsgCtrl, dataRef);
-					result = npFileOpenAuto (filePath, NULL, data);
-
-					//zz debug, add node sync routine so globals can load first
-					sprintf (filePath, "%s%s", data->io.file.csvPath, "antzglobals0001.csv");
-				//	strcpy (filePath, data->io.file.csvPath);
-				//	strcat (filePath, "antzglobals0001.csv");
-					result = npOpenGlobalsCSV (filePath, 1, 15, dataRef);
-				}
-				// then load tags (thread) and sync to nodes
-				strcpy (filePath, data->io.file.csvPath);
-				strcat (filePath, "antztag0001.csv");
-				sprintf(msg, "Loading: %s", filePath);
-				npPostMsg (msg, kNPmsgCtrl, data);
-				result = npFileOpenAuto (filePath, NULL, data);
-			}	
-			// if (result) 
-			//		npPostMsg ("Done!", kNPmsgCtrl, dataRef);
-			npPostTool (NULL, data);			//zz-s
-
-			break;
-
-		case kNPfileMapTwo :
-			if (data->io.key.modShift)
-			{
-				sprintf (filePath, "%s%s", data->io.file.csvPath, "antz0002.csv");
-				sprintf (msg, "Saving: %s", filePath);
-				npPostMsg (msg, kNPmsgCtrl, dataRef);
-				result = npFileSaveMap (filePath, 1, strlen(filePath), dataRef);
-
-				//save the globals csv file
-				sprintf (filePath, "%s%s", data->io.file.csvPath, "antzglobals0002.csv");
-				result = npSaveMapToCSV (filePath, kNPtableGlobals, dataRef);
-
-				sprintf (filePath, "%s%s", data->io.file.csvPath, "antztag0002.csv");		
-				result = npSaveMapToCSV (filePath, kNPtableTag, dataRef);
-			}
-			else
-			{
-				if (!data->io.key.modAlt)	// if alt held then skip nodes and load only tags //zz debug remove this test feature
-				{
-					// next load node state (thread) sets global->cameraID on load
-					sprintf (filePath, "%s%s", data->io.file.csvPath, "antz0002.csv");
-					sprintf(msg, "Loading: %s", filePath);
-					npPostMsg (msg, kNPmsgCtrl, dataRef);
-					result = npFileOpenAuto (filePath, NULL, data);
-
-					//zz debug, add node sync routine so globals can load first
-					sprintf (filePath, "%s%s", data->io.file.csvPath, "antzglobals0002.csv");
-					result = npOpenGlobalsCSV (filePath, 1, 15, dataRef);
-				}
-				// then load tags (thread) and sync to nodes
-				sprintf (filePath, "%s%s", data->io.file.csvPath, "antztag0002.csv");
-				sprintf(msg, "Loading: %s", filePath);
-				npPostMsg (msg, kNPmsgCtrl, data);
-				result = npFileOpenAuto (filePath, NULL, data);
-			}	
-			npPostTool (NULL, data);			//zz-s
-			break;
-
-		case kNPfileMapThree :
-		if (data->io.key.modShift)
-			{
-				sprintf (filePath, "%s%s", data->io.file.csvPath, "antz0003.csv");
-				sprintf (msg, "Saving: %s", filePath);
-				npPostMsg (msg, kNPmsgCtrl, dataRef);
-				result = npFileSaveMap (filePath, 1, strlen(filePath), dataRef);
-
-				//save the globals csv file
-				sprintf (filePath, "%s%s", data->io.file.csvPath, "antzglobals0003.csv");
-				result = npSaveMapToCSV (filePath, kNPtableGlobals, dataRef);
-
-				sprintf (filePath, "%s%s", data->io.file.csvPath, "antztag0003.csv");		
-				result = npSaveMapToCSV (filePath, kNPtableTag, dataRef);
-			}
-			else
-			{
-				if (!data->io.key.modAlt)	// if alt held then skip nodes and load only tags //zz debug remove this test feature
-				{
-					// next load node state (thread) sets global->cameraID on load
-					sprintf (filePath, "%s%s", data->io.file.csvPath, "antz0003.csv");
-					sprintf(msg, "Loading: %s", filePath);
-					npPostMsg (msg, kNPmsgCtrl, dataRef);
-					result = npFileOpenAuto (filePath, NULL, data);
-
-					//zz debug, add node sync routine so globals can load first
-					sprintf (filePath, "%s%s", data->io.file.csvPath, "antzglobals0003.csv");
-					result = npOpenGlobalsCSV (filePath, 1, 15, dataRef);
-				}
-				// then load tags (thread) and sync to nodes
-				sprintf (filePath, "%s%s", data->io.file.csvPath, "antztag0003.csv");
-				sprintf(msg, "Loading: %s", filePath);
-				npPostMsg (msg, kNPmsgCtrl, data);
-				result = npFileOpenAuto (filePath, NULL, data);
-			}	
-			npPostTool (NULL, data);			//zz-s											//zz-s
-			break;
-		//zz-JJ
-		case kNPfileImport :
-			strcpy (filePath, data->io.file.csvPath);
-			if (data->io.key.modShift)
-			{
-				strcat (filePath, "antzchmap0002.csv");					//zz debug, why 2 and not 1?
-				npSaveChMap (filePath, dataRef);
+				strcat (name, "antzchmap0001.csv");					//zz debug, why 2 and not 1?
+				npSaveChMap (name, dataRef);	//this is a chmap TEST save function, thats why 2
 			}
 			else			// load set of channel files, Metadata, Tracks and ChMap
 			{
-				strcat (filePath, "antzchset0001.csv");			
-				npFileOpenChSet (filePath, dataRef);
+				strcat (name, "antzchset0001.csv");			
+				npFileOpenChSet (name, dataRef);
 			}
 			npPostTool (NULL, data);												//zz-s
 			break; //npFileDialog (NULL, kNPfileDialogImport, dataRef); break;
-		case kNPfileExport : npFileDialog (NULL, kNPfileDialogExport, dataRef); break;
+		case kNPcmdFileExport : npFileDialog (NULL, kNPfileDialogExport, dataRef); break;
 
-
-		case kNPopenURL : npOpenURL (NULL, dataRef); break;
-		case kNPopenApp : npOpenApp (NULL, dataRef); break;
-		case kNPopenAntz : npOpenAntz (NULL, dataRef); break;
+		case kNPcmdOpenURL : npOpenURL (NULL, dataRef); break;
+		case kNPcmdOpenNodeFile : npOpenNodeFile (NULL, dataRef); break;
+		case kNPcmdOpenApp : npOpenApp (NULL, dataRef); break;
+		case kNPcmdOpenAntz : npOpenAntz (NULL, dataRef); break;
 
 		default : break;
 	}
@@ -599,6 +486,29 @@ void npCtrlVector (int command, void* dataRef)
 	else
 		velocity = data->ctrl.slow;
 
+	//zz debug, temp workaround for ALTernate key mapping
+	if( data->io.key.modAlt )
+	{		  printf("text alt-rotate id: %d\n", node->id);
+	  switch( command )
+	  {	
+
+		case kNPcmdXdecrease :		command = kNPcmdRotateLeft; break;
+		case kNPcmdXdecreaseOff :	command = kNPcmdRotateLeftOff; break;
+		case kNPcmdXincrease :		command = kNPcmdRotateRight; break;
+		case kNPcmdXincreaseOff :	command = kNPcmdRotateRightOff; break;
+
+		case kNPcmdYdecrease :		command = kNPcmdRotateUp; break;
+		case kNPcmdYdecreaseOff :	command = kNPcmdRotateUpOff; break;
+		case kNPcmdYincrease :		command = kNPcmdRotateDown; break;
+		case kNPcmdYincreaseOff :	command = kNPcmdRotateDownOff; break;
+
+		case kNPcmdZdecrease :		command = kNPcmdRotateCCW; break;
+		case kNPcmdZdecreaseOff :	command = kNPcmdRotateCCWOff; break;
+		case kNPcmdZincrease :		command = kNPcmdRotateCW; break;
+		case kNPcmdZincreaseOff :	command = kNPcmdRotateCWOff; break;
+		default : break;
+	  }
+	}
 	switch (command)
 	{								//normalize and change to 0.0f - velocity,	debug zz
 		case kNPcmdXdecrease : node->translateRate.x = -velocity; break;
@@ -698,6 +608,7 @@ void npCtrlVector (int command, void* dataRef)
 	}
 }
 
+
 //------------------------------------------------------------------------------
 void npCtrlSelect (int command, void* dataRef)
 {
@@ -713,7 +624,34 @@ void npCtrlSelect (int command, void* dataRef)
 	pNPnode nodeParent = NULL;
 
 
+	msg[0] = '\0';
 	msgPart[0] = '\0';
+
+
+	//workaround to allow camera keyboard fly with arrows for rotation		//zz debug
+	if( data->io.mouse.pickMode == kNPmodeCamera )
+	{
+	  switch( command )
+	  {					
+		case kNPcmdNext :		command = kNPcmdRotateLeft; break;
+		case kNPcmdNextOff :	command = kNPcmdRotateLeftOff; break;
+		case kNPcmdPrev :		command = kNPcmdRotateRight; break;
+		case kNPcmdPrevOff :	command = kNPcmdRotateRightOff; break;
+
+		case kNPcmdNextBranch :		command = kNPcmdRotateUp; break;
+		case kNPcmdNextBranchOff :	command = kNPcmdRotateUpOff; break;
+		case kNPcmdPrevBranch :		command = kNPcmdRotateDown; break;
+		case kNPcmdPrevBranchOff :	command = kNPcmdRotateDownOff; break;
+
+		default : i = 1;  break;
+	  }	
+	
+	  if( !i )
+	  {
+		npCtrlVector( command, data );
+		return;
+	  }
+	}	//end workaround
 
 	switch (command)
 	{						// add ability to copy existing node parameters, debug zz
@@ -763,7 +701,7 @@ void npCtrlSelect (int command, void* dataRef)
 				sprintf (msgPart, "New grid ");
 			if (node->type == kNodePin)
 				sprintf (msgPart, "New pin ");
-			sprintf (msg, "%sid: %d   branchLevel: %d", msgPart, node->id, node->branchLevel);
+			sprintf (msg, "%sid: %-7d level: %d", msgPart, node->id, node->branchLevel + 1);
 			npPostMsg (msg, kNPmsgCtrl, dataRef);
 			break;
 
@@ -821,7 +759,7 @@ void npCtrlSelect (int command, void* dataRef)
 					// keep in bounds and roll over between first and last
 					if (nodeParent->childIndex >= nodeParent->childCount)
 						nodeParent->childIndex = 0;
-					else if (node->childIndex < 0)
+					else if (nodeParent->childIndex < 0)
 						nodeParent->childIndex = nodeParent->childCount - 1;
 
 					// select our next sibling node and make active
@@ -833,85 +771,246 @@ void npCtrlSelect (int command, void* dataRef)
 			npSetCamTarget (data);
 
 			node = data->map.currentNode;
-			if (node->recordID)
-				sprintf(msg, "pin id: %d   recordID: %d", node->id, node->recordID);
-			else
-				sprintf(msg, "pin id: %d", node->id);
-			npPostMsg (msg, kNPmsgCtrl, dataRef);
+
+			npSelectNode (node, data);
+			npSetCamTarget (data);
+			npPostNodeID( node, data );
 			break;
 
-		case kNPcmdNextBranch : 
+		case kNPcmdNext :
+			if (data->io.mouse.pickMode != kNPmodePin)
+			{
+				data->io.mouse.pickMode = kNPmodePin;
+				npPostMsg("mode: Pin", kNPmsgCtrl, dataRef);
+				npPostTool (NULL, data);
+			}
+			if (data->map.nodeRootCount <= kNPnodeRootPin)		// if no nodes select cam
+			{
+				npSelectNode (data->map.currentCam, data);
+				break;
+			}
+			if (data->map.nodeRootIndex < kNPnodeRootPin)		//camera or grid selected
+			{
+				npSelectNode (data->map.selectedPinNode, data); //restore previous node
+			}
+			else
+			{
+				if (node->branchLevel == 0)	//root pin
+				{
+					//if shift+key held then apply skip interval multiplier
+					if( data->io.key.modShift )
+					{
+						data->io.key.skipCount++;
+						data->map.nodeRootIndex += (data->io.key.skipCount * data->io.key.skipCount);
+					
+						//hold at endpoint
+						if (data->map.nodeRootIndex >= data->map.nodeRootCount)
+								data->map.nodeRootIndex = data->map.nodeRootCount - 1;		//zz debug handle skip remainder roll-over
+						else if (data->map.nodeRootIndex < kNPnodeRootPin)	//select last pin
+							data->map.nodeRootIndex = kNPnodeRootPin;
+		
+					}
+					else
+					{
+						data->map.nodeRootIndex++;
+						data->io.key.skipCount = 0;
+	
+						//keep inbounds and rollover if necessary
+						if (data->map.nodeRootIndex >= data->map.nodeRootCount)
+								data->map.nodeRootIndex = kNPnodeRootPin;		//zz debug handle skip remainder roll-over
+						else if (data->map.nodeRootIndex < kNPnodeRootPin)	//select last pin
+							data->map.nodeRootIndex = data->map.nodeRootCount - 1;
+					}
+		
+					//select next node by root index
+					node = data->map.node[data->map.nodeRootIndex];
+					npSelectNode (node, data);
+				}
+				else
+				{						//select next sibling
+					nodeParent = node->parent;
+
+										//if shift+key held then apply skip interval multiplier
+					if( data->io.key.modShift )
+					{
+						data->io.key.skipCount++;
+						nodeParent->childIndex += (data->io.key.skipCount * data->io.key.skipCount);
+										// keep in bounds and roll over between first and last
+						if (nodeParent->childIndex >= nodeParent->childCount)
+							nodeParent->childIndex = nodeParent->childCount - 1;
+					}
+					else
+					{
+						nodeParent->childIndex++;
+						data->io.key.skipCount = 0;
+
+						// keep in bounds and roll over between first and last
+						if (nodeParent->childIndex >= nodeParent->childCount)
+							nodeParent->childIndex = 0;
+					}
+
+					// select our next sibling node and make active
+					node = nodeParent->child[nodeParent->childIndex];
+					npSelectNode (node, data);
+				}
+			}
+			// set the examiner target on the selected root node
+			npSetCamTarget (data);
+
+			node = data->map.currentNode;
+			npSelectNode (node, data);
+			npSetCamTarget (data);
+			npPostNodeID( node, data );
+			break;
+		case kNPcmdNextOff : break;
+
+		case kNPcmdPrev :
+			if (data->io.mouse.pickMode != kNPmodePin)
+			{
+				data->io.mouse.pickMode = kNPmodePin;
+				npPostMsg("mode: Pin", kNPmsgCtrl, dataRef);
+				npPostTool (NULL, data);
+			}
+			if (data->map.nodeRootCount <= kNPnodeRootPin)		// if no nodes select cam
+			{
+				npSelectNode (data->map.currentCam, data);
+				break;
+			}
+			if (data->map.nodeRootIndex < kNPnodeRootPin)		//camera or grid selected
+			{
+				npSelectNode (data->map.selectedPinNode, data); //restore previous node
+			}
+			else
+			{
+				if (node->branchLevel == 0)	//root pin
+				{
+					//if shift+key held then apply skip interval multiplier
+					if( data->io.key.modShift )
+					{
+						data->io.key.skipCount++;
+						data->map.nodeRootIndex -= (data->io.key.skipCount * data->io.key.skipCount);
+					
+						//keep inbounds and rollover if necessary
+						if (data->map.nodeRootIndex < kNPnodeRootPin)	//select last pin
+							data->map.nodeRootIndex = kNPnodeRootPin;
+					}
+					else
+					{
+						data->map.nodeRootIndex--;
+						data->io.key.skipCount = 0;
+
+						//keep inbounds and rollover if necessary
+						if (data->map.nodeRootIndex < kNPnodeRootPin)	//select last pin
+							data->map.nodeRootIndex = data->map.nodeRootCount - 1;
+					}
+
+					//select next node by root index
+					node = data->map.node[data->map.nodeRootIndex];
+					npSelectNode (node, data);
+				}
+				else
+				{						//select next sibling
+					nodeParent = node->parent;
+
+															//if shift+key held then apply skip interval multiplier
+					if( data->io.key.modShift )
+					{
+						data->io.key.skipCount++;
+						nodeParent->childIndex -= (data->io.key.skipCount * data->io.key.skipCount);
+						
+						if (nodeParent->childIndex < 0)
+							nodeParent->childIndex = 0;
+					}
+					else
+					{
+						nodeParent->childIndex--;
+						data->io.key.skipCount = 0;
+
+						if (nodeParent->childIndex < 0)
+							nodeParent->childIndex = nodeParent->childCount - 1;
+					}
+
+					// select our next sibling node and make active
+					node = nodeParent->child[nodeParent->childIndex];
+					npSelectNode (node, data);
+				}
+			}
+			// set the examiner target on the selected root node
+			npSetCamTarget (data);
+
+			node = data->map.currentNode;
+			npSelectNode (node, data);
+			npSetCamTarget (data);
+			npPostNodeID( node, data );
+			break;
+				//zz debug, move logic -> Data Structure logic belongs in data/npmap.h	
+		case kNPcmdNextBranch :
 			if (data->io.key.modShift)
 			{
-				if (node->branchLevel > 0)		// do nothing if at the trunk
+				while ( node->childCount )		// do nothing if at the trunk
+				{
+					if ( !node->child[node->childIndex] )
+					{
+						npPostMsg ("err 3582 - child node is NULL", kNPmsgErr, dataRef);
+						break;
+					}
+					else
+						node = node->child[node->childIndex];
+				}
+			}
+			else
+			{
+				if (node->childCount > 0)	// do nothing if at the trunk
+				{							// traverse up 1 level to the childs parent
+					if ( !node->child[node->childIndex] )
+						npPostMsg ("err 3582 - child node is NULL", kNPmsgErr, dataRef);
+					else
+						node = node->child[node->childIndex];
+				}
+				data->io.key.skipCount = 0;
+			}
+
+			npSelectNode (node, data);
+			npSetCamTarget (data);
+			npPostNodeID( node, data );
+			break;
+
+		case kNPcmdPrevBranch : 
+			if (data->io.key.modShift)
+			{
+				while ( node->branchLevel )		// do nothing if at the trunk
 				{
 					// traverse up 1 level to the childs parent
-					if (node->parent == NULL)
-						npPostMsg ("err 3582 - child node has NULL parent", kNPmsgErr, dataRef);
+					if ( !node->parent )
+					{
+						npPostMsg ("err 3584 - parent node has NULL parent", kNPmsgErr, dataRef);
+						break;
+					}
 					else
 						node = node->parent;
 				}
-			}		// traverse down 1 level if selected child exists
-			else if (node->childCount)
+			}
+			else
 			{
-				if (node->child[node->childIndex] != NULL)
-					node = node->child[node->childIndex];
-				else
-					npPostMsg("err 3583 - child is NULL",kNPmsgErr,data);
+				if ( node->branchLevel )		// do nothing if at the trunk
+				{
+					// traverse up 1 level to the childs parent
+					if ( !node->parent )
+					{
+						npPostMsg ("err 3585 - parent node has NULL parent", kNPmsgErr, dataRef);
+						break;
+					}
+					else
+						node = node->parent;
+				}
+				data->io.key.skipCount = 0;
 			}
 
 			npSelectNode (node, data);
 			npSetCamTarget (data);
-			
-			if (node->type == kNodeCamera)
-				sprintf(msgPart, "camera ");
-			if (node->type == kNodeGrid)
-				sprintf(msgPart, "grid ");
-			if (node->type == kNodePin)
-				sprintf(msgPart, "pin ");
-			if (node->type == kNodePin)
-				sprintf(msgPart, "link ");
-
-			if (node->recordID)
-				sprintf(msg, "%sid: %d   branchLevel: %d   recordID: %d", msgPart,
-						node->id, node->branchLevel, node->recordID);
-			else
-				sprintf(msg, "%sid: %d   branchLevel: %d", msgPart,
-						node->id, node->branchLevel);
-			npPostMsg (msg, kNPmsgCtrl, dataRef);
+			npPostNodeID( node, data );
 			break;
-		case kNPcmdPrevBranch : 
-
-			if (node->branchLevel > 0)		// do nothing if at the trunk
-			{
-				// traverse up 1 level to the childs parent
-				if (node->parent == NULL)
-					npPostMsg ("err 3582 - child node has NULL parent", kNPmsgErr, dataRef);
-				else
-					node = node->parent;
-			}
-
-			npSelectNode (node, data);
-			npSetCamTarget (data);
-			
-			if (node->type == kNodeCamera)
-				sprintf(msgPart, "camera ");
-			if (node->type == kNodeGrid)
-				sprintf(msgPart, "grid ");
-			if (node->type == kNodePin)
-				sprintf(msgPart, "pin ");
-			if (node->type == kNodePin)
-				sprintf(msgPart, "link ");
-
-			if (node->recordID)
-				sprintf(msg, "%sid: %d   branchLevel: %d   recordID: %d", msgPart,
-						node->id, node->branchLevel, node->recordID);
-			else
-				sprintf(msg, "%sid: %d   branchLevel: %d", msgPart,
-						node->id, node->branchLevel);
-			npPostMsg (msg, kNPmsgCtrl, dataRef);
-			break;
-					
+		
 		case kNPcmdGrid :
 			if (data->io.mouse.pickMode != kNPmodeGrid)
 			{
@@ -1115,7 +1214,7 @@ void npCtrlSelect (int command, void* dataRef)
 			npSelectNode (node, data);		//restore currentNode
 
 			if (data->io.mouse.tool == kNPtoolHide)
-				npPostMsg("Hide ALL Sub-Nodes with branch_level > 1",kNPmsgCtrl,data);
+				npPostMsg("Hide ALL nodes with level > 1",kNPmsgCtrl,data);
 			else if (data->io.mouse.tool == kNPtoolTag)
 				npPostMsg("Toggle ALL Text Tags",kNPmsgCtrl,data);
 			else
@@ -1134,8 +1233,8 @@ void npCtrlSelect (int command, void* dataRef)
 				npPostMsg("Show ALL Nodes",kNPmsgCtrl,data);
 			else if (data->io.mouse.tool == kNPtoolTag)
 				npPostMsg("Hide ALL Text Tags",kNPmsgCtrl,data);
-			else
-				npPostMsg("Clear Selection",kNPmsgCtrl,data);
+			//else //zz debug not when picking clear selection tool/key hit, not when picking
+			//	npPostMsg("Clear Selection",kNPmsgCtrl,data);
 			break;
 
 		case kNPcmdSelectOne :
@@ -1300,26 +1399,26 @@ void npCtrlProperty (int command, void* dataRef)
 
 		case kNPcmdColorUp :
 			node->colorIndex++;
-			SetIndexColor (&node->color, &node->colorIndex);
-			sprintf(msg, "color index:%3d   RGB: %3d,%3d,%3d",
+			npSetIndexColor( &node->color, &node->colorIndex, NULL ); //node->palette
+			sprintf( msg, "color index:%5d RGB: %3d %3d %3d",
 				node->colorIndex, node->color.r, node->color.g, node->color.b);
-			npPostMsg (msg, kNPmsgCtrl, dataRef);
+			npPostMsg( msg, kNPmsgCtrl, dataRef );
 			break;
 		case kNPcmdColorDown :
 			node->colorIndex--;
-			SetIndexColor (&node->color, &node->colorIndex);
-			sprintf(msg, "color index:%3d   RGB: %3d,%3d,%3d",
+			npSetIndexColor( &node->color, &node->colorIndex, NULL );
+			sprintf( msg, "color index:%5d RGB: %3d %3d %3d",
 				node->colorIndex, node->color.r, node->color.g, node->color.b, node->color.a);
-			npPostMsg (msg, kNPmsgCtrl, dataRef);
+			npPostMsg( msg, kNPmsgCtrl, dataRef );
 			break;
 
 		case kNPcmdAlphaUp :
-			if ((node->color.a + 10) > 255)
+			if( ( node->color.a + 10 ) > 255 )
 				node->color.a = 255;
 			else
 				node->color.a += 10;
-			sprintf(msg, "alpha: %d",node->color.a);
-			npPostMsg (msg, kNPmsgCtrl, dataRef);
+			sprintf( msg, "alpha: %d",node->color.a );
+			npPostMsg( msg, kNPmsgCtrl, dataRef );
 			break;
 		case kNPcmdAlphaDown :
 			if ((node->color.a - 10) < 0)
@@ -1624,6 +1723,8 @@ void npCtrlGlobal (int command, void* dataRef)
 
 	switch (command)
 	{
+		case kNPcmdConsole : npConsole (dataRef); break;				//zz tag
+
 		case kNPcmdMenu : //data->io.drawMenu = 1 - data->io.drawMenu;
 			data->io.gl.hud.console.level++;
 			if (data->io.gl.hud.console.level >= kNPconsoleLevelCount)
@@ -1663,9 +1764,9 @@ void npCtrlGlobal (int command, void* dataRef)
 				npPostMsg( "Background Black", kNPmsgCtrl, dataRef );
 			
 				testOSC[0] = toggle = &data->io.clear.a;
-			//	npOscTx( 0, "/3/toggle3 ", "f", testOSC, dataRef );
+		//zzsql		npOscTx( 0, "/3/toggle3 ", "f", testOSC, dataRef );	//zz-osc
 			
-			//	cppTx (0, "/3/xy", "f", &data->io.clear.r, dataRef );
+			//	cppTx (0, "/3/xy", "f", &data->io.clear.r, dataRef );	
 			}
 			else
 			{
@@ -1678,17 +1779,10 @@ void npCtrlGlobal (int command, void* dataRef)
 				npPostMsg( "Background White", kNPmsgCtrl, dataRef );
 			
 				//npTxOSC (0, "/3/toggle1", "f", (void*)&data->io.clear.a, dataRef );
-
-
+			
 				testOSC[0] = toggle = &data->io.clear.a;
-	
-	//			npOscTx( 0, "/3/toggle3 ", "f", testOSC[0], dataRef ); // Contributing to crash on 'b'	
-	
-			//	cppTx (0, "/3/xy", "ff", &data->io.clear, dataRef );
-			
+		//zzsql		npOscTx( 0, "/3/toggle3 ", "f", testOSC[0], dataRef ); // Contributing to crash on 'b'
 			}
-			
-
 			break;
 
 		case kNPcmdNormalMode : 
@@ -1731,8 +1825,6 @@ void npCtrlGlobal (int command, void* dataRef)
 			sprintf(msg, "pause: %d\n", data->io.ch.pause);
 			npPostMsg (msg, kNPmsgCtrl, dataRef);
 			break;
-
-		case kNPcmdConsole : npConsole (dataRef); break;
 
 		default : break;
 	}
@@ -1835,7 +1927,7 @@ void npInitCPU (void* dataRef)
 	//this if followed by IO performance tuning
 
 	//test thread count of 1,2,4,6,8,12...4096 until speed per thread drops
-	//then we know the optimal number of threads experimentally
+	//the point is to determine the optimal number of threads experimentally
 	//this can be shared across multiple instances of the app to play friendly
 	//ideally would check for other active antz on the system before running
 	//benchmarks... to avoid a performance hit from perf testing!

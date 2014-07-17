@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -30,13 +30,12 @@
 #include "stdbool.h"
 #include "../io/net/nposcpack.h"		//JJ-zz				//zz debug, remove this
 
+//#include "../io/npkey.h"					//zz debug, add this and move key codes
+//#include "npmath.h"
 
-#define kPI			 3.141593f
-#define k2PI		 6.283185f
-#define kNeg2PI		-6.283185f
-#define kRADtoDEG	57.29578f
 
 #define	kNPtextureCountMax	2000
+#define kNPpaletteMax		65535			//max number of color palettes
 
 #define kNPkeyMapSize		256				// keyboard map
 #define kNPkeyEventTypeSize 8				// 2^3 SHIFT, CTRL and ALT combos
@@ -44,9 +43,9 @@
 #define kNPmapFileBufferMax	34000000		//512MB = 536870912, was 128MB current file size limit  //zzhp
 #define kNPfileBlockSize	4194304			//65535 4MB 2^22 = 4194304 //65535 //
 
-#define	kNPnodeMax			4194304			// 4194304 16MB with set of 32bit ptr, 16MB if 64bit	//zzhp
-#define kNPnodeRootMax		4194304			// 1048576 4MB with 32bit ptr, 8MB if 64bit	//zzhp 262144
-#define kNPnodeChildMax		266				// 1KB RAM each node with 32bit OS	//zzhpa
+#define	kNPnodeMax			2097152			// 4194304 16MB with set of 32bit ptr, 16MB if 64bit	//zzhp
+#define kNPnodeRootMax		2097152			// 1048576 4MB with 32bit ptr, 8MB if 64bit	//zzhp 262144
+#define kNPnodeChildMax		512				// 1KB RAM each node with 32bit OS	//zzhpa
 											// C99 max fixed array size is 16383
 											// 266 fills a sphere at 15 deg, possibly switch data structure to GTK.org zz
 
@@ -83,33 +82,37 @@
 #define kNPgridSegmentsX	12				// default grid 16x16, was 16
 #define kNPgridSegmentsY	6				// default grid 16x16, was 16
 
-#define kNPpaletteSize		20				// index mapped color pallete
+#define kNPpaletteSize		20				// index mapped color palette
 
+#define kNPmaxName			266				// name portion of the filePath
 #define	kNPmaxPath			4096			// max file path, msw supports 260
 #define	kNPurlMax			4096			// maximum length of URL accepted
 
-#define kNPdataTypeMax		4096			//used for CSV header field names
+#define kNPdataTypeMax		4096			// used for CSV header field names
 #define kNPbaseItemCount	18
 #define kNPnodeItemCount	52
 #define kNPcameraItemCount	17
 #define kNPgridItemCount	5
-#define kNPpinItemCount		12				//important to keep these up-to-date
+#define kNPpinItemCount		12				// important to keep these up-to-date
 
 #define kNPtagItemCount		5				// debug db //zzsql
 #define kNPChMapItemCount	7				// debug db //zzsql
 
-#define kNPmenuPerPageMax			20
-#define kNPconsoleLineMax		40			//default is 80x40 character layout
+#define kNPmenuPerPageMax		20
+#define kNPconsoleLineMax		40			// default is 80x40 character layout
 #define kNPconsoleCharPerLine	80
-#define kNPconsoleHistoryMax	800			//max entries to store in RAM
-#define kNPconsoleInputMax		4096		//max user input string
-#define kNPmessageQueMax		500			//max messages stored in que
-#define kNPmessageLengthMax		127			//max message length
-
-#define kNPtitleSizeMax			63			// max length of the tag title
-#define kNPdescSizeMax			8			// max length of the tag description	//zzhpa
+#define kNPconsoleHistoryMax	800			// max entries to store in RAM
+#define kNPconsoleInputMax		4096		// max user input string
+#define kNPmessageQueMax		500			// max messages stored in que
+#define kNPmessageLengthMax		127			// max message length
+											
+											// link to journal article LENGTH statistics for title and abstract
+											// http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0049476
+#define kNPtagTitleMax			333			// tag title max length
+#define kNPtagDescMax			8			// tag description max length 	//zzhpa // 4096
+#define	kNPtagMax				kNPnodeMax	// max number of record Tags
 #define	kNPtagDrawMax			16383		// max number tags allowed to draw
-#define	kNPrecordTagListMax		kNPnodeMax	// max number of record Tags
+
 #define kNPlinkQueMax			kNPnodeMax	// max in draw que, not total nodes
 
 #define kNPsingleClickTime		0.45		//max duration considered to be a click
@@ -131,6 +134,9 @@
 #define kNPmaxLineLength		10000		//zz-JJ move to nptypes.h
 #define kNPmaxTokens			1000		//zz-JJ move to nptypes.h
 #define kNPmaxPropertiesMapped	500000		//JJ maximum number of node properties (one set for each data type) fed by channel tracks
+
+#define kNPthumbWidth			480			//thumbnail size, such as dataset node texture
+#define kNPthumbHeight			270
 
 #define kNPwindowWidth 800
 #define kNPwindowHeight 510
@@ -229,7 +235,7 @@ struct NPmapType
 	char*	desc;
 };
 typedef struct NPmapType NPmapType;
-typedef struct NPmapType *NPmapTypePtr;
+typedef struct NPmapType *pNPmapType;
 
 
 //zz-JJ
@@ -338,6 +344,7 @@ struct NPosc {
 	int			id;
 
 	NPoscItem	list[kNPoscListMax];			//list of que items or commands
+	NPoscPackListener udp[kNPoscListMax];		//zz osc
 	int			count;			//number of items in list
 	int			max;		//max size of que
 
@@ -348,6 +355,20 @@ struct NPosc {
 };
 typedef struct NPosc NPosc;
 typedef struct NPosc* pNPosc;
+
+
+struct NPmapColor {
+	int				id;
+
+	pNPubyteRGBA*	palette;		//list of que items or commands
+	int				index;			//current color
+	int				altIndex;		//alternate color (ie: black/white)
+	int				count;			//number of items in list
+
+	int				size;			//active memory used
+};
+typedef struct NPmapColor NPmapColor;
+typedef struct NPmapColor* pNPmapColor;
 
 
 //zz-q que and queList could be merged and made a recursive method, perhaps confusing?
@@ -433,9 +454,9 @@ struct NPrecordTag
 	int			recordID;			//recordID of the node
 	int			tableID;			//tableID of the node, may not need these, debug zz
 
-	char		title[kNPtitleSizeMax + 1];	//one line with max width of 63 characters
-	char		desc[kNPdescSizeMax + 1];	//allows for newline in desc
-	
+	char		title[kNPtagTitleMax + 3];	//size + 3 for possible line endings
+	char		desc[kNPtagDescMax + 3];	//allows for newline in desc
+	//char*		desc;
 	int			titleSize;			//number of characters in title
 	int			descSize;			//number of characters in description
 
@@ -449,8 +470,8 @@ struct NPtag
 	int			tableID;			//tableID of the node, may not need these, debug zz
 	int			recordID;			//recordID of the node
 
-	char		title[kNPtitleSizeMax + 1];	//one line with max width of 63 characters
-	char		desc[kNPdescSizeMax + 1];	//allows for newline in desc
+	char		title[kNPtagTitleMax + 1];	//one line with max width of 63 characters
+	char		desc[kNPtagDescMax + 1];	//allows for newline in desc
 	
 	int			titleSize;		//number of characters in title
 	int			descSize;		//number of characters in description
@@ -590,6 +611,8 @@ struct NPkey {
 	bool	modCommandLeft;
 	bool	modCommandRight;
 	
+	int		skipCount;
+
 	int		map[kNPkeyEventTypeSize][kNPkeyMapSize];	//key command map
 
 	int		size;
@@ -719,19 +742,11 @@ struct NPconsole {
 
 	int			level;
 	int			mode;						//1 line, 3 lines, max lines
-	bool		tagEdit;
 
 	NPfloatXY	box;						//background box size
 
 	void*		font;
 	int			justify;
-
-	int			lineMax;					//default is 40 lines
-	int			charPerLine;				//default is 80 characters per line
-
-	int			lineIndex;					//the currently displayed line
-	int			lineCount;
-	int			historyMax;					//max number of lines stored
 
 	NPfuncPtr   pMenuCallback;			//menu item selected callback
 	pNPmenu		menu;						//menu list, menubar
@@ -739,16 +754,26 @@ struct NPconsole {
 	int			page;						//active page, page = 0 for current
 	int			selectIndex;				//user selected line
 
+	int			selectText;	
+	int			insertText;	////selectText
+
 	int			cursorLine;					//current cursor line number
 	int			cursorColumn;				//current cursor column number
 
 	int			cursorType;
 	bool		cursorShow;					//display a blinking cursor
 
-	int			inputIndex;
-	char		inputStr[kNPinputStrMax];	//key input typed by user
+	int			historyMax;					//max number of lines stored
+	int			lineMax;					//default is 40 lines
+	int			charPerLine;				//default is 80 characters per line
 
-	char		line[kNPconsoleLineMax][kNPconsoleCharPerLine+1]; //+1 for null char
+	int			lineIndex;					//the currently displayed line
+	int			lineCount;
+
+	int			inputIndex;
+	char		inputStr[kNPinputStrMax + 1];	//user input, +1 for null '\0'
+
+	char		line[kNPconsoleLineMax][kNPconsoleCharPerLine + 1];
 
 	//char*		history[kNPconsoleHistoryMax];	//debug, zz
 
@@ -800,19 +825,19 @@ struct NPgl {
 	int			windowID;		//multiple GL contexts can share a windowID
 	int			glContext;		//multiple windows can share a GL context
 								//multi-GPU support
-	char		name[kNPtitleSizeMax];			//name used for window title
+	char		name[kNPtagTitleMax];			//name used for window title
 
-	int			width;			//current size both window and fullscreen
-	int			height;
+	int			width;			//current draw size, both window and fullscreen
+	int			height;			//do not set this, is set by actual dimensions
 
 	NPintXY		windowSize;		//non-fullscreen window size and position
-	NPintXY		position;
-
-	int			pixelDepth;
-	float		refreshRate;
+	NPintXY		position;		//can set these and call npGlobalsUpdate()
 
 	int			fullscreen;
-	int			stereo;
+
+	int			stereo3D;
+	int			pixelDepth;
+	float		refreshRate;
 
 	int			normal;
 	int			shade;
@@ -824,8 +849,12 @@ struct NPgl {
 
 	int			pickPass;
 	int			pickID;
+	
+	int			screenGrab;		//flag for screenGrab
+	char		datasetName[kNPmaxPath];	//used by screenGrab
 
 	NPhud		hud;			//one HUD per window
+
 
 	pNPnode		linkQue[kNPnodeMax];	//zz debug move this to data->map
 	int			linkQueCount;
@@ -837,60 +866,67 @@ typedef struct NPgl * pNPgl;
 
 
 struct NPmap {
-	void**	node;					//root node array, size of kNPnodeRootMax
-	void**	sort;					//used for z-sort during GL draw
+	void**		node;					//root node array, uses kNPnodeRootMax
+	void**		sort;					//used for z-sort during GL draw
 
-	int		sortSwap;				//0 for sortA and 1 for sortB			//zzhp
-	int		sortSwapFlag;			//sort is done and ready for swap
-	void**	sortA;					//double buffered async sort
-	void**	sortB;					//double buffered async sort			//zzhp
+	int			sortSwap;				//0 for sortA and 1 for sortB			//zzhp
+	int			sortSwapFlag;			//sort is done and ready for swap
+	void**		sortA;					//double buffered async sort
+	void**		sortB;					//double buffered async sort			//zzhp
 
-	void**	nodeID;					//maps nodeID to pNPnode, kNPnodeMax
-	void**	sortID;					//maps nodeID for sorting nodes
+	void**		nodeID;					//maps nodeID to pNPnode, kNPnodeMax
+	void**		sortID;					//maps nodeID for sorting nodes
 
-	int*	parentID;				//maps node ID to parentID
-	int*	orphanList;				//list of orphans by node ID
-	int		orphanCount;
-	int		sortCount;														//zzhp
-	int		sortCountA;
-	int		sortCountB;														//zzhp
+	int*		parentID;				//maps node ID to parentID
+	int*		orphanList;				//list of orphans by node ID
+	int			orphanCount;
+	int			sortCount;														//zzhp
+	int			sortCountA;
+	int			sortCountB;														//zzhp
 
-	bool	syncNodes;
-	bool	syncTagsReady;
-									// 2^24 max for picking algorithm
-	int		nodeCount;				//total for root and children nodes
-	int		nodeRootCount;			//number of root nodes
-	int		nodeRootIndex;			//the active node root
+	bool		syncNodes;
+	bool		syncTagsReady;
+										// 2^24 max for picking algorithm
+	int			nodeCount;				//total for root and children nodes
+	int			nodeRootCount;			//number of root nodes
+	int			nodeRootIndex;			//the active node root
 	
-	pNPnode previousNode;			//used for clicking away...
-	pNPnode	currentNode;			//active node, commands, traversing tree
-	pNPnode	currentCam;				//active camera used for zsort distance
+	pNPnode		previousNode;			//used for clicking away...
+	pNPnode		currentNode;			//active node, commands, traversing tree
+	pNPnode		currentCam;				//active camera used for zsort distance
 
-	pNPnode	selectedGrid;			//selected grid
-	pNPnode	selectedPinNode;		//current node selection, can be a child branch
-	int		selectedPinIndex;		//helpful to know which tree we are on
-	pNPnode selectedHUD;			//the currently selected HUD item
+	pNPnode		selectedGrid;			//selected grid
+	pNPnode		selectedPinNode;		//currently selected node
+	int			selectedPinIndex;		//helpful to know which tree we are on
+	pNPnode		selectedHUD;			//the currently selected HUD item
 
-	NPboolXYZ	selectSet;			//current selection set to add too
-	int			selectAll;			//true when all nodes selected
+	NPboolXYZ	selectSet;				//current selection set to add too
+	int			selectAll;				//true when all nodes selected
 
-	NPmapTypePtr	typeMap[kNPdataTypeMax];
+	pNPmapColor	color[kNPpaletteMax];	// #define kNPpaletteMax	65535
 
-	NPmapTypePtr	typeMapBase;
-	NPmapTypePtr	typeMapNode;
-	NPmapTypePtr	typeMapCamera;
-	NPmapTypePtr	typeMapPin;
-	NPmapTypePtr	typeMapGrid;
+	pNPmapType	typeMap[kNPdataTypeMax];
+
+	pNPmapType	typeMapBase;
+	pNPmapType	typeMapNode;
+	pNPmapType	typeMapCamera;
+	pNPmapType	typeMapPin;
+	pNPmapType	typeMapGrid;
 		
-	NPmapTypePtr	typeMapTag;		// debug db //zzssql 
-	NPmapTypePtr	typeMapChMap;	// debug db //zzssql
+	pNPmapType	typeMapTag;				// debug db //zzssql 
+	pNPmapType	typeMapChMap;			// debug db //zzssql
 
-	pNPmapLink		typeMapGlobals;
-	pNPmapLink		typeMapOSC;
-	int				globalsCount;
-	int				oscCount;
+	pNPmapType	typeMapPalette;				//zz color
 
-	int		size;					// memory used, add/del should modify this, debug zz
+	pNPmapType	mapTypeList;
+	int			mapTypeCount;
+
+	pNPmapLink	typeMapGlobals;
+	pNPmapLink	typeMapOSC;
+	int			globalsCount;
+	int			oscCount;
+
+	int			size;					// memory used, add/del should modify this, debug zz
 };
 typedef struct NPmap NPmap;
 typedef struct NPmap * pNPmap;
@@ -1014,7 +1050,18 @@ struct NPfile
 typedef struct NPfile NPfile;
 typedef struct NPfile* pNPfile;
 
+
+struct NPconnect
+{
+	NPoscPackListener oscListener;	//zz osc
+
+	int			size;
+};
+typedef struct NPconnect NPconnect;
+typedef struct NPconnect* pNPconnect;
+
 #define kNPqueMax 256
+#define kNPmaxConnect 65535
 
 struct NPio {
 	int			argc;
@@ -1030,7 +1077,9 @@ struct NPio {
 //	struct	dbNewConnect *connect;	//zzsql							//zz debug	//zz dbz
 	struct databases *dbs;			//zz dbz
 
-//	NPoscPackListener oscListener;	//JJ-zz
+//	NPoscPackListener oscListener;		//JJ-zz
+	pNPconnect	connect[kNPmaxConnect];	//zz osc
+	int			connectCount;
 	NPosc		osc;				//OSC stuff uses io que for thread safety
 
 	NPqueList	fifo;				//io buffering for data and command sync
@@ -1107,6 +1156,8 @@ struct NPctrl {
 
 	NPcpu	cpu;
 
+	bool	startup;
+
 	void**	cmdFunc;
 
 	int		size;
@@ -1158,7 +1209,7 @@ struct NPcamera
 
 	int			format;						//320p, 480i, 720p, 4K full app
 	int			interlaced;					//interlaced field order
-	int			stereo;						//stereoscopic 3D
+	int			stereo3D;						//stereoscopic 3D
 	float		aspectRatio;				//1.0, 1.333, 1.777, 1.85, 2.25... 
 	float		fps;						// 15, 24, 29.97, 30, 59.94, 120...
 	int			colorSpace;					//8, 12bit, YUV, RGBA, XYZ, CMYK...
@@ -1191,7 +1242,7 @@ struct NPvideo
 
 	int			format;						//320p, 480i, 720p, 4K full app
 	int			interlaced;					//interlaced field order
-	int			stereo;						//stereoscopic 3D
+	int			stereo3D;						//stereoscopic 3D
 	float		aspectRatio;				//1.0, 1.333, 1.777, 1.85, 2.25... 
 	float		fps;						// 15, 24, 29.97, 30, 59.94, 120...
 	int			colorSpace;					//8, 12bit, YUV, RGBA, XYZ, CMYK...
@@ -1393,18 +1444,23 @@ enum
 	kNodeChannel,
 };
 
+
 enum
 {
-	kNPmapNull = 0,
-	
-	kNPmapRoot,				//kNPmapUniverses
-	kNPmapUniverse,			//kNPmapGalaxyCluster,
+	kNPmapNull = 0,			//default native handler
+		
+	kNPmapNP,				//map descriptor to build maps
+
+	kNPmapRoot,				//1 root to rule them all
+	kNPmapMultiverse,		//collection of universes		
+	kNPmapUniverse,
+	kNPmapGalaxyCluster,
 	kNPmapGalaxy,
-	kNPmapSolar,
+	kNPmapSolar,			//single star or binary/trinary... system
 
 	kNPmapWorld,			// Earth is 100ms typical, 10ms theoretical
 	kNPmapRegion,			// < 30 ms latency, < 4000km  kNPmapLocation,			// < 3 ms latency, < 400km   kNPmapCluster,			// < 1 ms latency, < 40km
-	kNPmapNode,				// < 1 ms latency, // < 4m, CPU node, not scene node
+	kNPmapSpot,				// < 1 ms latency, // < 4m, CPU node, not scene node
 
 	kNPmapSystem, 
 	kNPmapIO,				// typically a bus device if a node
@@ -1425,7 +1481,9 @@ enum
 	kNPmapJoystick,
 	kNPmapTablet,
 	kNPmapTouchScreen,
-	kNPmapHID,
+	kNPmapHID,				//end physical locality start virtual structures
+
+	//zz  above is physical context, perhaps below should be separate list
 
 	kNPmapNPE,
 	kNPmapDraw,				//a list of objects to draw in a GL context 
@@ -1437,22 +1495,25 @@ enum
 	kNPmapArray,
 	
 //	kNPmapNodeNull,
-	kNPmapGlobals,
 
+	kNPmapGlobals,
+	kNPmapNode,
 	kNPmapTag,
+	kNPmapChannel,
+	kNPmapTrack,
 	kNPmapGL,
-	
+
 	kNPmapCSV,			//generic table/row/field/type
-	kNPmapOSC,			//default 3rd party OSC mapping
-	kNPmapDB,			//native DB format is MySQL
 	kNPmapJSON,			//likely the most descriptive
-	kNPmapSNMP,			//can bridge SNMP-JSON-OSC
 	kNPmapXML,			//for 3rd party data support
 	kNPmapKML,			//google KML, related to COLLADA
 
-	kNPmapNP,				//default native handler
+	kNPmapOSC,			//default 3rd party OSC mapping
+	kNPmapSNMP,			//can bridge SNMP-JSON-OSC
 
-	kNPmapNodeCSVvOne,	//zz debug... change these
+	kNPmapDB,			//native DB format is MySQL
+
+	kNPmapNodeCSVvOne,	//zz debug... move this elsewhere
 	kNPmapNodeCSV,		//zz
 
 	kNPmapCount
@@ -1472,6 +1533,9 @@ enum
 	kNPformatXML,			//for 3rd party data support
 	kNPformatKML,			//google KML, related to COLLADA
 
+	kNPformatBMP,
+	kNPformatTGA,
+	kNPformatDDS,
 	kNPformatJPG,			//perhaps should be in  separate list... //zz debug
 	kNPformatJ2K,			//...
 	kNPformatPNG,			//..
@@ -1646,19 +1710,27 @@ enum{
 
 enum {
 	//global ctrl commands
-	kCtrlCommandNull = 0,
+	kNPcmdNull = 0,
 
-	kNPfileNew,
-	kNPfileOpen,
-	kNPfileClose,
-	kNPfileSave,
-	kNPfileSaveAs,
-	kNPfileImport,
-	kNPfileExport,
+	kNPcmdFileNew,
+	kNPcmdFileOpen,
+	kNPcmdFileClose,
+	kNPcmdFileSave,
+	kNPcmdFileSaveAs,
+	kNPcmdFileImport,
+	kNPcmdFileExport,
 
-	kNPfileMapOne,		//used for quick loading and saving of state files
-	kNPfileMapTwo,
-	kNPfileMapThree,
+	kNPcmdScreenGrab,
+
+	kNPcmdFileMapOne,		//used for quick loading and saving of state files
+	kNPcmdFileMapTwo,
+	kNPcmdFileMapThree,
+
+	// launch external app
+	kNPcmdOpenURL,
+	kNPcmdOpenNodeFile,
+	kNPcmdOpenApp,
+	kNPcmdOpenAntz,
 
 	kNPcmdConsole,
 	kNPcmdViewer,
@@ -1671,9 +1743,13 @@ enum {
 	kNPcmdDelete,
 
 	kNPcmdNext,
+	kNPcmdNextOff,
 	kNPcmdPrev,
+	kNPcmdPrevOff,
 	kNPcmdNextBranch,
+	kNPcmdNextBranchOff,
 	kNPcmdPrevBranch,
+	kNPcmdPrevBranchOff,
 
 	kNPcmdCamera,
 	kNPcmdGrid,
@@ -1758,7 +1834,7 @@ enum {
 	kNPcmdColorDown,
 	kNPcmdColorFade,
 	kNPcmdAltColor,
-	kNPcmdColorPallete,
+	kNPcmdColorPalette,
 	
 	kNPcmdAlphaUp,
 	kNPcmdAlphaDown,
@@ -1811,8 +1887,7 @@ enum {
 	kNPcmdCount
 };
 
-
-
+//zz  debug move key codes npkey.h
 enum {	kKeyDown = 1,
 		kKeyRepeat,
 		kKeyUp,
@@ -1964,7 +2039,7 @@ enum {
 	kNPnodeData,
 	kNPcamera,
 	kNPgrid,
-	kNPpin,
+	kNPpin,			//zz remove this, too easily confused with kNodePin
 	kNPchMap,		//remove this, should not be here //zzsql 
 
 	// fundamental C types
@@ -2074,7 +2149,7 @@ enum {
 
 	kNPtagMode,
 	kNPformatID,
-	kNPtableID,
+	kNPmapID,
 	kNPrecordID,
 
 	// camera
@@ -2121,14 +2196,9 @@ enum {
 
 	// map file
 	kNPversion,
-	kNPtableTypeCount,
+	kNPmapTypeCount,
 	kNPrecordCount,
 	kNPnodeRootCount,
-
-	// launch external app
-	kNPopenURL,
-	kNPopenApp,
-	kNPopenAntz,
 
 	// global types
 	kNPgNull,
@@ -2401,29 +2471,12 @@ enum
 	kNPtopoPin,				//default root pin shaped as icecream cone
 	kNPtopoRod,
 	kNPtopoPoint,			//zero origin offset with spherical coords
-kNPtopoCount,
+	kNPtopoCount,
 	kNPtopoCone,
 	kNPtopoPlot,			//perhaps call it a plot and not a graph
 	kNPtopoSurface,			//deformable grid, FFT, color ball, sound sphere
 	kNPtopoMesh			//3D mesh model mapped as surface terrain
 //	kNPtopoCount
-};
-
-enum
-{
-	kNPtableNull = 0,
-	kNPtableGlobals,
-	kNPtableCamera,
-	kNPtableGrid,
-	kNPtableNode,
-	kNPtableChMap,
-	kNPtableChMeta,
-	kNPtableTracks,
-	kNPtableTag,
-	kNPtableFormat,
-	kNPtableMap,
-	kNPtableMapOSC,
-	kNPtableCount
 };
 
 enum
@@ -2456,9 +2509,10 @@ enum
 enum{
 	kNPconsoleMessage = 0,		//default message mode
 	kNPconsoleCmd,
-	kNPconsoleMenu,				//menu list	
+	kNPconsoleTag,				//set the tag names
 	kNPconsoleEdit,				//code editor
-	kNPconsoleMySQL
+	kNPconsoleMenu,				//generic menu list	
+	kNPconsoleMySQL				//DB Browser
 };
 
 enum
@@ -2490,7 +2544,7 @@ enum
 	kNPpositionNull = 0,
 	kNPpositionLeft,
 	kNPpositionRight,
-	kNPpositionCenter,			//refers to either vertical or horizontal
+	kNPpositionCenter,			//refers to either vertical or horizontal middle
 	kNPpositionTop,
 								//kNPmiddle,
 	kNPpositionBottom,
@@ -2519,6 +2573,44 @@ enum
 	kNPflagOSC,
 	kNPflagHelp,
 	kNPflagVer
+};
+
+
+//zz used by npfile.h
+enum{
+	kNPfileNull = 0,
+
+	kNPfileDir,		//file directory
+
+	kNPfileTIFF,	//image formats
+	kNPfileRAW,
+	kNPfileJ2K,		//JPEG 2000
+	kNPfileJPG,
+
+	kNPfileCSV,		//data table formats
+	kNPfileTXT,
+	kNPfileXML,
+	kNPfileJSON,	//data tree schema
+
+	kNPfileKML,		//GIS standard
+	kNPfileCollada,	//3D model inter-change
+
+	kNPfileAIFF,	//audio
+	kNPfileWAV,
+
+	kNPfileMP3,
+	kNPfileM4A,
+
+	kNPfileMPG,		//MPEG 1 and 2 video
+	kNPfileMP4,		//MPEG 4
+
+	kNPfileMJ2,		//Motion JPEG 2000
+	kNPfileDCP,		//Digital Cinema Package
+
+	kNPfileMXF,		//AV formats, open standard and proprietary
+	kNPfileDNX,
+	kNPfileAVI,
+	kNPfileMOV
 };
 
 

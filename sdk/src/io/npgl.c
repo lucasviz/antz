@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -330,7 +330,7 @@ void npGLDrawScene (void* dataRef)
 	glMatrixMode(GL_MODELVIEW);
 
 	//stereo 3D
-	if (data->io.gl.stereo)
+	if (data->io.gl.stereo3D)
 	{
 	//	glMatrixMode(GL_MODELVIEW);	//outside of if 
 		glDrawBuffer( GL_BACK_RIGHT );
@@ -443,8 +443,10 @@ void npPostTool (pNPnode node, void* dataRef)
 
 	char msg[128];
 
-	if( data->io.gl.hud.console.tagEdit && data->io.mouse.tool != kNPtoolTag )
-		npTagEditMode(false, data);
+	//workaround for exiting tag edit mode, does not catch all exit conditions
+	if(	data->io.gl.hud.console.mode == kNPconsoleTag							//zz tag
+			  && data->io.mouse.tool != kNPtoolTag )
+				npTagEditMode(false, data);
 
 	strcpy (msg, "tool: ");
 
@@ -569,10 +571,26 @@ void npPostTool (pNPnode node, void* dataRef)
 		node = node->child[kNPhudTool];			//select Tool node
 	}
 	strcpy (node->tag->title, msg);
-	npUpdateTextTag (node->tag);
+	npUpdateTag (node->tag);
 
 	//post the tool type message
 	npPostMsg (msg, kNPmsgCtrl, dataRef);
+}
+
+//update the GUI tool type indicator when NULL
+//------------------------------------------------------------------------------
+void npMenuRefresh( pNPhud hud, void* dataRef )
+{
+	pNPnode node = NULL;
+	pData data = (pData) dataRef;
+
+//	if (hud == NULL)
+	{
+		node = data->map.node[kNPnodeRootHUD];	//select Root HUD node
+		node = node->child[kNPhudTool];			//select Tool node
+	}
+	sprintf( node->tag->title, "tool:         " );
+	npUpdateTag (node->tag);
 }
 
 //------------------------------------------------------------------------------
@@ -610,7 +628,7 @@ void npPostMode (pNPnode node, void* dataRef)
 
 	//update the GUI mode type indicator
 	strcpy (node->tag->title, msg);
-	npUpdateTextTag (node->tag);
+	npUpdateTag (node->tag);
 
 	//post the tool type message
 	npPostMsg (msg, kNPmsgCtrl, dataRef);
@@ -670,22 +688,22 @@ void npTagEditMode( bool tagEditMode, void* dataRef )
 
 	pNPconsole console = &data->io.gl.hud.console;
 
-	data->io.gl.hud.console.tagEdit = tagEditMode;
-
 	if( tagEditMode )
 	{
-		data->map.previousNode = data->map.currentNode;
-
+		data->map.previousNode = data->map.currentNode;	//zz debug ???
+					//zz could also restore console->mode to return to previous mode...
+		console->mode = kNPconsoleTag;
+		console->cursorShow = true;
+	
 		npConsole( data );			//clears prompt, curserShow, console->mode
-	//	console->mode = kNPconsoleCmd;
-	//	console->cursorShow = true;
+		npUpdateConsoleUserText(console,data);
+	//	npConsoleKeyEvent( kKeyCodeRight, kKeyDownSpecial, data );
+	//	console->inputIndex--;
+	//	console->inputIndex--;
 	}
 	else
 	{
-		//console msg mode
-		//exit tagMode
-
-		//exit menu mode
+		//set to console msg mode
 		console->mode = kNPconsoleMessage;
 		console->cursorShow = false;
 	}
@@ -773,7 +791,7 @@ void npPickHUD (pNPnode node, void* dataRef)
 				data->io.key.modAlt = true;
 				data->io.file.saveSelect = true;
 		//		node->color.r = 255;
-				npCtrlCommand(kNPfileSave, data);
+				npCtrlCommand(kNPcmdFileSave, data);
 				data->io.key.modAlt = temp;
 		//		data->io.file.saveSelect = false;
 		//		node->color.r = 127;
@@ -872,7 +890,7 @@ void npPickTool (pNPnode node, void* dataRef)
 	if( node->type == kNodeHUD )
 	{
 		if( data->io.mouse.tool == kNPtoolTag )
-			npTagEditMode( false, data );
+			npTagEditMode( false, data );		  //exits console tag edit mode //zz tag
 
 		npPickHUD( node, data );
 		return;
@@ -911,7 +929,7 @@ void npPickTool (pNPnode node, void* dataRef)
 		case kNPtoolLink :
 			if (node->type == kNodeLink)
 			{
-				npPostMsg ("Cannot Link a Link to a Link", kNPmsgCtrl, data);
+				npPostMsg ("Graph (edge) link ends must be nodes", kNPmsgCtrl, data);
 				break;
 			}
 			if (data->io.mouse.linkA == NULL)				//first pick A
@@ -920,7 +938,7 @@ void npPickTool (pNPnode node, void* dataRef)
 				{
 					data->io.mouse.linkA = node;
 					if (node->recordID)
-						sprintf(msg,"Link node A selected id: %d record_id: %d - now pick B",
+						sprintf(msg,"Link node A selected id: %d record: %d - now pick B",
 								node->id, node->recordID);
 					else
 						sprintf(msg,"Link node A selected id: %d - now pick B",
@@ -987,18 +1005,21 @@ void npPickTool (pNPnode node, void* dataRef)
 			}
 			else
 			{
-				if (data->io.gl.hud.console.mode != kNPconsoleCmd)
+				if (data->io.gl.hud.console.mode != kNPconsoleTag)
 				{
+			//	
 					npTagEditMode( true, data );
+
 					//activate command console
 					//	npConsole (dataRef);
 
-					if (node->recordID)
+				/*	if (node->recordID)
 						sprintf (msg, "record: %d", node->recordID);
 					else
 						sprintf (msg, "id: %d", node->id);
 				//	npPostMsg (msg, kNPmsgCtrl, dataRef);
 				//	npPostMsg ("Type any text and hit Enter to set the tag name", kNPmsgCtrl, dataRef);
+				*/
 				}
 				else if ( data->io.gl.hud.console.inputStr[0] != '\0' )
 				{		//zz debug, this is a quick hack to workaround npconsole
@@ -1006,7 +1027,7 @@ void npPickTool (pNPnode node, void* dataRef)
 					nodeTemp = data->map.currentNode;	
 					data->map.currentNode = data->map.previousNode;
 					
-					npConsoleCmdText( &data->io.gl.hud.console, data );
+			//		npConsoleCmdText( &data->io.gl.hud.console, data );
 					
 					data->map.currentNode = nodeTemp;	//restore currentNode
 				}
@@ -1113,7 +1134,7 @@ void npPickTool (pNPnode node, void* dataRef)
 void npPick (int x, int y, void* dataRef)
 {
 	int id = 0;
-	char msg[256];
+//	char msg[256];
 
 	GLubyte r,g,b;	//Unsigned Byte 8-bit Range: 0-255 // changed from u_int8_t, zz debug
 	GLubyte pixels[4];		//4 Bytes
@@ -1160,6 +1181,9 @@ void npPick (int x, int y, void* dataRef)
 
 		if (node != NULL)
 		{
+			if ( data->io.gl.hud.console.mode == kNPconsoleTag )	//zz fixes bug 116
+				npConsoleCmdText(&data->io.gl.hud.console, data);
+
 			if (node->type != kNodeHUD)
 			{
 				if (node != data->map.currentNode)
@@ -1168,21 +1192,24 @@ void npPick (int x, int y, void* dataRef)
 					npSelectNode (node, data);
 
 					//if recordID exists then display it, otherwise use node->id
-					if (node->recordID)
+			/*		if (node->recordID)
 						sprintf(msg, "picked id: %d   recordID: %d", 
 								node->id, node->recordID);
 					else
 						sprintf(msg, "picked id: %d", node->id);
 					npPostMsg(msg, kNPmsgCtrl, data);
+			*/
+					if ( data->io.gl.hud.console.mode != kNPconsoleTag )	//zz tag
+						npPostNodeID( node, data );
 				}
 				else
 					npSelectNode (node, data);	//zz debug, remove this and test to verify ok
 			}
 			//applies action to nodes including HUD items, pins, cam, etc
 			npPickTool (node, data);
-			
-			if( data->io.gl.hud.console.mode == kNPconsoleCmd )
-				npConsolePrompt( &data->io.gl.hud.console, data );//npPostMsg(">", kNPmsgCtrl, data);	//refreshes GUI command prompt
+
+			//refresh GUI command console prompt with picked item
+			npConsolePrompt( &data->io.gl.hud.console, data );				//zz tag
 		}
 		else
 			data->io.gl.pickID = 0;	//if invalid node then set to default camera
@@ -1224,3 +1251,17 @@ void npResizeConsole (void* dataRef)
 	}
 }
 
+npScreenGrabThumb( char* name, int type, int x, int y, int w, int h, void* dataRef )
+{
+	pData data = (pData) dataRef;
+
+	char pathName[kNPmaxPath];
+
+	pathName[0] = '\0';
+	strncat( pathName, data->io.file.mapPath, kNPmaxPath );
+	strncat( pathName, name, kNPmaxPath - strlen( pathName ) );
+	
+	data->io.gl.datasetName[0] = '\0';
+	strncat( data->io.gl.datasetName, pathName, kNPmaxPath );
+	data->io.gl.screenGrab = 2;	//zz debug triggers a screenGrab timestamp not synced!!!			
+}

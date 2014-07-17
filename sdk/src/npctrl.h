@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -46,7 +46,7 @@ void npUpdateCtrl (void* dataRef);					//typically once per frame
 
 int npAppLoop(void* dataRef);
 
-void npCtrlCommand (int command, void* dataRef);   //apply to all selected nodes
+void npCtrlCommand (int command, void* dataRef);	//apply to all selected nodes
 
 void npCtrlCommandSet (int command, void* node, void* dataRef);	// specific node
 

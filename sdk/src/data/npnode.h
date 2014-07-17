@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -48,6 +48,9 @@ void npNodeRemove (bool freeNode, pNPnode node, void* dataRef);
 void npSetTagOffset (pNPnode node);
 
 pNPnode npGetActiveCam (void* dataRef);
+
+//void Spiral( int X, int Y);
+NPfloatXY npGridSpiralXY( int xNum, int yNum, float dX, float dY, int index );
 
 #endif
 

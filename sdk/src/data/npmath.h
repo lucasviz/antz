@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -26,6 +26,12 @@
 #define NPMATH_H_
 
 #include "../npdata.h"
+
+
+#define kPI			 3.141593f
+#define k2PI		 6.283185f
+#define kNeg2PI		-6.283185f
+#define kRADtoDEG	57.29578f		//converts radians to deg
 
 //--- Functions ---------------------------------------------------------------
 

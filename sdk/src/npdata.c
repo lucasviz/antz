@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -31,6 +31,7 @@
 #include "io/npmouse.h"
 #include "io/npgl.h"
 #include "os/npos.h"
+
 
 void* gData;
 
@@ -134,10 +135,10 @@ void npInitDataRecordTag (pNPrecordTag recordTag, void* dataRef)
 	recordTag->titleSize = 0;
 	recordTag->descSize = 0;
 
-	for (i = 0; i <= kNPtitleSizeMax; i++)
+	for (i = 0; i <= kNPtagTitleMax; i++)
 		recordTag->title[i] = '\0';
 
-	for (i = 0; i <= kNPdescSizeMax; i++)
+	for (i = 0; i <= kNPtagDescMax; i++)
 		recordTag->desc[i] = '\0';
 	
 	recordTag->size = sizeof(NPrecordTag);
@@ -177,11 +178,11 @@ void npInitTextTag (pNPtag tag, void* dataRef)
 	tag->lineColor.b = 255;
 	tag->lineColor.a = 64;		//70% opacity
 
-	//note <= since the buffer is (kNPtitleSizeMax + 1) for the null terminator
-	for (i = 0; i <= kNPtitleSizeMax; i++)
+	//note <= since the buffer is (kNPtagTitleMax + 1) for the null terminator
+	for (i = 0; i <= kNPtagTitleMax; i++)
 		tag->title[i] = '\0';
 
-	for (i = 0; i <= kNPdescSizeMax; i++)
+	for (i = 0; i <= kNPtagDescMax; i++)
 		tag->desc[i] = '\0';
 }
 
@@ -229,7 +230,6 @@ void npInitNodeConsole (void* consoleRef, void* dataRef)
 	console->position.y	= kNPpositionBottom;
 
 	console->mode = 0;							//kNPconsoleMessage = default mode
-	console->tagEdit = false;
 	
 	console->level = kNPconsoleLevelThree;		//3 lines of text
 	console->box.x = 734.0f;					//80 chars * 9 + 14 (for border)
@@ -247,6 +247,8 @@ void npInitNodeConsole (void* consoleRef, void* dataRef)
 
 	console->page = 0;							//zero to scroll current line
 	console->selectIndex = 1;
+	console->selectText = 0;					//zero for not selected
+	console->insertText = 0;
 
 	console->cursorLine = 0;
 	console->cursorColumn = 0;
@@ -254,8 +256,10 @@ void npInitNodeConsole (void* consoleRef, void* dataRef)
 	console->cursorType = 0;					//default cursor is underbar
 	console->cursorShow = false;
 
-	console->inputStr[0] = '\0';
 	console->inputIndex = 0;
+
+	for (i=0; i <= kNPconsoleInputMax; i++)
+		console->inputStr[i] = '\0';
 
 	for (i=0; i < kNPconsoleLineMax; i++)
 		for (j=0; j <= kNPconsoleCharPerLine; j++)	//write 81 chars, 80 +1 null
@@ -300,26 +304,26 @@ void npInitDataTags (pNPtags tags, void* dataRef)
 
 	if (tags->recordList == NULL)
 	{
-		tags->recordList = (void*) malloc (kNPrecordTagListMax * sizeof(void*));
+		tags->recordList = (void*) malloc (kNPtagMax * sizeof(void*));
 		if (tags->recordList == NULL)
 		{
 			printf ("err 4279 - malloc failed to allocate record tag list\n");
 			exit(EXIT_FAILURE);
 		}
 	}
-	for (i=0; i < kNPrecordTagListMax; i++)
+	for (i=0; i < kNPtagMax; i++)
 		tags->recordList[i] = NULL;
 
 	if (tags->sort == NULL)
 	{
-		tags->sort = (void*) malloc (kNPrecordTagListMax * sizeof(void*));	//zz debug, should be dynamic		
+		tags->sort = (void*) malloc (kNPtagMax * sizeof(void*));	//zz debug, should be dynamic		
 		if (tags->sort == NULL)
 		{
 			printf ("err 4280 - malloc failed to allocate sort tag list\n");
 			exit(EXIT_FAILURE);
 		}
 	}
-	for (i=0; i < kNPrecordTagListMax; i++)
+	for (i=0; i < kNPtagMax; i++)
 		tags->sort[i] = NULL;
 
 
@@ -445,7 +449,7 @@ void npInitDataGL(void* dataRef)
 	strcpy (gl->name, "ANTz");		//window title //zzf
 
 	gl->fullscreen = true;
-	gl->stereo = false;
+	gl->stereo3D = false;
 
 	gl->width = 0;
 	gl->height = 0;
@@ -468,6 +472,9 @@ void npInitDataGL(void* dataRef)
 
 	gl->pickPass = false;
 	gl->pickID = 0;
+
+	gl->screenGrab = false;
+	gl->datasetName[0] = '\0';
 
 	gl->subsample = 1;			//zzhp
 
@@ -578,6 +585,7 @@ void npInitDataOSC (pNPosc osc, void* dataRef)
 	int size = 0;
 
 	pData data = (pData) dataRef;
+	pNPoscPackListener oscItem = NULL;
 
 	osc->max = kNPoscListMax;	//zz, fix list size at this time
 	
@@ -595,6 +603,33 @@ void npInitDataOSC (pNPosc osc, void* dataRef)
 	osc->list[0].txPort = 8000;
 	osc->list[0].rxPort = 9000;
 
+	
+//	npNewConnect( txIP, txPort, rxIP, rxPort, data );
+
+	//for( i=0; i < data->io.connectCount; i++ )
+	{
+	data->io.connect[0] = npMalloc( 0, sizeof(NPconnect),data );
+
+	oscItem = &data->io.connect[0]->oscListener;
+	oscItem->rxPort = 8000;
+	oscItem->txPort = 9000;
+	data->io.connectCount++;
+
+	data->io.connect[1] = npMalloc( 0, sizeof(NPconnect),data );
+
+	oscItem = &data->io.connect[1]->oscListener;
+	oscItem->rxPort = 8001;
+	oscItem->txPort = 9001;
+	data->io.connectCount++;
+
+	data->io.connect[2] = npMalloc( 0, sizeof(NPconnect),data );
+
+	oscItem = &data->io.connect[2]->oscListener;
+	oscItem->rxPort = 7400;
+	oscItem->txPort = 7401;
+	data->io.connectCount++;
+	}
+data->io.connectCount = 0;
 	osc->size = sizeof(NPosc) + size;
 }
 
@@ -741,6 +776,8 @@ void npInitDataCtrl(void* dataRef)
 
 	npInitDataCPU(&data->ctrl.cpu);
 
+	data->ctrl.startup = true;
+
 	data->ctrl.cmdFunc = NULL;
 
 	for(i=0; i < kNPuserMax; i++)				//zz select
@@ -758,15 +795,17 @@ void npInitDataCtrl(void* dataRef)
 
 
 //------------------------------------------------------------------------------
-void npCloseData()
+void npCloseData( void* dataRef )
 {
 	pData data = (pData) gData;
 
-
-	//recursively release all data structures
-	//call npMemoryClost(dataRef);
-	
-	free (data);
+	if ( data != dataRef )
+		printf( "err 8888 - gData: %p != dataRef: %p\n", data, dataRef );
+	else
+	{		//recursively free all data elements
+			//npMemoryClose(dataRef);				//zz debug
+		free (data);
+	}
 }
 
 
@@ -1176,7 +1215,7 @@ void npDataCameraPreset (int preset, pNPnode node, void* dataRef)
 	}
 }
 
-
+//zz debug add support for startup messages to be sent to system console	//zz debug
 //adds message to the que to be processed by npDispatchMessages
 //------------------------------------------------------------------------------
 void npPostMsg (char* message, int type, void* dataRef)
@@ -1189,6 +1228,8 @@ void npPostMsg (char* message, int type, void* dataRef)
 		return;
 #endif
 
+	if( data->ctrl.startup )
+		printf( message );
 												//zz debug, update to send messages elsewhere
 	if ( data->io.gl.hud.console.mode == kNPconsoleMenu && type != kNPmsgView )
 		return;

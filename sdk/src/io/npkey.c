@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -158,6 +158,7 @@ void npInitKey (void* dataRef)
 	key->modCommandLeft = 0;
 	key->modCommandRight = 0;
 
+	key->skipCount = 0;
 
 	for (i = 0; i < kNPkeyEventTypeSize; i++)
 		for (j = 0; j < kNPkeyMapSize; j++)
@@ -185,9 +186,9 @@ void npInitKey (void* dataRef)
 	key->map[kKeyDown][kKeyCode4]				= kNPcmdSelectAll;
 	key->map[kKeyDown][kKeyCodeTilda]			= kNPcmdSelectNone;
 //	key->map[kKeyDown][kKeyCodeSlash]			= kNPcmdSelectToggle; //zzsql
-	key->map[kKeyDown][kKeyCode1]				= kNPfileMapOne;
-	key->map[kKeyDown][kKeyCode2]				= kNPfileMapTwo;
-	key->map[kKeyDown][kKeyCode3]				= kNPfileMapThree;
+	key->map[kKeyDown][kKeyCode1]				= kNPcmdFileMapOne;
+	key->map[kKeyDown][kKeyCode2]				= kNPcmdFileMapTwo;
+	key->map[kKeyDown][kKeyCode3]				= kNPcmdFileMapThree;
 
 	key->map[kKeyDown][kKeyCode5]				= kNPcmdPresetOne;
 	key->map[kKeyDown][kKeyCode6]				= kNPcmdPresetTwo;
@@ -204,13 +205,13 @@ void npInitKey (void* dataRef)
 
 	key->map[kKeyDown][kKeyCodeI]				= kNPcmdTagMode;
 	
-	key->map[kKeyDown][kKeyCodeK]				= kNPfileSave;
-	key->map[kKeyDown][kKeyCodeL]				= kNPfileOpen;
-	key->map[kKeyDown][kKeyCodeP]				= kNPfileImport;	// kNPcmdPoints;
+	key->map[kKeyDown][kKeyCodeK]				= kNPcmdFileSave;
+	key->map[kKeyDown][kKeyCodeL]				= kNPcmdFileOpen;
+	key->map[kKeyDown][kKeyCodeP]				= kNPcmdFileImport;	// kNPcmdPoints;
 
 	key->map[kKeyDown][kKeyCodeSlash]			= kNPcmdViewer;
 
-	key->map[kKeyDown][kKeyCodeU]				= kNPopenURL;
+	key->map[kKeyDown][kKeyCodeU]				= kNPcmdOpenURL;
 
 
 //	key->map[kKeyDown][kKeyCodeL]				= kNPcmdMesh;
@@ -233,12 +234,12 @@ void npInitKey (void* dataRef)
 
 	key->map[kKeyDown][kKeyCodeTab]				= kNPcmdPin;
 	key->map[kKeyRepeat][kKeyCodeTab]			= kNPcmdPin;
-
+/*
 	key->map[kKeyDown][kKeyCodeRightQuote]		= kNPcmdNextBranch;
 	key->map[kKeyRepeat][kKeyCodeRightQuote]	= kNPcmdNextBranch;
 	key->map[kKeyDown][kKeyCodeSemiColon]		= kNPcmdPrevBranch;
 	key->map[kKeyRepeat][kKeyCodeSemiColon]		= kNPcmdPrevBranch;
-	
+*/	
 	key->map[kKeyDown][kKeyCodeReturn]			= kNPcmdConsole;
 	key->map[kKeyRepeat][kKeyCodeReturn]		= kNPcmdConsole;
 	key->map[kKeyDown][kKeyCodeNumPadEnter]		= kNPcmdConsole;
@@ -304,28 +305,47 @@ void npInitKey (void* dataRef)
 	key->map[kKeyDown][kKeyCodeQ]				= kNPcmdZdecrease;
 	key->map[kKeyUp][kKeyCodeQ]					= kNPcmdZdecreaseOff;
 
+	// 
+	key->map[kKeyDown][kKeyCodeLeft]			= kNPcmdPrev;
+	key->map[kKeyRepeat][kKeyCodeLeft]			= kNPcmdPrev;
+	key->map[kKeyUp][kKeyCodeLeft]				= kNPcmdPrevOff;
+
+	key->map[kKeyDown][kKeyCodeRight]			= kNPcmdNext;
+	key->map[kKeyRepeat][kKeyCodeRight]			= kNPcmdNext;
+	key->map[kKeyUp][kKeyCodeRight]				= kNPcmdNextOff;
+	
+	key->map[kKeyDown][kKeyCodeDown]			= kNPcmdPrevBranch;
+	key->map[kKeyRepeat][kKeyCodeDown]			= kNPcmdPrevBranch;
+	key->map[kKeyUp][kKeyCodeDown]				= kNPcmdPrevBranchOff;
+	
+	key->map[kKeyDown][kKeyCodeUp]				= kNPcmdNextBranch;
+	key->map[kKeyRepeat][kKeyCodeUp]			= kNPcmdNextBranch;
+	key->map[kKeyUp][kKeyCodeUp]				= kNPcmdNextBranchOff;
+	
 	// rotate
-	key->map[kKeyDown][kKeyCodeLeft]			= kNPcmdRotateLeft;
-	key->map[kKeyUp][kKeyCodeLeft]				= kNPcmdRotateLeftOff;
+	//key->map[kKeyDown][kKeyCodeLeft]			= kNPcmdRotateLeft;
+	//key->map[kKeyUp][kKeyCodeLeft]			= kNPcmdRotateLeftOff;
 
-	key->map[kKeyDown][kKeyCodeRight]			= kNPcmdRotateRight;
-	key->map[kKeyUp][kKeyCodeRight]				= kNPcmdRotateRightOff;
+	//key->map[kKeyDown][kKeyCodeRight]			= kNPcmdRotateRight;
+	//key->map[kKeyUp][kKeyCodeRight]			= kNPcmdRotateRightOff;
 
-	key->map[kKeyDown][kKeyCodeUp]				= kNPcmdRotateUp;
-	key->map[kKeyUp][kKeyCodeUp]				= kNPcmdRotateUpOff;
+	//key->map[kKeyDown][kKeyCodeDown]			= kNPcmdRotateDown;
+	//key->map[kKeyUp][kKeyCodeDown]			= kNPcmdRotateDownOff;
 
-	key->map[kKeyDown][kKeyCodeDown]			= kNPcmdRotateDown;
-	key->map[kKeyUp][kKeyCodeDown]				= kNPcmdRotateDownOff;
+	//key->map[kKeyDown][kKeyCodeUp]			= kNPcmdRotateUp;
+	//key->map[kKeyUp][kKeyCodeUp]				= kNPcmdRotateUpOff;
 
-//	key->map[kKeyDown][kKeyCodeLeft]			= kNPcmdRotateCCW;
-//	key->map[kKeyUp][kKeyCodeLeft]				= kNPcmdRotateCCWOff;
+	//key->map[kKeyDown][kKeyCodeLeft]			= kNPcmdRotateCCW;
+	//key->map[kKeyUp][kKeyCodeLeft]			= kNPcmdRotateCCWOff;
 
-//	key->map[kKeyDown][kKeyCodeRight]			= kNPcmdRotateCW;
-//	key->map[kKeyUp][kKeyCodeRight]				= kNPcmdRotateCWOff;
+	//key->map[kKeyDown][kKeyCodeRight]			= kNPcmdRotateCW;
+	//key->map[kKeyUp][kKeyCodeRight]			= kNPcmdRotateCWOff;
 
 	// scale
 	key->map[kKeyDown][kKeyCodeZ]				= kNPcmdZoomOn;
 	key->map[kKeyUp][kKeyCodeZ]					= kNPcmdZoomOff;
+
+	key->map[kKeyDown][kKeyCodeF4]				= kNPcmdScreenGrab;
 }
 
 

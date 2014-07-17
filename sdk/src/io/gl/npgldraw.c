@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -165,6 +165,9 @@ void DrawPin (int selectedRootNode, pNPnode node, void* dataRef)
 	int i = 0;
 	int idRed = 0, idGrn = 0, idBlu = 0;
 
+	//zzhp can comment out the modelview if links not used
+	GLfloat modelView[16];													//zz-link
+
 	pData data = (pData) dataRef;
 
 	pNPnode nodeChild = data->map.currentNode;
@@ -187,13 +190,14 @@ void DrawPin (int selectedRootNode, pNPnode node, void* dataRef)
 	glPushMatrix();
 
 	// position the node and scale the z position based on root grid scale
-	glTranslatef (node->translate.x, node->translate.y, 
+	glTranslatef(	node->translate.x * rootGrid->scale.x,
+					node->translate.y * rootGrid->scale.y, 
 					node->translate.z * rootGrid->scale.z);	//global grid height
 
 	// rotate to node orientation
-	glRotatef (node->rotate.y, 0.0f, 0.0f, -1.0f);		//heading
-	glRotatef (node->rotate.x, -1.0f, 0.0f, 0.0f);		//tilt
-	glRotatef (node->rotate.z, 0.0f, 0.0f, -1.0f);		//roll
+	glRotatef (node->rotate.y, 0.0f, 0.0f, -1.0f);		//tlit
+	glRotatef (node->rotate.x, -1.0f, 0.0f, 0.0f);		//roll
+	glRotatef (node->rotate.z, 0.0f, 0.0f, -1.0f);		//heading
 
 	//set node scale, unless a rod topo
 	if ( node->topo != kNPtopoRod )
@@ -280,8 +284,34 @@ void DrawPin (int selectedRootNode, pNPnode node, void* dataRef)
 	//zzhp root local translate coordinates = world coordinates
 
 	//does not properly compute root nodes rotated about x axis,	//zz debug
-	node->world = node->translate;
 
+	//update the world coordinates of the node
+	//perhaps add logic to only calculate origin coordinates when needed,	 zz debug
+	//typically only need if cam target or connected by a link topo
+	if (node->topo == kNPtopoPin)
+	{
+		glPushMatrix();
+			glTranslatef (0.0f, 0.0f, kNPoffsetPin);// * node->scale.z);	//inverted position with negative scale, zz debug
+			glGetFloatv (GL_MODELVIEW_MATRIX, modelView);				//for some reason the rod does not have same issue
+			npLocalToWorld (&node->world, camData->inverseMatrix, modelView);
+		glPopMatrix();
+	}
+	else if (node->topo == kNPtopoRod)
+	{
+		glPushMatrix();
+			glTranslatef (0.0f, 0.0f, kNPoffsetRod);// * node->scale.z);	//zz debug bug 115
+			glGetFloatv (GL_MODELVIEW_MATRIX, modelView);
+			npLocalToWorld (&node->world, camData->inverseMatrix,  modelView);
+		glPopMatrix();
+	}
+	else
+	{
+		//node->world = node->translate;
+		node->world.x = node->translate.x * rootGrid->scale.x;
+		node->world.y = node->translate.y * rootGrid->scale.y;
+		node->world.z = node->translate.z * rootGrid->scale.z;
+	}
+		
 //zzoff
 /*
 	if (node->topo == kNPtopoPin)
@@ -291,8 +321,8 @@ void DrawPin (int selectedRootNode, pNPnode node, void* dataRef)
 		node->world.z = node->translate.z * rootGrid->scale.z
 						+ kNPoffsetRod * node->scale.z;
 	else if (node->topo == kNPtopoPoint)
-*/		node->world.z = node->translate.z * rootGrid->scale.z;
-/*	else
+		node->world.z = node->translate.z * rootGrid->scale.z;
+	else
 		node->world.z = node->translate.z * rootGrid->scale.z
 						+ kNPoffsetUnit * node->scale.z;
 */
@@ -706,7 +736,7 @@ void DrawPinChild (pNPnode node, void* dataRef)
 	else if (node->topo == kNPtopoRod)
 	{
 		glPushMatrix();
-			glTranslatef (0.0f, 0.0f, kNPoffsetRod * node->scale.z);
+			glTranslatef (0.0f, 0.0f, kNPoffsetRod);// * node->scale.z);	//zz debug bug 115
 			glGetFloatv (GL_MODELVIEW_MATRIX, modelView);
 			npLocalToWorld (&node->world, camData->inverseMatrix,  modelView);
 		glPopMatrix();
@@ -1187,6 +1217,8 @@ void npDrawConsole (void* dataRef)
 	float boxHeight = 0.0f;			//top edge of text background box
 	float boxWidth = 0.0f;
 
+	float selectBoxWidth = 0.0f;
+
 	int lineCount = 0;
 
 	pData data = (pData) dataRef;
@@ -1240,22 +1272,51 @@ void npDrawConsole (void* dataRef)
 	for (i=0; i < lineCount; i++)
 	{
 		//set position and draw text by line index
-		glRasterPos2f (0.0f, charHeight * (float)i);
-		npGlutDrawString (GLUT_BITMAP_9_BY_15, &console->line[index--][0]);
+		glRasterPos2f( 0.0f, charHeight * (float)i );
+		npGlutDrawString( GLUT_BITMAP_9_BY_15, &console->line[index--][0] );
 
 		if (index < 0)
 			index = kNPconsoleLineMax - 1;		//handles buffer roll-over
 	}
 	
-	//draw blinking cursor on top of text using inverse color
-	if (console->cursorShow && data->io.blinkState)
+	//draw blinking cursor and highlight on top of text using inverse XOR color
+	if( console->cursorShow )
 	{
-		glEnable(GL_COLOR_LOGIC_OP);
-		glLogicOp(GL_XOR);
-			glRasterPos2f (charWidth * (float)console->cursorColumn, 
-						   charHeight * (float)console->cursorLine);
-			npGlutDrawString (GLUT_BITMAP_9_BY_15, "_");
-		glDisable(GL_COLOR_LOGIC_OP);
+		if( data->io.blinkState )
+		{
+			glEnable(GL_COLOR_LOGIC_OP);
+			glLogicOp(GL_XOR);
+				glRasterPos2f( charWidth * (float)console->cursorColumn,
+							   charHeight * (float)console->cursorLine );
+				npGlutDrawString( GLUT_BITMAP_9_BY_15, "_" );	// blink cursor
+			glDisable(GL_COLOR_LOGIC_OP);
+		}
+		else if( console->selectText )	// select highlight 180 deg out of phase
+		{
+			selectBoxWidth = charWidth * (float)console->cursorColumn;
+
+			glEnable(GL_COLOR_LOGIC_OP);
+			glLogicOp(GL_XOR);
+				if( console->selectText )						// highlight box
+				{
+					glBegin (GL_QUADS);
+						glVertex2f(-2.0f + charWidth, -4.0f);	// border offset
+						glVertex2f(selectBoxWidth, -4.0f);
+						glVertex2f(selectBoxWidth, charHeight - 3.0f );
+						glVertex2f(-2.0f + charWidth,  charHeight - 3.0f );
+					glEnd();
+				}
+			glDisable(GL_COLOR_LOGIC_OP);
+
+			//now darken the highlight, so its not so blinding...
+			glColor4ub( 0, 0, 0, 64 );
+			glBegin (GL_QUADS);
+						glVertex2f(-2.0f + charWidth, -4.0f);	// border offset
+						glVertex2f(selectBoxWidth, -4.0f);
+						glVertex2f(selectBoxWidth, charHeight - 3.0f );
+						glVertex2f(-2.0f + charWidth,  charHeight - 3.0f );
+			glEnd();
+		}
 	}
 
 	glPopMatrix();
@@ -1279,7 +1340,7 @@ void npDrawFPS (void* dataRef)
 	sprintf (tag->title, "FPS:%6.2f", fps);
 
 	//updates the box size, we really only need to do this once, debug zz
-	npUpdateTextTag (tag);
+	npUpdateTag (tag);
 
 	glPushMatrix();
 		glTranslatef (data->io.gl.width * 0.5f - 105.0f,
@@ -1389,7 +1450,7 @@ void npDrawCompass (void* dataRef)
 		else if (node->rotate.y > 22.5f) 
 			sprintf (hudItem->tag->title, "   %6.2f NE   ", node->rotate.y);
 	}	
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	//draw XYZ axes with green for active and grey for disabled
 	if ( node->scaleRate.x || node->scaleRate.y || node->scaleRate.z
@@ -1402,7 +1463,7 @@ void npDrawCompass (void* dataRef)
 	{
 		hudItem = hudParent->child[kNPhudAngle];
 		sprintf (hudItem->tag->title, "Ratio:  %7.2f", node->ratio);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (data->io.mouse.buttonR)
 			hudItem->tag->boxColor = green;			//green if active
 		else
@@ -1410,7 +1471,7 @@ void npDrawCompass (void* dataRef)
 
 		hudItem = hudParent->child[kNPhudCoordX];
 		sprintf (hudItem->tag->title, "Scale X:%7.2f", node->scale.x);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (axes.x)
 		{
 			if (data->io.mouse.buttonR)
@@ -1423,7 +1484,7 @@ void npDrawCompass (void* dataRef)
 
 		hudItem = hudParent->child[kNPhudCoordY];
 		sprintf (hudItem->tag->title, "Scale Y:%7.2f", node->scale.y);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (axes.y)
 		{
 			if (data->io.mouse.buttonR)
@@ -1436,7 +1497,7 @@ void npDrawCompass (void* dataRef)
 
 		hudItem = hudParent->child[kNPhudCoordZ];
 		sprintf (hudItem->tag->title, "Scale Z:%7.2f", node->scale.z);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (axes.z)
 		{
 			if (data->io.mouse.buttonR)
@@ -1459,7 +1520,7 @@ void npDrawCompass (void* dataRef)
 
 		hudItem = hudParent->child[kNPhudCoordX];
 		sprintf (hudItem->tag->title, "RotateX:%7.2f", node->rotate.x);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (axes.x)
 		{	
 			if (data->io.mouse.buttonR)
@@ -1472,7 +1533,7 @@ void npDrawCompass (void* dataRef)
 
 		hudItem = hudParent->child[kNPhudCoordY];
 		sprintf (hudItem->tag->title, "RotateY:%7.2f", node->rotate.y);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (axes.y)
 		{	
 			if (data->io.mouse.buttonR)
@@ -1485,7 +1546,7 @@ void npDrawCompass (void* dataRef)
 
 		hudItem = hudParent->child[kNPhudCoordZ];
 		sprintf (hudItem->tag->title, "RotateZ:%7.2f", node->rotate.z);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (axes.z)
 		{	
 			if (data->io.mouse.buttonR || !(axes.x && axes.y))
@@ -1511,12 +1572,12 @@ void npDrawCompass (void* dataRef)
 			sprintf (hudItem->tag->title, "Roll:   %7.2f", node->rotate.z);
 		else
 			sprintf (hudItem->tag->title, "Tilt:   %7.2f", node->rotate.x);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		hudItem->tag->boxColor = black;
 
 		hudItem = hudParent->child[kNPhudCoordX];
 		sprintf (hudItem->tag->title, "Coord X:%7.2f", node->translate.x);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (axes.x)
 			hudItem->tag->boxColor = green;
 		else
@@ -1529,7 +1590,7 @@ void npDrawCompass (void* dataRef)
 
 		hudItem = hudParent->child[kNPhudCoordY];
 		sprintf (hudItem->tag->title, "Coord Y:%7.2f", node->translate.y);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (axes.y)
 		{
 			if ( !(axes.x && axes.y ))
@@ -1554,7 +1615,7 @@ void npDrawCompass (void* dataRef)
 
 		hudItem = hudParent->child[kNPhudCoordZ];
 		sprintf (hudItem->tag->title, "Coord Z:%7.2f", node->translate.z);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (axes.z)
 		{
 			if ( !(axes.x && axes.y) )
@@ -1586,7 +1647,7 @@ void npDrawCompass (void* dataRef)
 			sprintf (hudItem->tag->title, "Roll:   %7.2f", node->rotate.z);
 		else
 			sprintf (hudItem->tag->title, "Tilt:   %7.2f", node->rotate.x);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		hudItem->tag->boxColor = black;
 
 		//	sprintf (coordX.title,	"LONG X:%7.2f", node->translate.x);	//zz debug, base on compass vs heading?
@@ -1595,7 +1656,7 @@ void npDrawCompass (void* dataRef)
 
 		hudItem = hudParent->child[kNPhudCoordX];
 		sprintf (hudItem->tag->title, "Coord X:%7.2f", node->translate.x);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (data->io.axes.x)
 			hudItem->tag->boxColor = green;
 		else
@@ -1603,7 +1664,7 @@ void npDrawCompass (void* dataRef)
 
 		hudItem = hudParent->child[kNPhudCoordY];
 		sprintf (hudItem->tag->title, "Coord Y:%7.2f", node->translate.y);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (data->io.axes.y)
 			hudItem->tag->boxColor = green;
 		else
@@ -1611,7 +1672,7 @@ void npDrawCompass (void* dataRef)
 
 		hudItem = hudParent->child[kNPhudCoordZ];
 		sprintf (hudItem->tag->title, "Coord Z:%7.2f", node->translate.z);
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 		if (data->io.axes.z)
 			hudItem->tag->boxColor = green;
 		else
@@ -1636,13 +1697,13 @@ void npDrawCompass (void* dataRef)
 		strcpy (hudItem->tag->title, "mode: Pin      ");
 		hudItem->color = grey;
 	}
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	if (data->io.mouse.pickMode == kNPmodeCamera)
 	{
 		hudItem = hudParent->child[kNPhudTool];
 		strcpy (hudItem->tag->title, "tool: Target   ");
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 	}
 
 	//zzf //zz select
@@ -1652,7 +1713,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Select Region  ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	if (1)//data->io.mouse.pickMode == kNPmodeCamera)
 	{
@@ -1667,7 +1728,7 @@ void npDrawCompass (void* dataRef)
 			hudItem->tag->boxColor.r = 127;
 			strcpy (hudItem->tag->title, "Save Selected  ");
 		}
-		npUpdateTextTag (hudItem->tag);
+		npUpdateTag (hudItem->tag);
 	}
 	//zzf end
 
@@ -1678,7 +1739,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Create         ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	hudItem = hudParent->child[kNPhudLink];
 	if (data->io.mouse.tool == kNPtoolLink && data->io.mouse.pickMode == kNPmodePin)
@@ -1686,7 +1747,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Link           ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	hudItem = hudParent->child[kNPhudCombo];
 	if (data->io.mouse.tool == kNPtoolCombo && data->io.mouse.pickMode == kNPmodePin)
@@ -1694,7 +1755,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Combo          ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	hudItem = hudParent->child[kNPhudMove];
 	if (data->io.mouse.tool == kNPtoolMove && data->io.mouse.pickMode == kNPmodePin)
@@ -1702,7 +1763,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Move           ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	hudItem = hudParent->child[kNPhudRotate];
 	if (data->io.mouse.tool == kNPtoolRotate && data->io.mouse.pickMode == kNPmodePin)
@@ -1710,7 +1771,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Rotate         ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	hudItem = hudParent->child[kNPhudSize];
 	if (data->io.mouse.tool == kNPtoolSize && data->io.mouse.pickMode == kNPmodePin)
@@ -1718,7 +1779,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Size           ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	hudItem = hudParent->child[kNPhudTopo];
 	if (data->io.mouse.tool == kNPtoolTopo && data->io.mouse.pickMode == kNPmodePin)
@@ -1726,7 +1787,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Topo           ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	hudItem = hudParent->child[kNPhudGeo];
 	if (data->io.mouse.tool == kNPtoolGeometry && data->io.mouse.pickMode == kNPmodePin)
@@ -1734,7 +1795,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Geometry       ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	hudItem = hudParent->child[kNPhudColor];
 	if (data->io.mouse.tool == kNPtoolColor && data->io.mouse.pickMode == kNPmodePin)
@@ -1742,7 +1803,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Color          ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	hudItem = hudParent->child[kNPhudTexture];
 	if (data->io.mouse.tool == kNPtoolTexture && data->io.mouse.pickMode == kNPmodePin)
@@ -1750,7 +1811,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Texture        ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	hudItem = hudParent->child[kNPhudHide];
 	if (data->io.mouse.tool == kNPtoolHide && data->io.mouse.pickMode == kNPmodePin)
@@ -1758,7 +1819,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Hide           ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 	hudItem = hudParent->child[kNPhudTag];
 	if (data->io.mouse.tool == kNPtoolTag && data->io.mouse.pickMode == kNPmodePin)
@@ -1766,7 +1827,7 @@ void npDrawCompass (void* dataRef)
 	else
 		hudItem->color = grey;
 	strcpy (hudItem->tag->title, "Text Tag       ");
-	npUpdateTextTag (hudItem->tag);
+	npUpdateTag (hudItem->tag);
 
 
 	//draw indicators
@@ -1838,58 +1899,6 @@ void npDrawHUD (void* dataRef)
 
 	glPopMatrix();
 }
-
-
-//zz debug, update to allow loading pallete from CSV file and user defined color
-// sets the node RGB color based on index, preserves existing alpha value
-//------------------------------------------------------------------------------
-void SetIndexColor (NPubyteRGBA *color, int *colorIndex)
-{	
-	int index = *colorIndex;
-									//kNPpaletteSize stored in nptypes.h
-	static const GLubyte colorPallete[kNPpaletteSize][3] = {
-											{50,  101, 101},
-											{0,   255, 0},
-											{255,   0, 0},
-											{0,     0, 255},
-											{255, 255, 0},
-											{152,   0, 255},
-											{255, 168, 0},
-											{0,   255, 255},
-											{255,   0, 255},
-											{0,   153, 0},
-											{185, 153, 102},
-											{255, 180, 255},
-											{0,   152, 255},
-											{185, 255, 0},
-											{152,   0, 0},
-											{127, 127, 127},
-											{127, 127, 255},
-											{197,  82, 0},
-											{0,     0, 0},
-											{255, 255, 255}
-											};
-	//re-maps out of bounds colorIndex
-	if (index >= kNPpaletteSize)
-	{
-		while (index >= kNPpaletteSize)
-			index -= kNPpaletteSize;	//subtracts pallete sized increments
-		*colorIndex = index;
-	}
-	else if (index < 0)
-	{
-		while (index < 0)
-			index += kNPpaletteSize;
-		*colorIndex = index;			//adds pallete sized increments		
-	}
-
-	//now set the color
-	color->r = colorPallete[index][0];
-	color->g = colorPallete[index][1];
-	color->b = colorPallete[index][2];
-}
-
-
 
 
 //MB-Transp

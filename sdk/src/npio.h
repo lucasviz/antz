@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -29,8 +29,8 @@
 	extern "C" {
 #endif
 
+#include "npdata.h"
 #include "io/npconsole.h"
-
 
 void npInitIO (void* data);			// may update default init from pref file
 
@@ -40,6 +40,9 @@ void npUpdateIO (void* dataRef);
 
 void npViewer (void* dataRef);
 void npConsole (void* dataRef);
+
+//
+void npPostNodeID( pNPnode node, void* dataRef );	//zz debug move -> io/...
 
 #ifdef __cplusplus
 	}

@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -164,7 +164,7 @@ public:
 
 };
 
-#define MAX_OSC_LISTENERS 10
+#define MAX_OSC_LISTENERS 256						//zz changed from 10
 static void* listeners[ MAX_OSC_LISTENERS ];
 static void* listenerSockets[ MAX_OSC_LISTENERS ];
 static int listenerPorts[ MAX_OSC_LISTENERS ];
@@ -640,7 +640,7 @@ protected:
 
 
 
-#define MAX_OSC_SENDERS 10
+#define MAX_OSC_SENDERS 256											//zz was 10
 //#define OUTPUT_BUFFER_SIZE 10000
 static UdpTransmitSocket* senderSockets[ MAX_OSC_SENDERS ];
 static osc::OutboundPacketStream* senderStreams[ MAX_OSC_SENDERS ];
@@ -683,8 +683,11 @@ void npStartOscPackListener( pNPoscPackListener oscListener )
 //  Listening on port is done by "npStartOscPackListener"
 //
 //JJ-zz swapped in/out to be out followed by in TxRx 
-void npInitOscPackListener( pNPoscPackListener oscListener, int outgoingPort, int incomingPort, void* dataRef )
+void npInitOscPackListener( pNPoscPackListener oscListener, void* dataRef )
 {
+	int outgoingPort = oscListener->txPort;
+	int incomingPort = oscListener->rxPort;
+
 	initAdapter();
 	oscListener->id = -1;	//JJ-zz debug... change osc err method....
 
@@ -871,7 +874,7 @@ extern "C" void npOscConnect( pNPosc Item, void* dataRef )
 //	oscItem = data->io.osc.list[oscID];
 
 	// initialize then start listener in another thread
-	npInitOscPackListener( oscItem, oscItem->txPort, oscItem->rxPort, data );
+	npInitOscPackListener( oscItem, data );
 	nposBeginThread (npOscListenerThread, oscItem);
 }
 

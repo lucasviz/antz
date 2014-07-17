@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -132,10 +132,7 @@ void UpdateNodeData (pNPnode node, pData dataRef)
 
 	pData data = (pData) dataRef;
 
-	if (node->colorShift == 0.0f)	//do not update if no color shift
-		return;
-
-	if (node->freeze)	//do not update if frozen
+	if( node->colorShift == 0.0f || node->freeze )	//exit if no shift or frozen
 		return;
 
 	colorTmp.r = 127;
@@ -144,7 +141,7 @@ void UpdateNodeData (pNPnode node, pData dataRef)
 	colorTmp.a = 127;
 
 	//  retrieve original color from index
-	SetIndexColor (&node->color, &node->colorIndex);
+	npSetIndexColor( &node->color, &node->colorIndex, NULL );
 
 	if (colorShift < 0.0f)
 		colorShift = 0.0f;
@@ -400,16 +397,6 @@ void npCameraTranslate (void* nodeRef, void* dataRef )
 		mouse->targetDest.x = targetNode->world.x;				//zz debug world position is 1-2w fraes behind
 		mouse->targetDest.y = targetNode->world.y;				// calculated last draw time using GL matrix stack
 		mouse->targetDest.z = targetNode->world.z;				// should calculate cam and target node position after all other nodes updated
-
-		//set target of root pin or rod topo types to top of object
-		//sub-node world coordinates are already corrected for the top of object
-		if( targetNode->branchLevel == 0)
-		{
-			if ( targetNode->topo == kNPtopoPin )
-				mouse->targetDest.z += kNPoffsetPin * targetNode->scale.z;
-			else if ( targetNode->topo == kNPtopoRod ) 
-				mouse->targetDest.z += kNPoffsetRod * targetNode->scale.z;
-		}
 	}
 	
 	if (data->io.mouse.camMode == kNPmouseModeCamExamXZ)

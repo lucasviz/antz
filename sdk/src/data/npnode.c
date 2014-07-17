@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -110,15 +110,63 @@ void npSetTagOffset (pNPnode node)
 	}
 }
 
+// http://stackoverflow.com/questions/3437404/min-and-max-in-c
+// http://stackoverflow.com/questions/398299/looping-in-a-spiral
+// returns the XY coordinate of the item placed by id
+//-----------------------------------------------------------------------------
+NPfloatXY npGridSpiralXY( int nX, int nY, float dX, float dY, int index )
+//void Spiral( int X, int Y)
+{
+	NPfloatXY coordXY = { 0.0f, 0.0f };
+
+    int x, y, dx, dy;
+	int i = 0, j = 0;
+   
+    int t = 0;
+    int maxI = 0;
+
+	x = y = dx = 0;
+    dy = -1;
+	
+	// set t = max(x,y)
+	if( nX > nY ) t = nX; else t = nY;
+
+	maxI = t*t;
+
+	for(i=0; i < maxI; i++)
+	{
+        if ((-nX/2 <= x) && (x <= nX/2) && (-nY/2 <= y) && (y <= nY/2))
+		{
+			// DO STUFF... // printf("x: %4d y: %d \n", x, y );
+			if( j++ == index )
+			{
+				coordXY.x = (float)x * dX;
+				coordXY.y = (float)y * dY;
+				return coordXY;
+			}
+        }
+        if( (x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == 1-y)))
+		{
+            t = dx;
+            dx = -dy;
+            dy = t;
+        }
+        x += dx;
+        y += dy;
+    }
+
+	return coordXY;
+}
+
 // should make this static and add locking for delete to be thread safe,      debug zz
 // creates a new node and attaches it as a child of the nodeParent
 // if nodeParent is NULL then creates a root node
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 pNPnode npNodeNew (int nodeType, pNPnode nodeParent, void* dataRef)
 {
 	pData data = (pData) dataRef;
 	pNPnode node = NULL;
-
+	NPfloatXY xy = {0.0f,0.0f};
 	char msg[256];
 
 	// check to see if max total nodes hit
@@ -244,13 +292,19 @@ pNPnode npNodeNew (int nodeType, pNPnode nodeParent, void* dataRef)
 			if (node->branchLevel == 0)
 			{
 				// distributes 264 root nodes to fill a 24x12 grid at 15 unit spacing
-				node->translate.x = -15.0f * (float)(data->map.nodeRootCount - 5);
+				xy = npGridSpiralXY(49, 25, 7.5f, 7.5f, data->map.nodeRootCount - kNPnodeRootPin - 1);
+
+				node->translate.x = xy.x;
+				node->translate.y = xy.y;
+
+		/*		node->translate.x = -15.0f * (float)(data->map.nodeRootCount - 5);
 				if ( data->map.nodeRootCount <= 172 )		// northern hemisphere
 					node->translate.y = 15.0f * ((data->map.nodeRootCount - 5) / 24);
 				else if ( data->map.nodeRootCount <= 316 )	// southern hemisphere
 					node->translate.y = 90.0f - 15.0f * ((data->map.nodeRootCount - 5) / 24);
 				else		// after grid filled place additional nodes on x axis
 					node->translate.y = 0.0f;
+		*/
 			}
 			else
 			{
@@ -539,8 +593,8 @@ void npNodeRemove (bool freeNode, pNPnode node, void* dataRef)
 		}
 		else
 		{
-			sprintf(msg,"err 3464 - id: %d branchLevel: %d parent is NULL\n",
-					node->id, node->branchLevel);
+			sprintf(msg,"err 3464 - id: %d level: %d parent is NULL\n",
+					node->id, node->branchLevel );
 			npPostMsg(msg, kNPmsgErr, data);
 		}
 
@@ -771,7 +825,7 @@ void npInitNodeCamera (pNPnode node)
 
 	data->format		= kVideoFormat720p;
 	data->interlaced	= kVideoFieldNull;		//progressive scan, no fields
-	data->stereo		= kVideoStereoNull;		//not stereoscopic
+	data->stereo3D		= kVideoStereoNull;		//not stereoscopic
 	data->aspectRatio	= 1.7777778f;				//1.77778 is approx 16:9
 	data->colorSpace	= kColorSpaceRGB_8;		//8bit RGB is what GPU's output
 	data->fps			= 59.94f;
@@ -812,8 +866,8 @@ void InitNodeVideo (pNPnode node)
 
 	data->format		= kVideoFormat720p;
 	data->interlaced	= kVideoFieldNull;		//progressive scan, no fields
-	data->stereo		= kVideoStereoNull;		//not stereoscopic
-	data->aspectRatio	= 1.77778f;				//1.77778 is approx 16:9
+	data->stereo3D		= kVideoStereoNull;		//not stereoscopic
+	data->aspectRatio	= 1.77778f; 			//1.77778 is approx 16:9
 	data->colorSpace	= kColorSpaceRGB_8;		//8bit RGB is what GPU's output
 	data->fps			= 59.97f;
 	data->width			= 1280;
@@ -872,7 +926,7 @@ void InitNodePoints (pNPnode node)
 	NPpointsPtr data = (NPpointsPtr) malloc (sizeof(NPpoints));
 	if (data == NULL)
 	{
-		printf ("\n 4216 error malloc failed cannot write file \n");
+		printf ("\n 4317 error malloc failed cannot write file \n");
 		return;
 	}
 

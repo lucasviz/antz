@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -68,13 +68,20 @@ void npExport (int size, void* dataRef);
 void npGetOpenFilePath (char* buffer, int* size, void* dataRef);
 void npGetCWD (char* buffer, int* size);			//get Current Working Directory
 
-void npListDir (int size, void* dataRef);
+void npListDir (char* dirPath, void* dataRef);
 
-void npMakeDir (int size, void* dataRef);
-void npDelDir (int size, void* dataRef);
+void npMakeDir( char* dirPath, void* dataRef);
 
-void npGetFileAttrib (int size, void* dataRef);
-void npSetFileAttrib (int size, void* dataRef);
+void npDelFile( char* filePath, void* dataRef);
+void npDelDir(  char* dirPath, void* dataRef);
+
+void npMoveFile( char* newPath, char* filePath, void* dataRef);
+void npMoveDir(  char* newPath, char* dirPath, void* dataRef);
+
+void npRenameFile( char* newName, char* filePath, void* dataRef);
+
+int npGetFileAttrib ( char* pathName, int attrib, void* dataRef);
+bool npSetFileAttrib ( char* pathName, int attrib, void* dataRef);
 
 void npOpenURL (const char* url, void* dataRef);
 void npOpenApp (const char* fileName, void* dataRef);
@@ -95,7 +102,11 @@ void npFileOpenChMap (const char* filePath, void* dataRef);
 //closes the file set, typically antzch000x.csv would be the only open file
 void npFileCloseChTracks (const char* filePath, void* dataRef);
 
+int	npSaveScene( int format, char* datasetName, void* dataRef);
+int	npLoadScene( int format, char* datasetName, void* dataRef);
 
+bool npOpenNodeFile( pNPnode node, void* dataRef );
+bool npOpenNode( pNPnode node, void* dataRef );
 
 #endif
 

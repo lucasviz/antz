@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -68,7 +68,7 @@ void npCSVtoMap (FILE* file, int type, void*dataRef);
 int npMapGlobalsFromCSV (char* csvStr, int size, void* dataRef);
 int npMapGlobalsToCSV (char* csvStr, int size, void* dataRef);
 
-int npSaveMapToCSV (char* filePath, int mapType, void* dataRef);
+int npSaveMapToCSV (char* filePath, int mapTypeID, void* dataRef);
 int npOpenGlobalsCSV (char* filePath, int wordSize, int size, void* dataRef);
 
 void npMapTypeInit (void* dataRef);		//zz debug move thes to npmap.h etc...
@@ -76,5 +76,8 @@ void npMapTypeInit (void* dataRef);		//zz debug move thes to npmap.h etc...
 pNPmapLink npMapAddressToMapTypeItem (const char* str, void* dataRef);
 
 void* npMapAddressToPtr (const char* str, void* dataRef);
+
+char* npMapTypeName( int mapType, void* dataRef );
+
 #endif
 

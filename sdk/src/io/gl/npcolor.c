@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -60,14 +60,14 @@ int npRGBtoID( int r, int g, int b )
 
 
 
-//zz debug, update to allow loading pallete from CSV file and user defined color
+//zz debug, update to allow loading palette from CSV file and user defined color
 // sets the node RGB color based on index, preserves existing alpha value
 //------------------------------------------------------------------------------
-void SetIndexColor( NPubyteRGBA *color, int *colorIndex )
+void npSetIndexColor( NPubyteRGBA *color, int *colorIndex )
 {	
 	int index = *colorIndex;
 									//kNPpaletteSize stored in nptypes.h
-	static const GLubyte colorPallete[kNPpaletteSize][3] = {
+	static const GLubyte colorPalette[kNPpaletteSize][3] = {
 											{50,  101, 101},
 											{0,   255, 0},
 											{255,   0, 0},
@@ -93,22 +93,75 @@ void SetIndexColor( NPubyteRGBA *color, int *colorIndex )
 	if (index >= kNPpaletteSize)
 	{
 		while (index >= kNPpaletteSize)
-			index -= kNPpaletteSize;	//subtracts pallete sized increments
+			index -= kNPpaletteSize;	//subtracts palette sized increments
 		*colorIndex = index;
 	}
 	else if (index < 0)
 	{
 		while (index < 0)
 			index += kNPpaletteSize;
-		*colorIndex = index;			//adds pallete sized increments		
+		*colorIndex = index;			//adds palette sized increments		
 	}
 
 	//now set the color
-	color->r = colorPallete[index][0];
-	color->g = colorPallete[index][1];
-	color->b = colorPallete[index][2];
+	color->r = colorPalette[index][0];
+	color->g = colorPalette[index][1];
+	color->b = colorPalette[index][2];
 }
 */
+//zz debug, update to allow loading palette from CSV file and user defined color
+// sets the node RGB color based on index, preserves existing alpha value
+//------------------------------------------------------------------------------
+void npSetIndexColor( NPubyteRGBA *color, int *colorIndex, pNPmapColor palette )
+{	
+	int index = *colorIndex;
+
+	static const NPubyte colorPalette[kNPpaletteSize][3] = {
+											{50,  101, 101},
+											{0,   255, 0},
+											{255,   0, 0},
+											{0,     0, 255},
+											{255, 255, 0},
+											{152,   0, 255},
+											{255, 168, 0},
+											{0,   255, 255},
+											{255,   0, 255},
+											{0,   153, 0},
+											{185, 153, 102},
+											{255, 180, 255},
+											{0,   152, 255},
+											{185, 255, 0},
+											{152,   0, 0},
+											{127, 127, 127},
+											{127, 127, 255},
+											{197,  82, 0},
+											{0,     0, 0},
+											{255, 255, 255}
+											};
+
+//	if( !palette )
+//		palette = currentPalette;
+
+
+	//re-maps out of bounds colorIndex
+	if (index >= kNPpaletteSize)
+	{
+		while (index >= kNPpaletteSize)
+			index -= kNPpaletteSize;	//subtracts palette sized increments
+		*colorIndex = index;
+	}
+	else if (index < 0)
+	{
+		while (index < 0)
+			index += kNPpaletteSize;
+		*colorIndex = index;			//adds palette sized increments		
+	}
+
+	//now set the color
+	color->r = colorPalette[index][0];
+	color->g = colorPalette[index][1];
+	color->b = colorPalette[index][2];
+}
 
 // NOTE x,y,z does not refer to XYZ color unless type = kNPcolorXYZtoRGB
 NPfloatRGBA npColorPicker (float x, float y, float z, int type, void* data);
@@ -250,14 +303,14 @@ NPfloatRGBA npColorPicker6DOE ( float x, float y, float z,
 	return npColorPicker( x, y, z, type, dataRef);
 }
 /*
-int npColorID(ubyte r, ubyte g, ubyte b, int palleteID, void* dataRef);
+int npColorID(ubyte r, ubyte g, ubyte b, int paletteID, void* dataRef);
 // returns nearest colorID match(es) based on RGB, YUV, YC...
-// colorID can be dynamically mapped to different palletes
+// colorID can be dynamically mapped to different palettes
 // will not change color unless you also call npGetColorIndex(id)
 // changing the colorIndex of a custom color maintains a phase offset!
 
 // ---------------------------------------------------------------------------
-int npColorID(ubyte r, ubyte g, ubyte b, int palleteID, void* dataRef)
+int npColorID(ubyte r, ubyte g, ubyte b, int paletteID, void* dataRef)
 { return 0;
 }
 z

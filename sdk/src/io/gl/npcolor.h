@@ -6,9 +6,9 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
-*  Please see main.c for a complete list of additional code contributors.
+*  Please see main.c for a list of additional code contributors.
 *
 *  To the extent possible under law, the author(s) have dedicated all copyright 
 *  and related and neighboring rights to this software to the public domain
@@ -39,7 +39,7 @@ float npHueToRGB (float v1, float v2, float Hue);
 void npHSLtoRGB (float H, float S, float L, float* R, float* G, float* B); //pNPfloatRGB rgbOut
 NPfloatRGBA npHSLtoRGBA( float H, float S, float L, float alpha );
 
-// void SetIndexColor (NPubyteRGBA *color, int *colorIndex);
+void npSetIndexColor (pNPubyteRGBA color, int *colorIndex, pNPmapColor palette);
 
 // void npIDtoRGB (int id, int* r, int* g, int* b);			//MB-PICK
 // int npRGBtoID (int r, int g, int b);						//MB-PICK

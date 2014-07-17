@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -54,7 +54,7 @@ void npInitIO (void* dataRef)
 	//start network connections which in turn can further update init state
 	npInitOSC (dataRef);			//zz-osc
 
-	npConnectDB (dataRef);				//zzsql	//zz db2
+	npConnectDB (dataRef);				//zzsql
 }
 
 
@@ -82,6 +82,7 @@ void npUpdateIO (void* dataRef)
 
 	npUpdateCh (dataRef);	//zz-JJ
 
+	//zzsql
 	if(data->io.cycleCount % 300 == 0)
 	{
 		npdbUpdateAntzStateFromDatabase(dataRef);
@@ -307,6 +308,9 @@ void npViewer (void* dataRef)
 	return;
 }
 
+//zz tag debug move this to npconsole.c
+//this is the entry point for the current user focus console
+//zz add multi-console support here , like multi-window handling
 //------------------------------------------------------------------------------
 void npConsole (void* dataRef)
 {
@@ -315,5 +319,48 @@ void npConsole (void* dataRef)
 
 	//activate command console
 	npConsoleCmd( console, dataRef );
+}
+
+//------------------------------------------------------------------------------
+void npPostNodeID( pNPnode node, void* dataRef )
+{
+	pData data = (pData) dataRef;
+
+	char msg[256];
+	char msgPart[256];
+
+	msg[0] = '\0';
+	msgPart[0] = '\0';
+
+	if( node->type == kNodeLink )
+		strcpy( msg, "edge  " );
+	else if( node->branchLevel && !node->childCount )
+		strcpy( msg, "leaf  " );
+	else if( !node->childCount )
+		strcpy( msg, "solo  " );				//tree with only root node
+	else if ( !node->branchLevel )
+		strcpy( msg, "root  " );
+	else
+		strcpy( msg, "nexus " );				//internal node that is neither root nor leaf
+	
+
+	if (node->type == kNodeCamera)
+		sprintf(msgPart, "%s cam ", msg);
+	if (node->type == kNodeGrid)
+		sprintf(msgPart, "%s grid", msg);
+	if (node->type == kNodePin)
+		sprintf(msgPart, "%s pin ", msg);
+	if (node->type == kNodeLink)
+		sprintf(msgPart, "%s link", msg);
+
+		//display id level and tag							//zz add subspace grid_id?
+		if (node->recordID)									
+			sprintf( msg, "%s level: %-3d id: %-6d rec: %-6d tag: %s", msgPart,
+				node->branchLevel + 1, node->id, node->recordID, node->tag->title );
+		else
+			sprintf( msg, "%s level: %-3d id: %-6d", msgPart,
+				node->branchLevel + 1, node->id );
+			
+		npPostMsg (msg, kNPmsgCtrl, dataRef);
 }
 

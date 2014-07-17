@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -33,6 +33,12 @@
 struct NPoscPackListener {
 	int id;
 
+	char* txURL;	//requires DNS lookup, unless is a numeric IP address
+	char* rxURL;
+
+	char* txIP;		//either IPv4 or IPv6 as a string "255.1.1.1"
+	char* rxIP;
+
 	int txPort;
 	int rxPort;
 	//int oscPackIdx;  // index into array that holds the oscpack instances
@@ -42,7 +48,7 @@ typedef struct NPoscPackListener* pNPoscPackListener;
 
 // listener functions
 void npStartListeners( pNPoscPackListener oscListener, int argc, char** argv, void* dataRef );
-void npInitOscPackListener( pNPoscPackListener oscListener, int outgoing, int incoming, void* dataRef );
+void npInitOscPackListener( pNPoscPackListener oscListener, void* dataRef );
 void npStartOscPackListener( pNPoscPackListener oscListener );
 
 // read a line that has been received by listener

@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -27,6 +27,30 @@
 
 #include "../npdata.h"
 
+/* -----------------------------------------------------------------------------
+*  --- high performance string conversion ---					//zz debug, in progress
+*
+*  converts native C data structs to and from human readable strings
+*  parses a defined table chunk size based on either item count or buffer size
+*
+*  fast string to number conversion and splits up chunks for parallel processing
+*
+*  supports bi-directional flow control between internal CPU process and IO
+*  native string struct is formatted to be byte-for-byte compatible with MySQL
+*
+*  string struct is handedled by target format process for file, DB or network
+*  target formats for import and export include CSV, JSON, XML, KML, OBJ...
+*
+*  data container and tree structure described separately
+*
+*  maps all elements of the global data context structure
+*  organization of the data tree and element groups is handled by npmap
+*
+*  JSON formatted data and commands are packaged with OSC for UDP streaming 
+*  GIS using GDAL for KML and OBJ files.
+*
+* --------------------------------------------------------------------------- */
+
 //--- atoi and atof optimized for antz ----------------------------------------
 int npatoi (const char *p);				//32bit int
 float npatof (const char *p);			//32bit float
@@ -46,13 +70,16 @@ double npstrtod( char** buffer );		//64bit double is akin to strtod
 // copy a string to a new memory location and return a pointer to the new copy
 char* npNewStrcpy( const char* str, void* dataRef );							
 
+char* npNextWhiteSpace( const char* buffer, int size );
 char* npSkipWhiteSpace( const char* buffer, int size );
-int npSeekToNextField( const char* buffer );	//zz64 need to change to long int
-int npSeekToNextLine( const char* buffer );
-int npSeekToNextLineLimit( const char* buffer, int size );
-int npSeekLastEOL( const char* buffer, int size );
+int npNextField( const char* buffer );	//zz64 need to change to long int
+int npNextLine( const char* buffer );
+int npNextLineLimit( const char* buffer, int size );
+int npLastEOL( const char* buffer, int size );
 
 int npStrDigitIsNext( const char* str, int size );
+
+int npStrToRange( int* lower, int* upper, const char* str, int size );
 
 #endif
 

@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -47,16 +47,19 @@
 #include "../npctrl.h"
 
 
+//zz debug console under construction!!!
 /* -----------------------------------------------------------------------------
-* multiple consoles in ASCII, 2D and 3D object texture mapped with hybrid modes
-* per console event handling mapped from multiple user input devices
+* multiple ASCII consoles with hybrid 2D and 3D console/menu/object interaction
+* supports multiple user focus domains with grouped input/output devices
 * --------------------------------------------------------------------------- */
 
 void npKeyEvent (int key, int keyEventType);
+void npUpdateConsoleText (pNPconsole console, void* dataRef);
 
 //------------------------------------------------------------------------------
 void npInitConsole (void* dataRef)
 {
+	//npConsoleCLS();
 	return;
 }
 
@@ -68,39 +71,7 @@ void npCloseConsole (void* dataRef)
 }
 
 //------------------------------------------------------------------------------
-void npConsolePrompt(pNPconsole console, void* dataRef)
-{
-	npPostMsg(">", kNPmsgView, dataRef);
 
-	//clear the input string
-	console->inputStr[0] = '\0';
-	console->inputIndex = 0;
-
-	//set cursor position
-	console->cursorLine = 0;
-	console->cursorColumn = 1;			//zz debug, should be 2 and no col zero
-	console->cursorShow = true;
-}
-
-int npStrToRange( int* lower, int* upper, const char* str, int size );
-//------------------------------------------------------------------------------
-int npStrToRange( int* lower, int* upper, const char* str, int size )
-{
-	int curs = 0;
-
-	//convert first number string to int
-	*lower = npatoi( str );
-
-	//search for separator
-	while( !( str[curs] == ':' || str[curs] == '-' ) && curs < size ) curs++;	//zz debug add better exception handling
-
-	if (curs < (size - 1) )
-		*upper = npatoi( str + curs + 1 );
-	else
-		*upper = *lower;	//test
-
-	return (*upper - *lower + 1);	
-}
 
 //------------------------------------------------------------------------------
 void npConsoleCmdText( pNPconsole console, void* dataRef )
@@ -126,24 +97,28 @@ void npConsoleCmdText( pNPconsole console, void* dataRef )
 	//turn on messages to display command respones for user
 //	console->mode = kNPconsoleMessage;
 	
-	if (data->io.mouse.tool == kNPtoolTag)
+	
+	if (data->io.mouse.tool == kNPtoolTag)	//zz debug, messy - if(..toolTag) else strncmp...
 	{
 		node = data->map.currentNode; //zz debug //selectedPinNode;	//
 
-		strncpy (node->tag->title, console->inputStr, kNPtitleSizeMax);
-		node->tag->titleSize = strlen(node->tag->title);
-		npUpdateTextTag(node->tag);
-		if( !node->recordID )
-			node->recordID = node->id;
-		node->tag->recordID = node->recordID;
-		node->tag->tableID = node->tableID;
+		node->tag->title[0] = '\0';
+		strncat (node->tag->title, console->inputStr, kNPtagTitleMax);
+		npUpdateTag(node->tag);	//sets titleSize and box dimensions
+
+		//if none, create a record_id using the node_id
+		if( !node->recordID )					//if no recordID then...
+			node->recordID = node->id;			//set recordID to the node id
+
+		node->tag->recordID = node->recordID;	//tag uses node's recordID
+		node->tag->tableID = node->tableID;		//and tableID
 		
-		if ( !node->tagMode )
+		if ( !node->tagMode )					//unhides tag if needed
 			node->tagMode++;
 
 	//	npTagEditMode( false, data );
-		sprintf( msg, "record_id: %d title: \"%s\"", node->recordID, node->tag->title );
-		npPostMsg(msg, kNPmsgCtrl, dataRef);			//send as kNPmsgCtrl
+//		sprintf( msg, "record: %d tag: \"%s\"", node->recordID, node->tag->title );
+//		npPostMsg(msg, kNPmsgCtrl, dataRef);			//send as kNPmsgCtrl
 //		npPostMsg("Keyboard: Game Mode", kNPmsgCtrl, dataRef);
 	}
 	else if( strncmp ( "pick ", console->inputStr, 5 ) == 0 )
@@ -183,7 +158,7 @@ void npConsoleCmdText( pNPconsole console, void* dataRef )
 			npCtrlCommand( kNPcmdSelectNone, dataRef );
 			temp = 1;
 		}
-		else if( strncmp( "first", &console->inputStr[curs], 4 ) == 0 )
+		else if( strncmp( "first", &console->inputStr[curs], 4 ) == 0 )	//zz debug turn this into an descriptor list
 			npSelectNode( data->map.node[kNPnodeRootPin], dataRef );
 		else if( strncmp( "last", &console->inputStr[curs], 4 ) == 0 )
 			npSelectNode( data->map.node[data->map.nodeRootCount - 1], dataRef );
@@ -482,35 +457,44 @@ void npConsoleKeyEvent (int key, int keyEventType, void* dataRef)
 	int lineStart = 0;
 
 //	char msg[256];
-
 	pData data = (pData) dataRef;
+
+	pNPnode node = NULL;
 	pNPconsole console = &data->io.gl.hud.console;
 
 
-	switch (keyEventType)
-	{
-		//first process specific ASCII keys
-		case kKeyDownASCII :
+	switch (keyEventType) //first process specific ASCII keys
+	{	case kKeyDownASCII :
 			switch (key)
-			{
-				case 8  : // kKeyCodeBackSpace
+			{	case 8  : // kKeyCodeBackSpace
 					if(console->inputIndex > 0)	//delete only if input exists
 					{
 						//perhaps rename inputIndex to inputCount
 						//translate col row to cursorIndex or store separately? zz debug
 						//if deleting in the middle of string then compact the gap
-					//	for(i = console->cursorIndex; i < console->inputIndex; i++)
-					//		console->inputStr[i] = console->inputStr[i+1];
-						
-						//replace the last char with null terminator
-						console->inputStr[console->inputIndex] = '\0';
-						console->inputIndex--;
-						
-						console->cursorColumn--;
-					}
-					npUpdateConsoleUserText(console, data);
-					if (console->cursorColumn == 0)
-						console->line[console->lineIndex][0] = '\0';
+			
+						if ( console->selectText )	//clear inputStr
+						{
+							console->selectText = false;
+							console->inputStr[0] = '\0';
+							console->inputIndex = 0;
+						}
+						else
+						{
+//							console->inputStr[kNPconsoleInputMax - 1] = '\0';	//zz debug remove this
+
+							if( console->inputStr[console->inputIndex] == '\0' )
+								console->inputStr[console->inputIndex - 1] = '\0';
+							else
+								for( i = console->inputIndex - 1;
+									 i < kNPconsoleInputMax - 1; i++ )
+								  console->inputStr[i] = console->inputStr[i+1];
+
+							console->inputIndex--;
+						}
+
+						npUpdateConsoleUserText(console, data);
+					}				
 					break;
 
 //				case 32 : //kKeyCodeSpace : //display next page if it exists
@@ -522,13 +506,15 @@ void npConsoleKeyEvent (int key, int keyEventType, void* dataRef)
 					{
 						case kNPconsoleMessage : break;
 						case kNPconsoleCmd :
+						case kNPconsoleTag :
+							//zz debug, add the newline to the string
 							npConsoleCmdText(console, data);
-							break;
-						case kNPconsoleMenu :
-							npConsoleMenuText (console, data);
 							break;
 						case kNPconsoleEdit :
 							//npConsoleEditEntry (console, data);
+							break;
+						case kNPconsoleMenu :
+							npConsoleMenuText (console, data);
 							break;
 						default : break;
 					}
@@ -541,52 +527,85 @@ void npConsoleKeyEvent (int key, int keyEventType, void* dataRef)
 					npPostMsg("Leave Console", kNPmsgCtrl, data);			//send as kNPmsgCtrl
 					npPostMsg("Keyboard: Game Mode", kNPmsgCtrl, data);
 
-					// free(console->menu->list);		//zz debug might fix W8 'Esc' crash
+					// free(console->menu->list);	//zz debug commented-out might fix W8 'Esc' crash
 					break;
 
+	//			case 115 : //kKeyCodeF4 : 
+	//				data->io.gl.screenGrab = 1;
+					break;	//zz debug screenGrab, overides key map
+
 				default :
-					//add key string storage with cursor position update
-					//	console->page = 0;							//zero to scroll current line
-					//	console->cursorLine = 0;
-					if(console->inputIndex > kNPconsoleInputMax)
-						return;
+					if( console->selectText )  // 8 = kKeyCodeBackSpace		//zz debug
+						//treat as kKeyCodeBackSpace if text is selected
+						npConsoleKeyEvent( 8 , keyEventType, dataRef );
 
-					console->inputStr[console->inputIndex++] = (char)key;
+					if( console->inputIndex >= kNPconsoleInputMax - 2 )
+						return;				//ignores input once end of buffer -1 hit
 
-					console->cursorColumn++;
+					//write key to the first slot and null terminate the string
+					if( console->inputStr[console->inputIndex] == '\0' )
+					{
+						console->inputStr[console->inputIndex++] = (char)key;
+						console->inputStr[console->inputIndex] = '\0';
+					}
+					else	//insert text by shifting buffer +1 char
+					{						
+						for (i =  kNPconsoleInputMax - 1; i > console->inputIndex; i--)
+							console->inputStr[i] = console->inputStr[i-1];
+
+						console->inputStr[kNPconsoleInputMax - 1] = '\0';					
+						console->inputStr[console->inputIndex++] = (char)key;
+					}
 
 					npUpdateConsoleUserText(console, data);
 					break;
 			}
 			break;
 
-		//process Special NON-ASCII keys
+
+		//process Special NON-ASCII keys, arrows
 		case kKeyDownSpecial :			// non-ASCII Glut constants
 			switch (key) 
 			{							
-				case kKeyCodeRight : break;
-				case kKeyCodeLeft :
-	/*				console->cursorColumn--;
-					if(console->cursorColumn < 0)
+				case kKeyCodeRight :
+					if(1)// console->inputStr[console->inputIndex] != '\0' )
 					{
-						console->cursorColumn = console->charPerLine - 1;
-						console->cursorLine = 
+						console->inputIndex++;
+						npUpdateConsoleUserText(console, data);
 					}
-	*/				break;
+					break;
+				case kKeyCodeLeft :		//if modShift then select region
+					if( console->selectText && !data->io.key.modShift )
+					{	
+						console->insertText = true;					//zz debug ???
+						console->inputIndex = 0;
+						console->selectText = false;
+
+						npUpdateConsoleUserText(console, data);
+					}
+					else
+					{
+						console->inputIndex--;
+						npUpdateConsoleUserText(console, data);
+					}
+					break;
 				case kKeyCodeUp :	// UP arrow
 					switch (console->mode)						//zzf
 					{
 						case kNPconsoleMessage : break;
 						case kNPconsoleCmd :
-							npConsoleCmdText(console, data);
+							npConsoleCmdText( console, data );
 							break;
+						case kNPconsoleTag :	//re-route, same as left arrow
+							npConsoleKeyEvent(kKeyCodeLeft, keyEventType, data);
+							break;
+						case kNPconsoleEdit : break;
 						case kNPconsoleMenu :
 							console->page--;
 							if (console->page < 0)				//rollover to last page
 								console->page = console->menu->count / kNPmenuPerPageMax;		
 							npUpdateConsoleMenu(console, data);
 							break;
-						case kNPconsoleEdit : break;
 						default : break;
 					}
 					break;
@@ -595,16 +614,20 @@ void npConsoleKeyEvent (int key, int keyEventType, void* dataRef)
 					switch (console->mode)						//zzf
 					{
 						case kNPconsoleMessage : break;
-						case kNPconsoleCmd :
+						case kNPconsoleCmd : 
 							npConsoleCmdText(console, data);
 							break;
+						case kNPconsoleTag : 
+							npConsoleKeyEvent(kKeyCodeRight, keyEventType, data);
+							break;
+						case kNPconsoleEdit : break;
 						case kNPconsoleMenu :
 							console->page++;					//calc last page
 							if (console->page > (console->menu->count / kNPmenuPerPageMax))
 								console->page = 0;
 							npUpdateConsoleMenu(console, data);
 							break;
-						case kNPconsoleEdit : break;
+						
 						default : break;
 					}
 					break;
@@ -614,6 +637,10 @@ void npConsoleKeyEvent (int key, int keyEventType, void* dataRef)
 			break;
 		default : break;
 	}
+
+	//note that arrow selecting return's before this
+	console->selectText = false;
+
 	return;
 }
 
@@ -628,7 +655,7 @@ void npUpdateConsole (void* dataRef)
 	pNPconsole console = NULL;
 	
 	//currently supports only 1 console,  make console a node type		//zz debug 
-//	console = &data->io.gl.hud.console;
+	console = &data->io.gl.hud.console;
 
 	//zz debug, move this code chunk to npTime()
 	//subtract the integer portion of the time to get the decimal portion
@@ -641,85 +668,51 @@ void npUpdateConsole (void* dataRef)
 		data->io.blinkState = false;
 
 									//call this from event handler instead //zz debug
+	//zz tag workaround, messy... but deals with invisible text problem
+	if( console->mode == kNPconsoleTag )
+		npUpdateConsoleUserText( console, data);
 //	npUpdateConsoleUserText(&data->io.gl.hud.console, data);	
 }
 
-//clear console screen
+
+//entry point for cmd, tag... use of inputStr
+//displays a menu list passed in and registers callback function then returns
+//selected item sent to callback function upon user action
 //------------------------------------------------------------------------------
-void npConsoleCLS (pNPconsole console, void* dataRef)
+// void npConsoleText (void (*pTextCallback)(char* textEntry, void* dataRef),
+void npConsoleCmd( pNPconsole console, void* dataRef )
 {
-	int i = 0;
+	pData data = (pData) dataRef;
 
-	for (i=0; i < kNPconsoleLineMax; i++)
-		console->line[i][0] = '\0';
-//		npPostMsg("",kNPmsgView, dataRef);
-
-	return;
-}
-
-//------------------------------------------------------------------------------
-void npUpdateConsoleUserText(pNPconsole console, void* data)
-{
-	int lineStartChar = 0;
-	int currentLine = 0;
-	int lineCount = 0;
-	char str[kNPconsoleCharPerLine + 1];
-
-	//if console input is active, then update the cursor and user text
-	if( console->mode == 0 )
+	if(!console)
+	{
+		npPostMsg("err 4284 - null console ptr, npConsoleCmd", kNPmsgErr, data);
 		return;
-
-		//handle line wrap, post input string to advance to new line
-	if (console->cursorColumn >= console->charPerLine)
-	{
-		if (console->inputIndex < (console->charPerLine - 1) )
-		{
-			console->cursorColumn = 0;
-			npPostMsg(console->inputStr, kNPmsgView, data);
-		}
-		else
-		{
-			console->cursorColumn = 0;
-		
-			lineStartChar = ((console->inputIndex + 1) / console->charPerLine) 
-					* console->charPerLine; 
-
-			npPostMsg(&console->inputStr[lineStartChar], kNPmsgView, data);	
-		}
-	} 
-	else if (console->cursorColumn < 0)
-	{
-		console->cursorColumn = console->charPerLine - 1;
-		console->lineIndex--;
 	}
 
-	// strncpy(userText, console->inputStr[0], console->inputIndex);
-	// sprintf(msg,">%d %d %s", console->inputIndex, strlen(console->inputStr), console->inputStr);
+	if( data->io.mouse.tool == kNPtoolTag ) //console->mode != kNPconsoleTag ) //zz tag
+	{
+		data->map.previousNode = data->map.currentNode;	//zz debug ???
+					//zz could also restore console->mode to return to previous mode...
+		console->mode = kNPconsoleTag;
+		console->cursorShow = true;
+	}
 
-	//ascerts the string is terminated,//zz debug
-	console->inputStr[console->inputIndex] = '\0';
-	lineCount = (console->inputIndex / kNPconsoleCharPerLine);
-
-	//format the active line
-	//first line has one less character
-	if (console->inputIndex < console->charPerLine)	
-		sprintf(str,">%s", console->inputStr);
+	//pause message view and switch to command view
+	if( console->mode != kNPconsoleTag ) //zz tag
+		console->mode = kNPconsoleCmd;
 	else
 	{
-		currentLine = (kNPconsoleCharPerLine * lineCount) - 1;
-		strncpy(str, &console->inputStr[currentLine], console->charPerLine);
+		console->selectText = true;
+		printf("TAG TEST!!!\n");
 	}
-	//copy formatted string to the console line buffer
-	if  (console->inputIndex == (console->charPerLine - 1))
-	{
-		strncpy(&console->line[console->lineIndex][0], str, console->charPerLine);
-	}
-	else
-		strncpy(&console->line[console->lineIndex][0], str, console->charPerLine);
 
+	npUpdateConsoleText( console, data );
 }
 
+
 //------------------------------------------------------------------------------
+//void npConsoleEnter() //set user focus to console
 void npUpdateConsoleText (pNPconsole console, void* dataRef)
 {
 	int i = 0;
@@ -741,17 +734,217 @@ void npUpdateConsoleText (pNPconsole console, void* dataRef)
 
 	npConsoleCLS(console, data);	//clear screen
 
-	if ( console->tagEdit )
-		npPostMsg ("+------------------------- TEXT TAG EDIT ---------------------------+", kNPmsgView, dataRef);
-	else
+	switch (console->mode)			//zz tag debug
 	{
+	  case kNPconsoleTag :
+		npPostMsg ("+------------------------- TEXT TAG EDIT ---------------------------+", kNPmsgView, dataRef);
+		break;
+	  case kNPconsoleCmd :
 		npPostMsg ("+------------------------ COMMAND CONSOLE --------------------------+", kNPmsgView, dataRef);
 		npPostMsg ("+------- Type 'help' and press Enter to get list of commands -------+", kNPmsgView, dataRef);
+		break;
+	  default :
+		npPostMsg ("+---------------------------- CONSOLE ------------------------------+", kNPmsgView, dataRef);
 	}
+
+	npPostMsg(">", kNPmsgView, dataRef);		//zz tag
 
 	//display user command prompt
 	npConsolePrompt (console, data);
+
+	//npConsoleKeyEvent(kNPkeyCodeArrowRight, k
+	if(0)// console->mode == kNPconsoleTag )
+	{
+		console->inputIndex++;
+		npUpdateConsoleUserText( console, data );
+		console->selectText = false;
+	}
 }
+
+
+//clear console screen
+//------------------------------------------------------------------------------
+void npConsoleCLS (pNPconsole console, void* dataRef)
+{
+	int i = 0;
+
+	//clear user text input buffer and reset index
+	console->inputIndex = 0;						//this resets the cursor
+	console->inputStr[0] = '\0';					//this clears the text
+	console->inputStr[kNPconsoleInputMax] = '\0';	//endpoint safety null '\0'
+
+	//clear console text display buffer and reset cursor
+	console->cursorColumn = 0;						//based on inputIndex
+	console->cursorLine = 0;
+	for (i=0; i < kNPconsoleLineMax; i++)
+	{
+		console->line[i][0] = '\0';
+		console->line[i][kNPconsoleLineMax] = '\0';	//endpoint safety null '\0'
+	}
+
+}
+
+
+//-----------------------------------------------------------------------------
+void npConsolePrompt(pNPconsole console, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPtag tag = data->map.currentNode->tag;		//zz debug, should this be selectedPinNode instead
+
+
+//	npPostMsg(">", kNPmsgView, dataRef);		//zz tag
+
+	if( console->mode == kNPconsoleTag )
+	{
+/*
+		char msg[kNPmessageLengthMax + 1];
+		msg[0] = '>';
+		msg[1] = '\0';
+		// strncpy( &msg[1], tag->title, kNPmessageLengthMax);
+		if ( kNPmessageLengthMax < kNPtagTitleMax )
+			strncat( &msg[1], tag->title, kNPmessageLengthMax - 1);
+		else
+			strncat( &msg[1], tag->title, kNPtagTitleMax - 1);
+		npPostMsg( msg, kNPmsgView, data );
+*/	
+		//clear user input buffer
+		if ( tag->titleSize < kNPconsoleInputMax )
+		{
+			console->inputStr[0] = '\0';
+			strncat( console->inputStr, tag->title, tag->titleSize );
+			console->inputIndex = tag->titleSize;
+		}
+		else	//zz debug, better handling would be good, user option, del, modify portion
+			npPostMsg("err 7373 - title exceeds kNPconsoleInputMax", kNPmsgErr, data);
+		
+		console->selectText = true;
+		console->cursorShow = true;
+
+		npUpdateConsoleUserText( console, dataRef );
+	}
+	else if( data->io.gl.hud.console.mode == kNPconsoleCmd )		//zz tag
+	{
+		npPostMsg(">", kNPmsgView, dataRef);		//zz tag
+
+		//clear the input string
+		console->inputStr[0] = '\0';
+		console->inputIndex = 0;
+
+		console->cursorShow = true;
+		npUpdateConsoleUserText( console, dataRef );				//zz tag
+
+	//	npUpdateConsoleUserText( console, data);					//zz tag
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void npUpdateConsoleUserText(pNPconsole console, void* dataRef)
+{
+	int i = 0;
+	int inputSize = 0;
+	int lineStartChar = 0;
+	int pageWidth = 0;
+	int cursCol = 0;
+	int cursLine = 0;
+	int currentLine = 0;
+	int lineCount = 0;
+	char* title = NULL;
+//	char str[kNPconsoleCharPerLine + 1];
+
+	pData data = (pData) dataRef;
+	pNPtag tag = NULL;
+
+	//if console input is active, then update the cursor and user text
+	if( console->mode == 0 )
+		return;
+
+	//get inputSize and ascert inputIndex is inbounds
+	inputSize = strnlen( console->inputStr, kNPconsoleInputMax - 1 );
+	if ( console->inputIndex >= inputSize )
+		console->inputIndex = inputSize;
+	else if ( console->inputIndex < 0 )
+		console->inputIndex = 0;
+
+	//copy user input to tag title and update tag
+	if( console->mode == kNPconsoleTag )
+	{
+		tag = data->map.currentNode->tag;	//get currently selected tag
+		if( !tag )
+			npPostMsg( "err 7894 - no tag", kNPmsgErr, data );
+		else
+		{
+			tag->title[0] = '\0';
+			strncat( tag->title, console->inputStr, kNPtagTitleMax );
+			npUpdateTag( tag );
+		}
+	}
+
+	//1st calc page lineCount from inputSize
+	pageWidth = console->charPerLine;
+	lineCount = (inputSize +1) / pageWidth;	// +1 for '>' prompt on 1st line
+
+	//2nd calc curs Col/Line from inputIndex
+	if( lineCount < 1 )							 // +1 for '>' prompt
+	{	
+		console->cursorColumn = console->inputIndex +1;
+		console->cursorLine = 0;
+	}
+	else		//zz debug, make cursorColumn range 1-80 (not 0-79)
+	{						// and cursorLine   ... 1-40
+		console->cursorColumn = ( console->inputIndex +1 )
+								- ( pageWidth * lineCount );
+		console->cursorLine = ( console->inputIndex +1 ) / 
+								 ( pageWidth * ( lineCount + 1 ) );
+	}
+
+	//3rd lines from inputStr
+	if( lineCount )
+	{
+		for( i=0; i <= lineCount; i++ )
+		{
+			//set current line and handle buffer roll-over
+			currentLine = console->lineIndex - i;
+			while ( currentLine >= console->lineMax ) 
+				currentLine -= console->lineMax;
+
+			strncpy( &console->line[currentLine][0],
+				 &console->inputStr[((lineCount - i) * pageWidth) -1], pageWidth );
+		}
+		
+		//workaround for 1st line copies when backspacing across lines //zz tag debug 
+		strcpy( &console->line[console->lineIndex - lineCount -1 ][0], ">\0" );
+	}
+
+	//workaround for 1st line copies when backspacing across lines //zz tag debug
+	//add a method to detect backspacing across lines...
+	currentLine = console->lineIndex - lineCount - 2;
+	while ( currentLine < 0 )
+		currentLine += console->lineMax;
+	strcpy( &console->line[currentLine][0], ">\0" );
+
+		currentLine = console->lineIndex - lineCount - 1;
+	
+
+			while ( currentLine < 0 )
+		currentLine += console->lineMax;
+	if( tag != NULL )
+		sprintf( &console->line[currentLine][0], ">record_id: %d", tag->recordID);
+
+	//4th and lastly, copy 1st line
+	currentLine = console->lineIndex - lineCount;
+	while ( currentLine < 0 )
+		currentLine += console->lineMax;
+
+	console->line[currentLine][0] = '>';						// -1 for '>'
+	if( console->mode == kNPconsoleTag )
+		strncpy( &console->line[currentLine][1], tag->title, pageWidth -1 );
+	else
+		strncpy( &console->line[currentLine][1], console->inputStr, pageWidth -1 );
+
+}
+//zz tag end
+
 
 //------------------------------------------------------------------------------
 void npUpdateConsoleMenu (pNPconsole console, void* dataRef)
@@ -812,25 +1005,6 @@ void npUpdateConsoleMenu (pNPconsole console, void* dataRef)
 	npConsolePrompt (console, data);
 }
 
-//displays a menu list passed in and registers callback function then returns
-//selected item sent to callback function upon user action
-//------------------------------------------------------------------------------
-// void npConsoleText (void (*pTextCallback)(char* textEntry, void* dataRef),
-void npConsoleCmd( pNPconsole console, void* dataRef )
-{
-	pData data = (pData) dataRef;
-
-	if(!console)
-	{
-		npPostMsg("err 4284 - null console ptr, npConsoleCmd", kNPmsgErr, data);
-		return;
-	}
-
-	//pause message view and switch to command view
-	console->mode = kNPconsoleCmd;
-
-	npUpdateConsoleText( console, data );
-}
 
 //displays a menu list passed in and registers callback function then returns
 //selected item sent to callback function upon user action
@@ -1056,7 +1230,7 @@ void npSystemConsoleHelp (int argc, char** argv)
 	// 24 row by 62 column layout
 	printf("\n");
 	printf("+------------------------------------------------------------+\n");
-	printf("|           ANTz Console Help v1.0 ....DON'T PANIC!          |\n");
+	printf("|              ANTz Console Help... DON'T PANIC!             |\n");
 	printf("|------------------------------------------------------------|\n");
 	printf("|                                                            |\n");
 	printf("|  ?  or 'help' or '/?' to show (this) help menu             |\n");

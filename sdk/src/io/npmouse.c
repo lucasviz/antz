@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2014 by Shane Saxon - makecontact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -521,10 +521,10 @@ void npMouseEvent (int button, int state, int x, int y)
 				npSetCamTarget (data);	//sets camera target to selected node
 
 				if (node->type == kNodeGrid)
-					sprintf (msgPart, "New grid ");
+					sprintf (msgPart, "New grid");
 				if (node->type == kNodePin)
-					sprintf (msgPart, "New pin ");
-				sprintf (msg, "%sid: %d   branchLevel: %d", msgPart, node->id, node->branchLevel);
+					sprintf (msgPart, "New pin");
+				sprintf (msg, "%s id: %6d level: %d", msgPart, node->id, node->branchLevel + 1);
 				npPostMsg (msg, kNPmsgCtrl, data);
 
 				npPostMsg ("Mouse IF", kNPmsgCtrl, data);
@@ -542,7 +542,7 @@ void npMouseEvent (int button, int state, int x, int y)
 						sprintf (msgPart, "New grid ");
 					if (node->type == kNodePin)
 						sprintf (msgPart, "New pin ");
-					sprintf (msg, "%sid: %d   branchLevel: %d", msgPart, node->id, node->branchLevel);
+					sprintf (msg, "%sid: %6d level: %d", msgPart, node->id, node->branchLevel + 1);
 					npPostMsg (msg, kNPmsgCtrl, data);
 
 					npPostMsg ("Mouse IF", kNPmsgCtrl, data);
