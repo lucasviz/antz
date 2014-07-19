@@ -1,12 +1,12 @@
 /* -----------------------------------------------------------------------------
 *
-*  npdb.h
+*  npdb.c
 *
 *  ANTz - realtime 3D data visualization tools for the real-world, based on NPE.
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2013 by Shane Saxon - contact@saxondigital.net
+*  Written in 2010-2014 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
