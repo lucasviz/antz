@@ -1,5 +1,24 @@
-ANTz - immersive data visualization
+ANTz - jetson
 ====
-Public Domain - CC0
 
-ANTz is an interactive realtime 3D data visualization tool for cognizance of complex systems. Think of it as 'spreadsheet meets cyberspace.' An immersive multi-dimensional spatially based environment for realtime analysis and decision making. Capable of combining stored data with live sources for time sensitive situations. It is good for finding the proverbial 'needle in the haystack.' The visual environment enables a more efficient mechanism for identifying patterns and relationships. Data fields are mapped to parameters such as geometry, transparency, velocity and position. Spatial cues based on shape, color, size and texture enable the user to identify key patterns. The ultimate goal is to close the cognitive loop between users and powerful logic engines known as computers.
+ANTz - jetson to forge mixed reality.
+
+- Telemedicine - Disaster Response and Humanitarian Aid
+- Biofeedback - PTSD and Sports
+- Machine Control - Robotics and Haptic Systems
+- Entertainment - Live Events and Post Production
+
+---
+Current hardware spec based on [nVidia - Jetson TK1 (tech brief)](http://developer.download.nvidia.com/embedded/jetson/TK1/docs/Jetson_platform_brief_May2014.pdf)
+
+Official TK1 wiki: http://elinux.org/Jetson_TK1
+
+key specs:
+- 13W - Low Power
+- Linux (ubuntu) on ARM 4+1 CPU
+- 192 CUDA cores using Kepler architecture (Tegra K1)
+- OpenGL 3D-Stereoscopic
+- Dual Display Port
+- Dual Cameras, one using CSI 1x1 and one with 1x4.
+- Direct low-level (LVDS) 1.2Giga-Pixels / sec.
+- Retail $200
