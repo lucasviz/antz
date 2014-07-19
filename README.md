@@ -2,7 +2,7 @@ ANTz - High Performance Computing
 ====
 ANTz - HPC version is aimed to push the envelope of visual processing.
 
-An experimental variant of standard ANTz with optimizations to increase performance aimed at visual cluster such as CAVE's and other immersive enviroments.
+An experimental variant of standard ANTz with optimizations to increase performance aimed at workstations and visual clusters, such as CAVE's and other immersive environments.
 
 Tasks:
 - Apply to existing code-base (known) HPC modifications.
