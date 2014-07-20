@@ -636,11 +636,24 @@ data->io.connectCount = 0;
 //------------------------------------------------------------------------------
 void npInitDataDB (struct databases* dbs, void* dataRef)
 {
-	int size = 0;
-
+	int i = 0;
+	
 	pData data = (pData) dataRef;
 
-	npInitDB (dataRef);				//zz db2
+	pNPdb db = NULL;
+
+	npInitDB (dataRef);				//zz db
+
+	for( i=0; i < kNPdbMax; i++ )
+	{
+		db = &data->io.db[i];
+
+		db->id = i;
+
+		db->autoUpdate = 0;
+		db->updatePeriod = 300;
+		db->update = false;
+	}
 
 /*
 	data->io.dbs = npMalloc( 0, sizeof(struct databases), data);

@@ -384,7 +384,10 @@ void npCtrlFile (int command, void* dataRef)
 
 		//navigate folders, files and DBs
 		case kNPcmdViewer :
-			if (data->io.key.modShift)
+			
+			if (data->io.key.modAlt )
+				data->io.db[0].update = true;						//zz db
+			else if (data->io.key.modShift)
 			{
 				printf("\nUpdating");
 				//npdbUpdateAntzStateFromDatabase(dataRef);

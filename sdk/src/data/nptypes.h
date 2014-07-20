@@ -143,6 +143,8 @@
 #define kNPwindowPositionX 40
 #define kNPwindowPositionY 40
 
+#define kNPdbMax				4096		//max number of databases	//zz db
+
 //------------------------------------------------------------------------------
 // Base Types - designed to be directly compatible with OpenGL
 
@@ -700,6 +702,20 @@ struct NPmessage
 typedef struct NPmessage NPmessage;
 typedef struct NPmessage * pNPmessage;
 
+
+//zz db
+struct NPdb {
+	int		id;				//db_id reference
+
+	int		autoUpdate;
+	int		updatePeriod;
+	bool	update;
+
+	int		size;			//number of items in the list
+};
+typedef struct NPdb NPdb;
+typedef struct NPdb * pNPdb;
+
 //struct pNPdatabases { //zzsql
 struct NPdatabases {
 	char** list;		//list of databases by name
@@ -1076,6 +1092,7 @@ struct NPio {
 
 //	struct	dbNewConnect *connect;	//zzsql							//zz debug	//zz dbz
 	struct databases *dbs;			//zz dbz
+	NPdb		db[kNPdbMax];
 
 //	NPoscPackListener oscListener;		//JJ-zz
 	pNPconnect	connect[kNPmaxConnect];	//zz osc

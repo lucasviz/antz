@@ -73,6 +73,8 @@ void npUpdateIO (void* dataRef)
 {
 	pData data = (pData) dataRef;
 
+	pNPdb db = &data->io.db[0];		//zz db
+
 	data->io.cycleCount++;
 
 	//we double buffer the mouse delta movement to maintain engine cycle sync
@@ -82,10 +84,18 @@ void npUpdateIO (void* dataRef)
 
 	npUpdateCh (dataRef);	//zz-JJ
 
-	//zzsql
-	if(data->io.cycleCount % 300 == 0)
+//	npUpdateDB( dataRef );
+	//zzsql //zz db
+	if( db->autoUpdate )
 	{
-		npdbUpdateAntzStateFromDatabase(dataRef);
+		if( data->io.cycleCount % db->updatePeriod == 0 )
+			db->update = true;
+	}
+
+	if( db->update )
+	{
+		npdbUpdateAntzStateFromDatabase( dataRef );
+		db->update = false;
 	}
 }
 
