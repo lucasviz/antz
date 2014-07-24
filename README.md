@@ -28,7 +28,7 @@ On multi-GPU systems, a further boost of about 2.5X (with 4 GPU's) can be achiev
 
 The most difficult code is optimizing for Visual Cluster systems. The current (freeglut) framework can be adapted to various cluster systems. Data / Video synchronization can result in additional overhead which reduces performance. However, with really realy good code (very difficult - months / years of coder time,) cluster performance can achieve better performance. Perhaps as much as a 4X boost with 8 or 16 systems.
 
-All together, ANTz is theoretically capable of displaying a million ojbects at interactive framerates, 30fps on existing hardware.
+All together, ANTz is theoretically capable of displaying a million objects at interactive framerates, 30fps on existing hardware.
 
 ---
 wiki:
