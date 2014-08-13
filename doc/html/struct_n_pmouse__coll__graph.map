@@ -1,0 +1,10 @@
+<map id="NPmouse" name="NPmouse">
+<area shape="rect" id="node2" href="$struct_n_pfloat_x_y_z.html" title="NPfloatXYZ" alt="" coords="5,124,92,151"/>
+<area shape="rect" id="node3" href="$struct_n_pnode.html" title="NPnode" alt="" coords="256,376,324,403"/>
+<area shape="rect" id="node4" href="$struct_n_ptag.html" title="NPtag" alt="" coords="117,124,175,151"/>
+<area shape="rect" id="node5" href="$struct_n_pfloat_x_y.html" title="NPfloatXY" alt="" coords="106,5,186,32"/>
+<area shape="rect" id="node6" href="$struct_n_pubyte_r_g_b_a.html" title="NPubyteRGBA" alt="" coords="221,5,330,32"/>
+<area shape="rect" id="node7" href="$struct_n_pint_x_y_z.html" title="NPintXYZ" alt="" coords="423,124,501,151"/>
+<area shape="rect" id="node8" href="$struct_n_pfloat_x_y_z_a.html" title="NPfloatXYZA" alt="" coords="199,124,295,151"/>
+<area shape="rect" id="node9" href="$struct_n_pnode2.html" title="Base Types &#45; designed to be directly compatible with OpenGL. " alt="" coords="558,376,633,403"/>
+</map>

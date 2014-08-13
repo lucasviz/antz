@@ -1,0 +1,13 @@
+<map id="npCtrlChannel" name="npCtrlChannel">
+<area shape="rect" id="node2" href="$npch_8c.html#a1cbf2c30c5637fc6d36a2c9d95842ebe" title="npChRemoveNode" alt="" coords="171,5,299,32"/>
+<area shape="rect" id="node4" href="$npch_8c.html#a58957f4a2bd98b623643e449b4fc407c" title="npChGetChannelAfter" alt="" coords="161,56,308,83"/>
+<area shape="rect" id="node5" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="423,107,511,133"/>
+<area shape="rect" id="node6" href="$npch_8c.html#ae5312886ade9ee73c3670256e0f86c3e" title="npChGetChannelBefore" alt="" coords="156,208,313,235"/>
+<area shape="rect" id="node8" href="$npch_8c.html#a6ddc46297a277a3e1fe6138fd7dceba4" title="npChSubscribeNode" alt="" coords="165,157,305,184"/>
+<area shape="rect" id="node3" href="$npch_8c.html#aa749573ec6ffe4b7f2c72fb7d37eb69d" title="npChRemoveMemoryReferences" alt="" coords="361,5,572,32"/>
+<area shape="rect" id="node7" href="$npch_8c.html#a16c0614827a0cb80e4c2bce7d98d45dc" title="npChGetMaxChannel" alt="" coords="394,208,539,235"/>
+<area shape="rect" id="node9" href="$npch_8c.html#a044c1426779a40896d0dba6d9cb9cbb3" title="MapTrackOffset" alt="" coords="410,157,523,184"/>
+<area shape="rect" id="node10" href="$npch_8c.html#ade2e51a1bc7028df6ffef9dbdaadb809" title="MapTrackToFloatAttribute" alt="" coords="623,107,793,133"/>
+<area shape="rect" id="node11" href="$npch_8c.html#a601bef0f0967f4d100e99c17162e021a" title="MapTrackToIntAttribute" alt="" coords="630,157,786,184"/>
+<area shape="rect" id="node12" href="$npch_8c.html#af4f7c5dd03badc78b782783dbf0c6b8a" title="MapTrackToUcharAttribute" alt="" coords="620,208,796,235"/>
+</map>

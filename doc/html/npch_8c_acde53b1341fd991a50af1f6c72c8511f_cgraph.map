@@ -1,0 +1,6 @@
+<map id="npChReadTokens" name="npChReadTokens">
+<area shape="rect" id="node2" href="$npch_8c.html#ae6b2ec89bb80904441f4909767da91b2" title="npChReadLine" alt="" coords="177,56,284,83"/>
+<area shape="rect" id="node3" href="$npch_8c.html#ae133ae7b2252fcec4c7fce01a4b37da6" title="npChReadLineFromFile" alt="" coords="332,5,489,32"/>
+<area shape="rect" id="node4" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="367,56,455,83"/>
+<area shape="rect" id="node5" href="$nposcpack_8cpp.html#a8e8686efe65ed9270a4cc946dd4a431e" title="npOscReadLine" alt="" coords="353,107,468,133"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="npNodeMoveBranch" name="npNodeMoveBranch">
+<area shape="rect" id="node2" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="653,22,741,48"/>
+<area shape="rect" id="node3" href="$npnode_8c.html#a8e3370475882e890bca6f06a3ef5276c" title="npNodeRemove" alt="" coords="223,59,335,86"/>
+<area shape="rect" id="node8" href="$npmap_8c.html#ae2c940d9992ee3cde2e6d17d86e3bfc1" title="npNodeUpdateBranchLevel" alt="" coords="191,110,368,136"/>
+<area shape="rect" id="node4" href="$npmap_8c.html#ae29e24d9186837ada30dae72fd176298" title="npSelectNode" alt="" coords="429,72,531,99"/>
+<area shape="rect" id="node6" href="$npch_8c.html#a1cbf2c30c5637fc6d36a2c9d95842ebe" title="npChRemoveNode" alt="" coords="416,123,544,150"/>
+<area shape="rect" id="node5" href="$npmap_8c.html#a7ef58ce416890e304ef3c82a8b0a3fd8" title="npGetRootIndex" alt="" coords="640,72,755,99"/>
+<area shape="rect" id="node7" href="$npch_8c.html#aa749573ec6ffe4b7f2c72fb7d37eb69d" title="npChRemoveMemoryReferences" alt="" coords="592,123,803,150"/>
+</map>

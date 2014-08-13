@@ -1,0 +1,6 @@
+<map id="npGLSurface" name="npGLSurface">
+<area shape="rect" id="node2" href="$npgeometry_8c.html#ae69a1191c9d77139248e66a747ef0cea" title="npGLTexture" alt="" coords="151,5,247,32"/>
+<area shape="rect" id="node3" href="$npgeometry_8c.html#a8a078a0ba08a3c18ff9dd4fd3780f7a6" title="npDrawTorus" alt="" coords="151,56,248,83"/>
+<area shape="rect" id="node4" href="$npglut_8c.html#a30e00052d3f9137489ac77cdc62bacc0" title="npGLWireTorus" alt="" coords="297,31,409,57"/>
+<area shape="rect" id="node5" href="$npglut_8c.html#a5990e5d357cb766828cccafc03b96cdc" title="npGLSolidTorus" alt="" coords="296,81,411,108"/>
+</map>

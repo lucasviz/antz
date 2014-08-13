@@ -1,0 +1,5 @@
+<map id="npGLResizeScene" name="npGLResizeScene">
+<area shape="rect" id="node2" href="$npdata_8c.html#adf8479252f67ced617edacde0b5d9681" title="npGetDataRef" alt="" coords="194,5,297,32"/>
+<area shape="rect" id="node3" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="201,56,289,83"/>
+<area shape="rect" id="node4" href="$npgl_8c.html#a87b72998681772e9ca9edeb3d8ead02e" title="npResizeConsole" alt="" coords="184,107,307,133"/>
+</map>

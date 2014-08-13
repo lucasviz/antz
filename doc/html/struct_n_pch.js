@@ -1,0 +1,28 @@
+var struct_n_pch =
+[
+    [ "channelDataSize", "struct_n_pch.html#ad56fc8a6dab453b0297d81e64911ba34", null ],
+    [ "channelFileTokenBuffer", "struct_n_pch.html#ac83d5e3a29fe08efe28807e018c2ffba", null ],
+    [ "channelFileTokens", "struct_n_pch.html#ad403f919a0ba57b4a9b5d54b696d8037", null ],
+    [ "channelNextDataChangeTime", "struct_n_pch.html#a1fb5a026473f187dbcb30de33d66b0b9", null ],
+    [ "channelReadIndex", "struct_n_pch.html#a4d414caab2ed156f5dcff32d04dc05c4", null ],
+    [ "channelSampleRate", "struct_n_pch.html#a4c6d5c35b53a39410c3127485e921f97", null ],
+    [ "channelWriteIndex", "struct_n_pch.html#ab74a3a395554fa186ca4fd179685c287", null ],
+    [ "coreNode", "struct_n_pch.html#af90cca82099ebecb82ab8f2785667991", null ],
+    [ "floatTracks", "struct_n_pch.html#aae1c98e88d48f2d9d107c2f2108b1d96", null ],
+    [ "intTracks", "struct_n_pch.html#a4b6ebe4c4ff953a0e13065ca499bff02", null ],
+    [ "numberTracks", "struct_n_pch.html#abb4034a90ebac0d09d39226777916663", null ],
+    [ "pause", "struct_n_pch.html#a66076fd4c94f1ef66bb0256b653cf37f", null ],
+    [ "setNumberToLoad", "struct_n_pch.html#a4e3853d7a85d4ec06720bba90223dc92", null ],
+    [ "size", "struct_n_pch.html#a439227feff9d7f55384e8780cfc2eb82", null ],
+    [ "trackDataSource", "struct_n_pch.html#abefec8c2f48dbb99cc9b182321e426d8", null ],
+    [ "trackFileTokenBuffer", "struct_n_pch.html#ac231c0c172d92cdad968866c1efb146f", null ],
+    [ "trackFileTokens", "struct_n_pch.html#af26eff422a5010cca4731bf23680c5e8", null ],
+    [ "trackFloatData", "struct_n_pch.html#a16d4d519970016e679f1861dba94888d", null ],
+    [ "trackIntData", "struct_n_pch.html#a670558df6fea9275628623ae697c3b8a", null ],
+    [ "trackNames", "struct_n_pch.html#ac63492ec54edc21e4e6c82074964ab7d", null ],
+    [ "trackUcharData", "struct_n_pch.html#af367550a810f6e1a1b17902124ff7518", null ],
+    [ "ucharTracks", "struct_n_pch.html#ab8b431f647a577215804d7b96c076e71", null ],
+    [ "updateData", "struct_n_pch.html#ad43ad677bb725342ff7287a04f34139f", null ],
+    [ "xref", "struct_n_pch.html#ae3c93322df729580c32a252afd8190db", null ],
+    [ "xrefIndex", "struct_n_pch.html#ac987af26bfd9196f8347dcacee955974", null ]
+];

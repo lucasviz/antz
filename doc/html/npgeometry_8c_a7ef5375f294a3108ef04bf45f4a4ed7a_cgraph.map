@@ -1,0 +1,5 @@
+<map id="CreatePinDL" name="CreatePinDL">
+<area shape="rect" id="node2" href="$npgeometry_8c.html#ac1ff977a41a83cd78c67fc792c65ca46" title="DrawPinDL" alt="" coords="148,31,235,57"/>
+<area shape="rect" id="node3" href="$npglut_8c.html#a8a89ef3d0ad2eb69cb5f69f9e018c8d4" title="npGLSolidCone" alt="" coords="288,5,400,32"/>
+<area shape="rect" id="node4" href="$npglut_8c.html#ab76d07f1585491b71b747798043e5ff9" title="npGLSolidSphere" alt="" coords="283,56,405,83"/>
+</map>

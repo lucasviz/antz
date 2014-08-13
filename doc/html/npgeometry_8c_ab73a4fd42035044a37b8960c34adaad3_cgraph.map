@@ -1,0 +1,5 @@
+<map id="CreatePinWireDL" name="CreatePinWireDL">
+<area shape="rect" id="node2" href="$npgeometry_8c.html#ab612f24429be5e0fab9bde26ef1690d3" title="DrawPinWireDL" alt="" coords="176,31,289,57"/>
+<area shape="rect" id="node3" href="$npglut_8c.html#a19e03caf8fe9e2518eb475e23126aa50" title="npGLWireCone" alt="" coords="343,5,453,32"/>
+<area shape="rect" id="node4" href="$npglut_8c.html#a91dac7de25126b8ef91955d0e77e6776" title="npGLWireSphere" alt="" coords="337,56,459,83"/>
+</map>

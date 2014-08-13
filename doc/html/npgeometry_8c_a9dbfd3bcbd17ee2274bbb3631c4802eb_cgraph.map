@@ -1,0 +1,4 @@
+<map id="CreateTorusDL" name="CreateTorusDL">
+<area shape="rect" id="node2" href="$npgeometry_8c.html#a5f3c093fd010633894e8140178338b01" title="DrawTorusDL" alt="" coords="161,5,260,32"/>
+<area shape="rect" id="node3" href="$npglut_8c.html#a5990e5d357cb766828cccafc03b96cdc" title="npGLSolidTorus" alt="" coords="308,5,423,32"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="npHueToRGB" name="npHueToRGB">
+<area shape="rect" id="node2" href="$npcolor_8c.html#a9f3a0afbd75eaa135dec0634e39a542b" title="npHSLtoRGB8" alt="" coords="155,5,261,32"/>
+<area shape="rect" id="node3" href="$npcolor_8h.html#a1cc5f2d0db40b8dd9056833ac10c7d25" title="npHSLtoRGB" alt="" coords="158,56,258,83"/>
+<area shape="rect" id="node4" href="$npcolor_8h.html#a4dc336b81a8ce6e471288730b65c05e2" title="npHSLtoRGBA" alt="" coords="309,31,419,57"/>
+<area shape="rect" id="node7" href="$npcolor_8h.html#ae6e262d33b91ab985b842478df05f787" title="npColorPicker" alt="" coords="313,81,415,108"/>
+<area shape="rect" id="node5" href="$nposc_8h.html#aa2d85df395c59520bf357603abcecf54" title="npOscRx" alt="" coords="498,31,574,57"/>
+<area shape="rect" id="node6" href="$class_osc_antz_packet_listener.html#a5c06189a85e9f9096d824fc6aa0b36ae" title="OscAntzPacketListener\l::ProcessMessage" alt="" coords="653,23,813,65"/>
+<area shape="rect" id="node8" href="$npcolor_8c.html#a4b94c2fff20734d1a643c3b599678f70" title="npColorPicker6DOE" alt="" coords="467,81,605,108"/>
+</map>

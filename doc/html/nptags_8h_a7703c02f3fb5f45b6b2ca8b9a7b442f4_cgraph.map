@@ -1,0 +1,12 @@
+<map id="npSyncTags" name="npSyncTags">
+<area shape="rect" id="node2" href="$npmap_8c.html#a6bce2f8f42a20c172ccc4f132a60a715" title="npMalloc" alt="" coords="173,5,248,32"/>
+<area shape="rect" id="node4" href="$npmap_8c.html#ad2bf2940c359f164820fc5ca194cf47e" title="npSort" alt="" coords="181,56,241,83"/>
+<area shape="rect" id="node5" href="$nptags_8c.html#a08a8026fb35557afc474ab988504cf90" title="npCompareNodes" alt="" coords="148,107,273,133"/>
+<area shape="rect" id="node6" href="$nptags_8c.html#a26557dbcbf40b3088106cf2954c7b890" title="npCompareTags" alt="" coords="153,157,269,184"/>
+<area shape="rect" id="node7" href="$nptags_8c.html#ac02038a24b9d29be18aef3d640cdb3e3" title="npTagNode" alt="" coords="167,208,254,235"/>
+<area shape="rect" id="node11" href="$npmap_8c.html#aface12b6cf40d6b874d6fdfb90aa67ca" title="npFree" alt="" coords="179,259,242,285"/>
+<area shape="rect" id="node3" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="331,5,419,32"/>
+<area shape="rect" id="node8" href="$npdata_8c.html#aa3c92e3fc58f25e764b7857a52175dbb" title="npInitTextTag" alt="" coords="325,157,424,184"/>
+<area shape="rect" id="node9" href="$nptags_8c.html#a0803e5393d91056866f20e4a8b70c758" title="npSetNodeTag" alt="" coords="321,208,428,235"/>
+<area shape="rect" id="node10" href="$nptags_8c.html#a845a433792230d44db3e2f7ddaf454e1" title="npUpdateTag" alt="" coords="325,259,424,285"/>
+</map>

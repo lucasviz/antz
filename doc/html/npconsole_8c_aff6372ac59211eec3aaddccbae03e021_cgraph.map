@@ -1,0 +1,7 @@
+<map id="npUpdateConsoleText" name="npUpdateConsoleText">
+<area shape="rect" id="node2" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="605,53,693,79"/>
+<area shape="rect" id="node3" href="$npconsole_8c.html#af196de368410eda4f660a36aea189f1c" title="npConsoleCLS" alt="" coords="211,27,319,54"/>
+<area shape="rect" id="node4" href="$npconsole_8c.html#a1143d00acfac0f96e964080b2384d330" title="npConsolePrompt" alt="" coords="203,78,328,105"/>
+<area shape="rect" id="node5" href="$npconsole_8c.html#aa833cb2ebd60aa1839beda717830c42b" title="npUpdateConsoleUserText" alt="" coords="376,103,552,130"/>
+<area shape="rect" id="node6" href="$nptags_8c.html#a845a433792230d44db3e2f7ddaf454e1" title="npUpdateTag" alt="" coords="600,103,699,130"/>
+</map>

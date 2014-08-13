@@ -1,0 +1,11 @@
+<map id="npReopenDataSource" name="npReopenDataSource">
+<area shape="rect" id="node2" href="$npfile_8c.html#a2992502e8cb1ccee23ce340003f080cf" title="npFileOpen" alt="" coords="394,26,482,52"/>
+<area shape="rect" id="node6" href="$npch_8c.html#abe9887aeda59ff8359fe39c3f10ce7de" title="npChTrackTokens" alt="" coords="201,95,328,122"/>
+<area shape="rect" id="node3" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="737,22,825,48"/>
+<area shape="rect" id="node4" href="$npmap_8c.html#a6bce2f8f42a20c172ccc4f132a60a715" title="npMalloc" alt="" coords="564,22,639,48"/>
+<area shape="rect" id="node5" href="$npmap_8c.html#aface12b6cf40d6b874d6fdfb90aa67ca" title="npFree" alt="" coords="570,72,633,99"/>
+<area shape="rect" id="node7" href="$npch_8c.html#acde53b1341fd991a50af1f6c72c8511f" title="npChReadTokens" alt="" coords="376,120,500,147"/>
+<area shape="rect" id="node8" href="$npch_8c.html#ae6b2ec89bb80904441f4909767da91b2" title="npChReadLine" alt="" coords="548,123,655,150"/>
+<area shape="rect" id="node9" href="$npch_8c.html#ae133ae7b2252fcec4c7fce01a4b37da6" title="npChReadLineFromFile" alt="" coords="703,98,860,124"/>
+<area shape="rect" id="node10" href="$nposcpack_8cpp.html#a8e8686efe65ed9270a4cc946dd4a431e" title="npOscReadLine" alt="" coords="724,148,839,175"/>
+</map>

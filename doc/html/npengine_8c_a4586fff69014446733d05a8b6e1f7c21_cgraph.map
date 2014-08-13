@@ -1,0 +1,5 @@
+<map id="UpdateNodeCamera" name="UpdateNodeCamera">
+<area shape="rect" id="node2" href="$npengine_8c.html#a65d2ddb997fa1724649aac6e1643df41" title="UpdateCameraMouse" alt="" coords="192,5,339,32"/>
+<area shape="rect" id="node3" href="$npengine_8c.html#a1f3c4080719648ae38e9f17e3a36c6a3" title="npCameraTranslate" alt="" coords="198,56,333,83"/>
+<area shape="rect" id="node4" href="$npmouse_8c.html#ab19da3071f57adf4825d7f137e32b0a0" title="npLowPassFilter" alt="" coords="387,56,505,83"/>
+</map>

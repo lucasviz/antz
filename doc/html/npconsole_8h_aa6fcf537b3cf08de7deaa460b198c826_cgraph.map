@@ -1,0 +1,9 @@
+<map id="npUpdateConsoleMenu" name="npUpdateConsoleMenu">
+<area shape="rect" id="node2" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="612,129,700,155"/>
+<area shape="rect" id="node3" href="$npconsole_8c.html#af196de368410eda4f660a36aea189f1c" title="npConsoleCLS" alt="" coords="218,27,326,54"/>
+<area shape="rect" id="node4" href="$npdb_8c.html#ac8389eeb424f7738d95a0760d445408d" title="npdbActiveHost" alt="" coords="216,78,328,105"/>
+<area shape="rect" id="node5" href="$npdb_8c.html#a2bc87aced5022ec126fd049d25daa49b" title="npdbActiveDB" alt="" coords="221,129,323,155"/>
+<area shape="rect" id="node6" href="$npconsole_8c.html#a1143d00acfac0f96e964080b2384d330" title="npConsolePrompt" alt="" coords="209,179,335,206"/>
+<area shape="rect" id="node7" href="$npconsole_8c.html#aa833cb2ebd60aa1839beda717830c42b" title="npUpdateConsoleUserText" alt="" coords="383,179,559,206"/>
+<area shape="rect" id="node8" href="$nptags_8c.html#a845a433792230d44db3e2f7ddaf454e1" title="npUpdateTag" alt="" coords="607,179,705,206"/>
+</map>

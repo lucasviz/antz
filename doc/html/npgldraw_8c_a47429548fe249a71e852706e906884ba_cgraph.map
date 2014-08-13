@@ -1,0 +1,13 @@
+<map id="npDrawHUD" name="npDrawHUD">
+<area shape="rect" id="node2" href="$npgldraw_8c.html#a10e52bf905909b8cd9644b39ec531b62" title="npDrawNodeTags" alt="" coords="145,5,268,32"/>
+<area shape="rect" id="node3" href="$npgldraw_8c.html#a7a3c4fbaff612898861edd231e979467" title="npDrawSelect" alt="" coords="155,56,258,83"/>
+<area shape="rect" id="node5" href="$npgldraw_8c.html#a7b5ce4764ad522c5bf231e345f1941c0" title="npDrawFPS" alt="" coords="161,157,252,184"/>
+<area shape="rect" id="node9" href="$npgldraw_8c.html#acceb6506b47303e7003f2f4e510302cb" title="npDrawConsole" alt="" coords="331,107,443,133"/>
+<area shape="rect" id="node10" href="$npgldraw_8c.html#a0c7a001bac9c4d60ac48303c92dd0cbd" title="npDrawCompass" alt="" coords="147,208,267,235"/>
+<area shape="rect" id="node4" href="$npdata_8c.html#adf8479252f67ced617edacde0b5d9681" title="npGetDataRef" alt="" coords="335,56,438,83"/>
+<area shape="rect" id="node6" href="$nptags_8c.html#a845a433792230d44db3e2f7ddaf454e1" title="npUpdateTag" alt="" coords="337,208,436,235"/>
+<area shape="rect" id="node7" href="$nptags_8c.html#a30e2518d733e580ed920d0ef6af6338f" title="npDrawTextTag" alt="" coords="331,157,442,184"/>
+<area shape="rect" id="node8" href="$nptags_8c.html#af1e3fc9846f3a88a8272e77572206105" title="npGlutDrawString" alt="" coords="505,157,628,184"/>
+<area shape="rect" id="node11" href="$nptags_8c.html#a93ab0098420488344ab0777680c0007b" title="npDrawNodeTextTag" alt="" coords="316,259,457,285"/>
+<area shape="rect" id="node12" href="$npgldraw_8c.html#a8a7b226dbd5eae1798160bb8d3f5e92d" title="npIDtoRGB" alt="" coords="523,259,610,285"/>
+</map>

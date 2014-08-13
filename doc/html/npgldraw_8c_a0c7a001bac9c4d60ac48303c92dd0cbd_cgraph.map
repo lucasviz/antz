@@ -1,0 +1,6 @@
+<map id="npDrawCompass" name="npDrawCompass">
+<area shape="rect" id="node2" href="$nptags_8c.html#a845a433792230d44db3e2f7ddaf454e1" title="npUpdateTag" alt="" coords="195,5,293,32"/>
+<area shape="rect" id="node3" href="$nptags_8c.html#a93ab0098420488344ab0777680c0007b" title="npDrawNodeTextTag" alt="" coords="173,56,315,83"/>
+<area shape="rect" id="node4" href="$npgldraw_8c.html#a8a7b226dbd5eae1798160bb8d3f5e92d" title="npIDtoRGB" alt="" coords="381,31,467,57"/>
+<area shape="rect" id="node5" href="$nptags_8c.html#af1e3fc9846f3a88a8272e77572206105" title="npGlutDrawString" alt="" coords="363,81,485,108"/>
+</map>

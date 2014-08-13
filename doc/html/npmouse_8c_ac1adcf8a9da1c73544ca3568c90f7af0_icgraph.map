@@ -1,0 +1,6 @@
+<map id="npMouseWheel" name="npMouseWheel">
+<area shape="rect" id="node2" href="$npglut_8h.html#a039f17e4c533e72caa23e6e80028fba8" title="npInitGlut" alt="" coords="165,5,243,32"/>
+<area shape="rect" id="node3" href="$npglut_8h.html#a68bfac6da07339845bda2541c46ba60d" title="npAppLoopGlut" alt="" coords="291,5,401,32"/>
+<area shape="rect" id="node4" href="$npctrl_8h.html#aca375c047bb7c89e59c1f9f926cd1c21" title="npAppLoop" alt="" coords="449,5,536,32"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="using doxygen with graphviz for inline code docs " alt="" coords="584,5,635,32"/>
+</map>

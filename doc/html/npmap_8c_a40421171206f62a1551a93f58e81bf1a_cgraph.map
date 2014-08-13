@@ -1,0 +1,5 @@
+<map id="npQueResize" name="npQueResize">
+<area shape="rect" id="node2" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="396,5,484,32"/>
+<area shape="rect" id="node3" href="$npmap_8c.html#aed79b52c22a1218ee9c7d5bdf5631558" title="npCalloc" alt="" coords="153,31,225,57"/>
+<area shape="rect" id="node4" href="$npmap_8c.html#a6bce2f8f42a20c172ccc4f132a60a715" title="npMalloc" alt="" coords="273,31,348,57"/>
+</map>

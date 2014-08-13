@@ -1,0 +1,13 @@
+<map id="NPctrl" name="NPctrl">
+<area shape="rect" id="node2" href="$struct_n_pcpu.html" title="NPcpu" alt="" coords="81,532,142,559"/>
+<area shape="rect" id="node3" href="$struct_n_pnode2.html" title="Base Types &#45; designed to be directly compatible with OpenGL. " alt="" coords="85,376,160,403"/>
+<area shape="rect" id="node4" href="$struct_n_puser.html" title="NPuser" alt="" coords="195,583,260,609"/>
+<area shape="rect" id="node12" href="$struct_n_puser_environment.html" title="NPuserEnvironment" alt="" coords="246,481,382,508"/>
+<area shape="rect" id="node5" href="$struct_n_pnode.html" title="NPnode" alt="" coords="355,376,423,403"/>
+<area shape="rect" id="node6" href="$struct_n_ptag.html" title="NPtag" alt="" coords="181,124,240,151"/>
+<area shape="rect" id="node7" href="$struct_n_pfloat_x_y.html" title="NPfloatXY" alt="" coords="90,5,170,32"/>
+<area shape="rect" id="node8" href="$struct_n_pubyte_r_g_b_a.html" title="NPubyteRGBA" alt="" coords="213,5,322,32"/>
+<area shape="rect" id="node9" href="$struct_n_pfloat_x_y_z.html" title="NPfloatXYZ" alt="" coords="346,124,432,151"/>
+<area shape="rect" id="node10" href="$struct_n_pint_x_y_z.html" title="NPintXYZ" alt="" coords="457,124,534,151"/>
+<area shape="rect" id="node11" href="$struct_n_pfloat_x_y_z_a.html" title="NPfloatXYZA" alt="" coords="562,124,658,151"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="npGLPrimitive" name="npGLPrimitive">
+<area shape="rect" id="node2" href="$npgeometry_8c.html#a8a078a0ba08a3c18ff9dd4fd3780f7a6" title="npDrawTorus" alt="" coords="156,31,253,57"/>
+<area shape="rect" id="node3" href="$npglut_8c.html#a30e00052d3f9137489ac77cdc62bacc0" title="npGLWireTorus" alt="" coords="303,5,415,32"/>
+<area shape="rect" id="node4" href="$npglut_8c.html#a5990e5d357cb766828cccafc03b96cdc" title="npGLSolidTorus" alt="" coords="301,56,416,83"/>
+</map>

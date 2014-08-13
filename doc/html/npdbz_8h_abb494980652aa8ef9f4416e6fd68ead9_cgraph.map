@@ -1,0 +1,19 @@
+<map id="npOpenDb" name="npOpenDb">
+<area shape="rect" id="node2" href="$npdbz_8c.html#ab02ed434f72a1669aae52b770348a41d" title="dbHook" alt="" coords="136,360,203,387"/>
+<area shape="rect" id="node3" href="$structdb_function.html#ab1a9c1ed87a0f0a4f63440d172860a9f" title="dbFunction::init" alt="" coords="295,5,406,32"/>
+<area shape="rect" id="node4" href="$structdb_function.html#a50e3b0f816769add23c0372b234c2d4d" title="dbFunction::connect" alt="" coords="281,56,421,83"/>
+<area shape="rect" id="node5" href="$structdb_function.html#a07c87dd67186a0e9e9b3e8fe9bb2e54d" title="dbFunction::query" alt="" coords="287,411,414,437"/>
+<area shape="rect" id="node6" href="$structdb_function.html#a3c6ca29f11684ab35b7a120339b12ccf" title="dbFunction::storeResult" alt="" coords="271,461,431,488"/>
+<area shape="rect" id="node7" href="$structdb_function.html#a090dd18725780a94c9b31703868441c6" title="dbFunction::close" alt="" coords="288,512,413,539"/>
+<area shape="rect" id="node8" href="$structdb_function.html#a93fa2cd4b18c00e707a19d96df3a4a9d" title="dbFunction::db_fetch_row" alt="" coords="265,563,436,589"/>
+<area shape="rect" id="node9" href="$structdb_function.html#aba38b775cd34cf10bed9bedb2314e57d" title="dbFunction::db_fetch\l_lengths" alt="" coords="279,614,422,655"/>
+<area shape="rect" id="node10" href="$structdb_function.html#aabf3f3597fdad0c3e61a1b1a33934121" title="dbFunction::db_num\l_fields" alt="" coords="281,679,421,721"/>
+<area shape="rect" id="node11" href="$structdb_function.html#a3b9ba9303e75c69d1c7bda2fe1465db4" title="dbFunction::db_num_rows" alt="" coords="263,745,438,772"/>
+<area shape="rect" id="node12" href="$npdbz_8c.html#a9fdc9c123bae9a8d763e4ff7ef09b0b4" title="npMysqlCreateStatement" alt="" coords="266,796,435,823"/>
+<area shape="rect" id="node13" href="$npdbz_8c.html#adecb51eea5122a7580690201b9f2289e" title="npMysqlInsertStatement" alt="" coords="269,107,432,133"/>
+<area shape="rect" id="node14" href="$npdbz_8c.html#a976a9d16f85008d0a55532ec1d097c8d" title="npMysqlSelectStatement" alt="" coords="267,157,435,184"/>
+<area shape="rect" id="node15" href="$npdbz_8c.html#ac3f111c3c788187a4b90b3745c6bb147" title="npMysqlCreateTableStatement" alt="" coords="251,208,451,235"/>
+<area shape="rect" id="node16" href="$npdbz_8c.html#a8e0eb42eba724655b7c2c0d238829d3b" title="npMysqlUseStatement" alt="" coords="273,259,428,285"/>
+<area shape="rect" id="node17" href="$npdbz_8c.html#a95b8971b881531e733cb672ffe8b5498" title="npMysqlShowStatement" alt="" coords="269,309,432,336"/>
+<area shape="rect" id="node18" href="$npdbz_8c.html#aaf88044911d86af2d86301c6bc94f844" title="npMysqlDropStatement" alt="" coords="271,360,430,387"/>
+</map>

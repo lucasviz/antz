@@ -1,0 +1,7 @@
+<map id="npQueMapItem" name="npQueMapItem">
+<area shape="rect" id="node2" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="711,68,799,95"/>
+<area shape="rect" id="node3" href="$npmap_8c.html#a265011a98cde3422069b86bfa4d00b2a" title="npQueOverflow" alt="" coords="164,43,272,69"/>
+<area shape="rect" id="node4" href="$npmap_8c.html#a40421171206f62a1551a93f58e81bf1a" title="npQueResize" alt="" coords="320,93,420,120"/>
+<area shape="rect" id="node5" href="$npmap_8c.html#aed79b52c22a1218ee9c7d5bdf5631558" title="npCalloc" alt="" coords="468,144,540,171"/>
+<area shape="rect" id="node6" href="$npmap_8c.html#a6bce2f8f42a20c172ccc4f132a60a715" title="npMalloc" alt="" coords="588,144,663,171"/>
+</map>

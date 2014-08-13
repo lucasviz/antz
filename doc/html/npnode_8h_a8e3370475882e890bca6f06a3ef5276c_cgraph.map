@@ -1,0 +1,8 @@
+<map id="npNodeRemove" name="npNodeRemove">
+<area shape="rect" id="node2" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="563,56,651,83"/>
+<area shape="rect" id="node3" href="$npnode_8c.html#a8e3370475882e890bca6f06a3ef5276c" title="npNodeRemove" alt="" coords="165,131,277,157"/>
+<area shape="rect" id="node4" href="$npmap_8c.html#ae29e24d9186837ada30dae72fd176298" title="npSelectNode" alt="" coords="338,5,441,32"/>
+<area shape="rect" id="node6" href="$npch_8c.html#a1cbf2c30c5637fc6d36a2c9d95842ebe" title="npChRemoveNode" alt="" coords="325,175,453,201"/>
+<area shape="rect" id="node5" href="$npmap_8c.html#a7ef58ce416890e304ef3c82a8b0a3fd8" title="npGetRootIndex" alt="" coords="549,5,664,32"/>
+<area shape="rect" id="node7" href="$npch_8c.html#aa749573ec6ffe4b7f2c72fb7d37eb69d" title="npChRemoveMemoryReferences" alt="" coords="501,175,712,201"/>
+</map>

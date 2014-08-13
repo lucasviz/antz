@@ -1,0 +1,4 @@
+<map id="npDrawTorus" name="npDrawTorus">
+<area shape="rect" id="node2" href="$npglut_8c.html#a30e00052d3f9137489ac77cdc62bacc0" title="npGLWireTorus" alt="" coords="152,5,264,32"/>
+<area shape="rect" id="node3" href="$npglut_8c.html#a5990e5d357cb766828cccafc03b96cdc" title="npGLSolidTorus" alt="" coords="151,56,265,83"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="databases" name="databases">
+<area shape="rect" id="node2" href="$struct_n_pdatabases.html" title="NPdatabases" alt="" coords="5,95,105,121"/>
+<area shape="rect" id="node3" href="$struct_n_pnode2.html" title="Base Types &#45; designed to be directly compatible with OpenGL. " alt="" coords="18,5,93,32"/>
+<area shape="rect" id="node4" href="$structdatabase.html" title="database" alt="" coords="130,95,205,121"/>
+<area shape="rect" id="node5" href="$structdb_function.html" title="dbFunction" alt="" coords="124,5,211,32"/>
+</map>

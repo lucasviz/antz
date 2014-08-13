@@ -1,0 +1,22 @@
+<map id="npInitGLPrimitive" name="npInitGLPrimitive">
+<area shape="rect" id="node2" href="$npgeometry_8c.html#a7ef5375f294a3108ef04bf45f4a4ed7a" title="CreatePinDL" alt="" coords="194,56,289,83"/>
+<area shape="rect" id="node6" href="$npgeometry_8c.html#ab73a4fd42035044a37b8960c34adaad3" title="CreatePinWireDL" alt="" coords="180,107,303,133"/>
+<area shape="rect" id="node10" href="$npgeometry_8c.html#a9dbfd3bcbd17ee2274bbb3631c4802eb" title="CreateTorusDL" alt="" coords="187,157,295,184"/>
+<area shape="rect" id="node13" href="$npgeometry_8c.html#adcb6ef8a4a24ede9c8abd51359dc4596" title="CreateTorusWireDL" alt="" coords="174,461,309,488"/>
+<area shape="rect" id="node16" href="$npgeometry_8c.html#aae2b4403b7a73462a1f9d3eaca256247" title="npCreatePrimitiveDL" alt="" coords="172,284,311,311"/>
+<area shape="rect" id="node3" href="$npgeometry_8c.html#ac1ff977a41a83cd78c67fc792c65ca46" title="DrawPinDL" alt="" coords="386,56,473,83"/>
+<area shape="rect" id="node4" href="$npglut_8c.html#a8a89ef3d0ad2eb69cb5f69f9e018c8d4" title="npGLSolidCone" alt="" coords="553,5,665,32"/>
+<area shape="rect" id="node5" href="$npglut_8c.html#ab76d07f1585491b71b747798043e5ff9" title="npGLSolidSphere" alt="" coords="548,56,671,83"/>
+<area shape="rect" id="node7" href="$npgeometry_8c.html#ab612f24429be5e0fab9bde26ef1690d3" title="DrawPinWireDL" alt="" coords="373,107,486,133"/>
+<area shape="rect" id="node8" href="$npglut_8c.html#a19e03caf8fe9e2518eb475e23126aa50" title="npGLWireCone" alt="" coords="554,107,665,133"/>
+<area shape="rect" id="node9" href="$npglut_8c.html#a91dac7de25126b8ef91955d0e77e6776" title="npGLWireSphere" alt="" coords="549,157,670,184"/>
+<area shape="rect" id="node11" href="$npgeometry_8c.html#a5f3c093fd010633894e8140178338b01" title="DrawTorusDL" alt="" coords="380,157,479,184"/>
+<area shape="rect" id="node12" href="$npglut_8c.html#a5990e5d357cb766828cccafc03b96cdc" title="npGLSolidTorus" alt="" coords="552,284,667,311"/>
+<area shape="rect" id="node14" href="$npgeometry_8c.html#a071dc8a702273b670e7abd2f7b261978" title="DrawTorusWireDL" alt="" coords="366,563,493,589"/>
+<area shape="rect" id="node15" href="$npglut_8c.html#a30e00052d3f9137489ac77cdc62bacc0" title="npGLWireTorus" alt="" coords="553,512,665,539"/>
+<area shape="rect" id="node17" href="$npgeometry_8c.html#afdc13649c5549fc24969dba6727c37b1" title="DrawSphereWireDL" alt="" coords="362,512,497,539"/>
+<area shape="rect" id="node18" href="$npgeometry_8c.html#aee069279b1a6cbe3d5291dff6fc9878f" title="DrawSphereDL" alt="" coords="375,208,483,235"/>
+<area shape="rect" id="node19" href="$npglut_8c.html#afceed00d943d03a83039a67bb55cc03e" title="npGlutPrimitive" alt="" coords="375,259,484,285"/>
+<area shape="rect" id="node20" href="$npgeometry_8c.html#a2a99f3cc7ccddf74d459ec51845873ad" title="DrawCylinderWireDL" alt="" coords="359,309,500,336"/>
+<area shape="rect" id="node21" href="$npgeometry_8c.html#ae8a695a60f5dc16ce5a5730ff18ad8a0" title="DrawCylinderDL" alt="" coords="372,411,487,437"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="npInitSQLite" name="npInitSQLite">
+<area shape="rect" id="node2" href="$npdb_8h.html#aad728f8204eca912e8097ddaecfa172a" title="npInitDB" alt="" coords="147,5,217,32"/>
+<area shape="rect" id="node3" href="$npdata_8c.html#a5a31fc7335151deb4a3bb55ad5e5efb4" title="npInitDataDB" alt="" coords="265,5,364,32"/>
+<area shape="rect" id="node4" href="$npdata_8c.html#a7736391590cbf7d76ada9904833e9407" title="npInitDataIO" alt="" coords="412,5,505,32"/>
+<area shape="rect" id="node5" href="$npdata_8h.html#afa33dc8c7f05d430e7444db4e558df98" title="npInitData" alt="" coords="553,5,633,32"/>
+<area shape="rect" id="node6" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="using doxygen with graphviz for inline code docs " alt="" coords="681,5,732,32"/>
+</map>

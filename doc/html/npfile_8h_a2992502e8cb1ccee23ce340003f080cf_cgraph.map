@@ -1,0 +1,5 @@
+<map id="npFileOpen" name="npFileOpen">
+<area shape="rect" id="node2" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="264,5,352,32"/>
+<area shape="rect" id="node3" href="$npmap_8c.html#a6bce2f8f42a20c172ccc4f132a60a715" title="npMalloc" alt="" coords="141,31,216,57"/>
+<area shape="rect" id="node4" href="$npmap_8c.html#aface12b6cf40d6b874d6fdfb90aa67ca" title="npFree" alt="" coords="147,81,210,108"/>
+</map>

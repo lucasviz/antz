@@ -1,0 +1,5 @@
+<map id="npInitDataQue" name="npInitDataQue">
+<area shape="rect" id="node2" href="$npmap_8c.html#aed79b52c22a1218ee9c7d5bdf5631558" title="npCalloc" alt="" coords="157,5,229,32"/>
+<area shape="rect" id="node3" href="$npmap_8c.html#a6bce2f8f42a20c172ccc4f132a60a715" title="npMalloc" alt="" coords="277,5,352,32"/>
+<area shape="rect" id="node4" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="400,5,488,32"/>
+</map>

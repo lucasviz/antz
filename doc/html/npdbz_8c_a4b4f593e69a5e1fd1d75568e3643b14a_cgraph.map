@@ -1,0 +1,16 @@
+<map id="npdbPushScene" name="npdbPushScene">
+<area shape="rect" id="node2" href="$npdbz_8c.html#ab9e83b26ed9c5624be4476f4fc575e7e" title="npUseDatabase2" alt="" coords="413,107,535,133"/>
+<area shape="rect" id="node4" href="$npdbz_8c.html#a4d0278b6865b84e891c881a63c5f7a64" title="npdbTruncate" alt="" coords="197,5,297,32"/>
+<area shape="rect" id="node5" href="$npdbz_8c.html#a0cf22af1a6a9f9d4b92bd536b1d84679" title="npRevisedNodeValues" alt="" coords="171,157,322,184"/>
+<area shape="rect" id="node8" href="$npdbz_8c.html#a8421374b519b48c8d3414ff336bae044" title="npEvenNewerAllChunk" alt="" coords="171,259,323,285"/>
+<area shape="rect" id="node13" href="$npdbz_8c.html#a7854566421fad1040e3934ce9ce8c32b" title="npInsertAllChunks" alt="" coords="183,56,310,83"/>
+<area shape="rect" id="node15" href="$npdbz_8c.html#a63b8fda0ae6175920a9b45cadcc16347" title="npNewFreeChunks" alt="" coords="181,309,312,336"/>
+<area shape="rect" id="node3" href="$structdb_function.html#a07c87dd67186a0e9e9b3e8fe9bb2e54d" title="dbFunction::query" alt="" coords="629,56,756,83"/>
+<area shape="rect" id="node6" href="$npmapfile_8c.html#ad85d03f6040cc22dea4414f7461b67a4" title="npWriteNode" alt="" coords="644,183,741,209"/>
+<area shape="rect" id="node7" href="$npdbz_8c.html#aa6ff848f31f6761c80db24afeefa609b" title="npNewerMapTraverseTreeLL" alt="" coords="382,157,566,184"/>
+<area shape="rect" id="node9" href="$npdbz_8c.html#a0aff4ce29b965c98a739df251f52a2d9" title="npNewInitChunksObj" alt="" coords="403,309,545,336"/>
+<area shape="rect" id="node10" href="$npdbz_8c.html#aad9004c6ad23a453de58e5638219e0e6" title="npInitAllChunkObjects" alt="" coords="399,259,549,285"/>
+<area shape="rect" id="node11" href="$npdbz_8c.html#a179c0d4683b244788ce6c8e6c0914a1d" title="npGeneralAddObjectsToChunks" alt="" coords="371,360,577,387"/>
+<area shape="rect" id="node12" href="$npdbz_8c.html#a310b781c41d10211a85c4ef7e677d2ff" title="npInitcsvStrObjects" alt="" coords="625,360,760,387"/>
+<area shape="rect" id="node14" href="$npdbz_8c.html#adf319e6ca190b7f8443011a0fe9205c8" title="npInsert" alt="" coords="440,56,508,83"/>
+</map>

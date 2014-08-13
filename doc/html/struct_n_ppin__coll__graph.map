@@ -1,0 +1,4 @@
+<map id="NPpin" name="NPpin">
+<area shape="rect" id="node2" href="$struct_n_pfloat_x_y_z.html" title="NPfloatXYZ" alt="" coords="5,5,92,32"/>
+<area shape="rect" id="node3" href="$struct_n_pfloat_x_y_z_a.html" title="NPfloatXYZA" alt="" coords="117,5,213,32"/>
+</map>

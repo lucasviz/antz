@@ -1,0 +1,39 @@
+<map id="npdbGetMenu" name="npdbGetMenu">
+<area shape="rect" id="node2" href="$npconsole_8c.html#a6e846a844b991786e128c68b7aa203df" title="npConsoleMenuText" alt="" coords="156,453,296,480"/>
+<area shape="rect" id="node37" href="$npio_8c.html#a22c0f5c9d435688c618dae204b12a6dc" title="npViewDatabases" alt="" coords="350,327,477,353"/>
+<area shape="rect" id="node3" href="$npconsole_8h.html#a4c27e6640bdc51d0264794ad7c1df4d9" title="npConsoleKeyEvent" alt="" coords="344,529,483,556"/>
+<area shape="rect" id="node4" href="$npkey_8c.html#af7e566fd9bb2cbe1cb796875b6d747c2" title="npKeyEvent" alt="" coords="531,555,621,581"/>
+<area shape="rect" id="node5" href="$npkey_8h.html#a00b111429816374c80cc98d131835d26" title="npKeyGlut" alt="" coords="669,725,752,752"/>
+<area shape="rect" id="node6" href="$npglut_8c.html#acc2492777b9ab274a7efbee6c4f975dc" title="npGlutKeyDown" alt="" coords="822,745,937,772"/>
+<area shape="rect" id="node34" href="$npglut_8c.html#ab983d2b933028c82661723e7ab8fdfd6" title="npGlutKeyUp" alt="" coords="830,796,929,823"/>
+<area shape="rect" id="node35" href="$npglut_8c.html#a08136c4082a44c83a046385d2a3f985f" title="npGlutKeyDownSpecial" alt="" coords="800,847,959,873"/>
+<area shape="rect" id="node36" href="$npglut_8c.html#a800a7ea44839aea4668e0c7487906c3c" title="npGlutKeyUpSpecial" alt="" coords="808,695,951,721"/>
+<area shape="rect" id="node7" href="$npglut_8h.html#a039f17e4c533e72caa23e6e80028fba8" title="npInitGlut" alt="" coords="2377,680,2455,707"/>
+<area shape="rect" id="node11" href="$npglut_8h.html#a60c18b2f0ea9c0d97f32194d15695c8e" title="npglFullscreen" alt="" coords="1007,756,1113,783"/>
+<area shape="rect" id="node8" href="$npglut_8h.html#a68bfac6da07339845bda2541c46ba60d" title="npAppLoopGlut" alt="" coords="2503,623,2613,649"/>
+<area shape="rect" id="node9" href="$npctrl_8h.html#aca375c047bb7c89e59c1f9f926cd1c21" title="npAppLoop" alt="" coords="2661,565,2748,592"/>
+<area shape="rect" id="node10" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="using doxygen with graphviz for inline code docs " alt="" coords="2796,512,2847,539"/>
+<area shape="rect" id="node12" href="$npctrl_8c.html#a4e89ef4ef00723f54a007124b0e805f3" title="npCtrlGlobal" alt="" coords="1161,635,1255,661"/>
+<area shape="rect" id="node13" href="$npctrl_8h.html#a6cacc121bf6448fa65b9be26084e17c0" title="npCtrlCommand" alt="" coords="1303,428,1417,455"/>
+<area shape="rect" id="node14" href="$npcsv_8c.html#a35017067e697bdad3c64013af7213a03" title="npUpdateGlobals" alt="" coords="1487,93,1609,120"/>
+<area shape="rect" id="node21" href="$nposc_8h.html#aa2d85df395c59520bf357603abcecf54" title="npOscRx" alt="" coords="1510,144,1586,171"/>
+<area shape="rect" id="node23" href="$class_osc_track_packet_listener.html#a985cf9f024dd775c19e33814be5ea1ce" title="OscTrackPacketListener\l::processCommands" alt="" coords="1465,398,1631,439"/>
+<area shape="rect" id="node24" href="$npconsole_8h.html#a1927c78c93174f24ad630fe0ca044f55" title="npConsoleCmdText" alt="" coords="1481,717,1615,744"/>
+<area shape="rect" id="node26" href="$npmouse_8h.html#adc0e287d00389cd08fed6df9844399e9" title="npMouseEvent" alt="" coords="2223,680,2329,707"/>
+<area shape="rect" id="node27" href="$npfile_8h.html#a45b7d1221514abb17998497225515b09" title="npOpenNode" alt="" coords="1499,245,1597,272"/>
+<area shape="rect" id="node28" href="$npfile_8h.html#a4f81436ec00d62d28769ade7d33d1bc1" title="npFileBrowser" alt="" coords="1707,245,1811,272"/>
+<area shape="rect" id="node29" href="$npgl_8c.html#a9d2c12e7726af7d5ec202431bf0d143e" title="npSetMode" alt="" coords="1504,667,1592,693"/>
+<area shape="rect" id="node30" href="$npgl_8c.html#aa5b88bbe40d785523352f2d4ee7e4c15" title="npPickHUD" alt="" coords="1714,641,1803,668"/>
+<area shape="rect" id="node31" href="$npgl_8c.html#a800aea14d3af94f6ffdfc7e16c1e9708" title="npPickTool" alt="" coords="1913,641,1999,668"/>
+<area shape="rect" id="node32" href="$npmouse_8h.html#ac1adcf8a9da1c73544ca3568c90f7af0" title="npMouseWheel" alt="" coords="1900,376,2012,403"/>
+<area shape="rect" id="node33" href="$npdata_8h.html#a2415077b243d4cb05ebab6eb2dbe27fc" title="npDataPreset" alt="" coords="1497,464,1599,491"/>
+<area shape="rect" id="node15" href="$npcsv_8c.html#af4d1d25c18103c8cd788189f0f0f3dbc" title="npOpenMapCSV" alt="" coords="1699,128,1818,155"/>
+<area shape="rect" id="node16" href="$npcsv_8h.html#a947755ee751567f2e82d5037bcaf9f7b" title="npOpenGlobalsCSV" alt="" coords="1887,144,2025,171"/>
+<area shape="rect" id="node17" href="$npfile_8h.html#a96a1d0975d94eea80f7abbbfca8e905e" title="npInitFile" alt="" coords="2239,169,2313,196"/>
+<area shape="rect" id="node19" href="$npfile_8h.html#afbdef67fa7dde42002f509ac175bc5ea" title="npLoadScene" alt="" coords="2073,195,2175,221"/>
+<area shape="rect" id="node18" href="$npio_8h.html#aa0718cb8bfee8213adf6dcecdad69e59" title="npInitIO" alt="" coords="2383,228,2449,255"/>
+<area shape="rect" id="node20" href="$npctrl_8c.html#ab5d63da4df67eb6d38b59fad2543d3a8" title="npCtrlFile" alt="" coords="2237,233,2315,260"/>
+<area shape="rect" id="node22" href="$class_osc_antz_packet_listener.html#a5c06189a85e9f9096d824fc6aa0b36ae" title="OscAntzPacketListener\l::ProcessMessage" alt="" coords="1679,179,1839,221"/>
+<area shape="rect" id="node25" href="$npgl_8h.html#ae231e62bdeea1061176b20a544b3369f" title="npPick" alt="" coords="2093,680,2155,707"/>
+<area shape="rect" id="node38" href="$npio_8h.html#a450ed70c46207a44f713be20c76af391" title="npViewer" alt="" coords="539,224,613,251"/>
+</map>

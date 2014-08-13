@@ -1,0 +1,6 @@
+<map id="npDrawNodeTags" name="npDrawNodeTags">
+<area shape="rect" id="node2" href="$npdata_8c.html#adf8479252f67ced617edacde0b5d9681" title="npGetDataRef" alt="" coords="195,5,298,32"/>
+<area shape="rect" id="node3" href="$nptags_8c.html#a93ab0098420488344ab0777680c0007b" title="npDrawNodeTextTag" alt="" coords="176,56,317,83"/>
+<area shape="rect" id="node4" href="$npgldraw_8c.html#a8a7b226dbd5eae1798160bb8d3f5e92d" title="npIDtoRGB" alt="" coords="383,31,470,57"/>
+<area shape="rect" id="node5" href="$nptags_8c.html#af1e3fc9846f3a88a8272e77572206105" title="npGlutDrawString" alt="" coords="365,81,488,108"/>
+</map>

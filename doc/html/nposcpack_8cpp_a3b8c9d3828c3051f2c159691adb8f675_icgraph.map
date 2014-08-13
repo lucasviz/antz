@@ -1,0 +1,8 @@
+<map id="initAdapter" name="initAdapter">
+<area shape="rect" id="node2" href="$nposcpack_8h.html#ae3c4ae8eb52346ce9c74ff5bf85d8e08" title="npInitOscPackListener" alt="" coords="137,31,291,57"/>
+<area shape="rect" id="node7" href="$nposcpack_8h.html#ad7f8b36c78c4f128e0b735ca5d0aec40" title="npInitOscPackSender" alt="" coords="140,81,288,108"/>
+<area shape="rect" id="node3" href="$nposc_8h.html#ae5a8377f2f3fe36590360481e23ccc55" title="npInitOSC" alt="" coords="352,5,433,32"/>
+<area shape="rect" id="node6" href="$nposcpack_8cpp.html#a25bfce602e7cac3d28ba7154b5c2ebf5" title="npOscConnect" alt="" coords="339,56,447,83"/>
+<area shape="rect" id="node4" href="$npio_8h.html#aa0718cb8bfee8213adf6dcecdad69e59" title="npInitIO" alt="" coords="495,5,561,32"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="using doxygen with graphviz for inline code docs " alt="" coords="609,5,660,32"/>
+</map>

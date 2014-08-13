@@ -1,0 +1,23 @@
+<map id="npCircularBufferLoadLoop" name="npCircularBufferLoadLoop">
+<area shape="rect" id="node2" href="$npch_8c.html#a137eb5336be07a5563e3c27c48f2cb65" title="SaveHeaders" alt="" coords="261,108,359,135"/>
+<area shape="rect" id="node4" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="1011,132,1099,159"/>
+<area shape="rect" id="node5" href="$npch_8c.html#a6639cb02a5554feb60adc18bb059caeb" title="npChReadTrackTokens" alt="" coords="445,305,601,332"/>
+<area shape="rect" id="node9" href="$npch_8c.html#a49f2c5ebd294122002222d9287c0c831" title="CreateTracks" alt="" coords="474,5,573,32"/>
+<area shape="rect" id="node10" href="$npch_8c.html#ada16595a272cbdca8c32b9548d5195dd" title="npChHasValidDataSource" alt="" coords="224,261,396,288"/>
+<area shape="rect" id="node11" href="$npch_8c.html#ae7ab5a1c568b9f7e753a683616a61f72" title="npChSaveTrackData" alt="" coords="241,312,379,339"/>
+<area shape="rect" id="node12" href="$npos_8h.html#a2f80949fe1ec5c7e47f209c320ce434e" title="nposSupportsAntzThreads" alt="" coords="223,363,397,389"/>
+<area shape="rect" id="node13" href="$npos_8h.html#a5486d5e81e06b7e0fab70ff892817c2f" title="nposSleep" alt="" coords="269,413,351,440"/>
+<area shape="rect" id="node14" href="$npch_8c.html#a9cafbd564dff852bb1ca846549fff46f" title="npCloseDataSource" alt="" coords="241,464,379,491"/>
+<area shape="rect" id="node16" href="$npch_8c.html#ae51801c70c1103ea861f22efbfd34ab5" title="npReopenDataSource" alt="" coords="236,160,384,187"/>
+<area shape="rect" id="node22" href="$npos_8h.html#a080a5155d69d4369c1a32377564d3fe1" title="nposEndThread" alt="" coords="254,515,366,541"/>
+<area shape="rect" id="node3" href="$npch_8c.html#ad0f5f31cb6b86c05e36d11008b33d369" title="SaveHeader" alt="" coords="666,108,757,135"/>
+<area shape="rect" id="node6" href="$npch_8c.html#ae6b2ec89bb80904441f4909767da91b2" title="npChReadLine" alt="" coords="821,309,928,336"/>
+<area shape="rect" id="node7" href="$npch_8c.html#ae133ae7b2252fcec4c7fce01a4b37da6" title="npChReadLineFromFile" alt="" coords="976,284,1133,311"/>
+<area shape="rect" id="node8" href="$nposcpack_8cpp.html#a8e8686efe65ed9270a4cc946dd4a431e" title="npOscReadLine" alt="" coords="997,335,1112,361"/>
+<area shape="rect" id="node15" href="$npfile_8c.html#adb642a83987989626f06f091e4c0d303" title="npFileClose" alt="" coords="478,464,569,491"/>
+<area shape="rect" id="node17" href="$npfile_8c.html#a2992502e8cb1ccee23ce340003f080cf" title="npFileOpen" alt="" coords="667,191,755,217"/>
+<area shape="rect" id="node20" href="$npch_8c.html#abe9887aeda59ff8359fe39c3f10ce7de" title="npChTrackTokens" alt="" coords="460,243,587,269"/>
+<area shape="rect" id="node18" href="$npmap_8c.html#a6bce2f8f42a20c172ccc4f132a60a715" title="npMalloc" alt="" coords="837,157,912,184"/>
+<area shape="rect" id="node19" href="$npmap_8c.html#aface12b6cf40d6b874d6fdfb90aa67ca" title="npFree" alt="" coords="843,208,906,235"/>
+<area shape="rect" id="node21" href="$npch_8c.html#acde53b1341fd991a50af1f6c72c8511f" title="npChReadTokens" alt="" coords="649,252,773,279"/>
+</map>

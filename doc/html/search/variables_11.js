@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['r',['r',['../struct_n_pfloat_r_g_b.html#a4788d82c901b9367dd5c0daff8a7616b',1,'NPfloatRGB::r()'],['../struct_n_pfloat_r_g_b_a.html#a4788d82c901b9367dd5c0daff8a7616b',1,'NPfloatRGBA::r()'],['../struct_n_pubyte_r_g_b_a.html#afd7b1ea9ff115205b65e0bffc92946ac',1,'NPubyteRGBA::r()']]],
+  ['radius',['radius',['../struct_n_pcircle.html#ac485d32a1bd89fc2bfc844a28ad8ea7f',1,'NPcircle']]],
+  ['radiusratioindex',['radiusRatioIndex',['../struct_n_ppin.html#a6b0eb89770b5486a591772f5cff69527',1,'NPpin']]],
+  ['ram',['RAM',['../struct_n_pcpu.html#a02a0a034cba505ae2587df3553f8df8c',1,'NPcpu']]],
+  ['ratio',['ratio',['../struct_n_pnode.html#a207ad05f99cc72068a92358861ff5e71',1,'NPnode']]],
+  ['readindex',['readIndex',['../struct_n_pbuffer.html#a156a167b3519834250c7a7224402d794',1,'NPbuffer']]],
+  ['recordcount',['recordCount',['../struct_n_ptags.html#af2b3801705d4d78cc1f2ede923a177e6',1,'NPtags']]],
+  ['recordid',['recordID',['../struct_n_precord_tag.html#ac4ae39bfaca3fdfb03c9dbb4239206af',1,'NPrecordTag::recordID()'],['../struct_n_ptag.html#ac4ae39bfaca3fdfb03c9dbb4239206af',1,'NPtag::recordID()'],['../struct_n_pnode.html#ac4ae39bfaca3fdfb03c9dbb4239206af',1,'NPnode::recordID()']]],
+  ['recordlist',['recordList',['../struct_n_ptags.html#a83423836232fda2f02321fff680d568a',1,'NPtags']]],
+  ['refreshrate',['refreshRate',['../struct_n_pgl.html#a8d2dee94459105e68841839ad2b49520',1,'NPgl']]],
+  ['returntype',['returnType',['../struct_n_pfunc_desc.html#a30f0eb77494e95a86fe48db2c170684b',1,'NPfuncDesc']]],
+  ['root',['root',['../struct_n_phud.html#aa70e43511c259cfcc2655e253be6a2bf',1,'NPhud']]],
+  ['rotate',['rotate',['../struct_n_pnode.html#a99453df5267da8d9da3c36d7bf46c893',1,'NPnode::rotate()'],['../struct_n_ptool.html#ae57eef8c2e6c4f713c1afbed36b560fe',1,'NPtool::rotate()']]],
+  ['rotatea',['rotateA',['../struct_n_ptool.html#af404e578a80baba7492069ba49452d78',1,'NPtool']]],
+  ['rotateb',['rotateB',['../struct_n_ptool.html#af55f93b25182d1a0aea90fcb17d44dd4',1,'NPtool']]],
+  ['rotaterate',['rotateRate',['../struct_n_pnode.html#aa131dc89a9f3b0efbec70623a1f42fac',1,'NPnode']]],
+  ['rotatetex',['rotateTex',['../struct_n_ppin.html#ad9bef5ea7bfa724d607d89a674851711',1,'NPpin']]],
+  ['rotatevec',['rotateVec',['../struct_n_pnode.html#aff3151554580d15a0b7cd6304686c989',1,'NPnode']]],
+  ['route',['route',['../struct_n_pnode2.html#adb58596bfeb3934cd8788a7b986ed758',1,'NPnode2']]],
+  ['rxip',['rxIP',['../struct_n_posc_item.html#ab3f8df20a0ca515d15455e18708981bb',1,'NPoscItem::rxIP()'],['../struct_n_posc_pack_listener.html#a4fe5a14c63187fc64a9de856d70c8fbd',1,'NPoscPackListener::rxIP()']]],
+  ['rxport',['rxPort',['../struct_n_posc_item.html#a9c20f05a57f231c790bb5d4529cf3b50',1,'NPoscItem::rxPort()'],['../struct_n_posc_pack_listener.html#a9c20f05a57f231c790bb5d4529cf3b50',1,'NPoscPackListener::rxPort()']]],
+  ['rxurl',['rxURL',['../struct_n_posc_pack_listener.html#abc0ad3ff1cfe4d3a493847134dd28ce8',1,'NPoscPackListener']]]
+];

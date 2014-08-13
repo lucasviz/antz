@@ -1,0 +1,5 @@
+<map id="npDrawFPS" name="npDrawFPS">
+<area shape="rect" id="node2" href="$nptags_8c.html#a845a433792230d44db3e2f7ddaf454e1" title="npUpdateTag" alt="" coords="150,5,249,32"/>
+<area shape="rect" id="node3" href="$nptags_8c.html#a30e2518d733e580ed920d0ef6af6338f" title="npDrawTextTag" alt="" coords="144,56,255,83"/>
+<area shape="rect" id="node4" href="$nptags_8c.html#af1e3fc9846f3a88a8272e77572206105" title="npGlutDrawString" alt="" coords="303,56,425,83"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="sdk/src/io/npmouse.h" name="sdk/src/io/npmouse.h">
+<area shape="rect" id="node2" href="$npengine_8c.html" title="sdk/src/ctrl/npengine.c" alt="" coords="5,80,160,107"/>
+<area shape="rect" id="node3" href="$nposc_8c.html" title="sdk/src/io/net/nposc.c" alt="" coords="185,80,335,107"/>
+<area shape="rect" id="node4" href="$npconsole_8c.html" title="sdk/src/io/npconsole.c" alt="" coords="359,80,513,107"/>
+<area shape="rect" id="node5" href="$npglut_8c.html" title="sdk/src/io/npglut.c" alt="" coords="537,80,666,107"/>
+<area shape="rect" id="node6" href="$npmouse_8c.html" title="sdk/src/io/npmouse.c" alt="" coords="691,80,837,107"/>
+<area shape="rect" id="node7" href="$npctrl_8c.html" title="sdk/src/npctrl.c" alt="" coords="861,80,973,107"/>
+<area shape="rect" id="node8" href="$npdata_8c.html" title="sdk/src/npdata.c" alt="" coords="998,80,1117,107"/>
+<area shape="rect" id="node9" href="$npio_8c.html" title="sdk/src/npio.c" alt="" coords="1141,80,1245,107"/>
+</map>

@@ -1,0 +1,33 @@
+<map id="npInitGL" name="npInitGL">
+<area shape="rect" id="node2" href="$npgldraw_8c.html#aaaa92aaa47e966dfe9d8ad23dc7fdf6d" title="npInitGLDraw" alt="" coords="134,81,233,108"/>
+<area shape="rect" id="node10" href="$npgeometry_8c.html#ac4b9dce4e44cb9a347bfeca3913eaa03" title="npInitGLPrimitive" alt="" coords="124,284,243,311"/>
+<area shape="rect" id="node31" href="$nptags_8c.html#af0a4be48d03ad1601cc0c640547b8bdd" title="npInitTags" alt="" coords="143,335,224,361"/>
+<area shape="rect" id="node32" href="$npgl_8c.html#aa971a7cd71b7ebaf5e32efa144ca886a" title="npLoadTextures" alt="" coords="126,385,241,412"/>
+<area shape="rect" id="node3" href="$npos_8h.html#a004c3e29a2debd99f0b3a92476b6cb9d" title="nposBeginThread" alt="" coords="299,31,421,57"/>
+<area shape="rect" id="node4" href="$npgldraw_8c.html#a18c2710efbba660c3394f5b1a8a95fe1" title="npDrawSortThread" alt="" coords="296,81,424,108"/>
+<area shape="rect" id="node5" href="$npos_8h.html#a5486d5e81e06b7e0fab70ff892817c2f" title="nposSleep" alt="" coords="507,56,589,83"/>
+<area shape="rect" id="node6" href="$npgldraw_8c.html#a90e306222d427168e131050be7964d9e" title="npDrawSort" alt="" coords="503,107,593,133"/>
+<area shape="rect" id="node9" href="$npos_8h.html#a080a5155d69d4369c1a32377564d3fe1" title="nposEndThread" alt="" coords="492,5,604,32"/>
+<area shape="rect" id="node7" href="$npgldraw_8c.html#a5285108ae3dcfea7ff2a80c8ea014f0e" title="npDistance" alt="" coords="735,56,822,83"/>
+<area shape="rect" id="node8" href="$npgldraw_8c.html#a5cf39b11536fe7bf3e46dd7f47a7dcda" title="comparePinsDistanceFromCamera" alt="" coords="667,107,891,133"/>
+<area shape="rect" id="node11" href="$npgeometry_8c.html#a7ef5375f294a3108ef04bf45f4a4ed7a" title="CreatePinDL" alt="" coords="313,208,407,235"/>
+<area shape="rect" id="node15" href="$npgeometry_8c.html#ab73a4fd42035044a37b8960c34adaad3" title="CreatePinWireDL" alt="" coords="299,259,421,285"/>
+<area shape="rect" id="node19" href="$npgeometry_8c.html#a9dbfd3bcbd17ee2274bbb3631c4802eb" title="CreateTorusDL" alt="" coords="306,613,414,640"/>
+<area shape="rect" id="node22" href="$npgeometry_8c.html#adcb6ef8a4a24ede9c8abd51359dc4596" title="CreateTorusWireDL" alt="" coords="293,309,427,336"/>
+<area shape="rect" id="node25" href="$npgeometry_8c.html#aae2b4403b7a73462a1f9d3eaca256247" title="npCreatePrimitiveDL" alt="" coords="291,436,429,463"/>
+<area shape="rect" id="node12" href="$npgeometry_8c.html#ac1ff977a41a83cd78c67fc792c65ca46" title="DrawPinDL" alt="" coords="505,208,591,235"/>
+<area shape="rect" id="node13" href="$npglut_8c.html#a8a89ef3d0ad2eb69cb5f69f9e018c8d4" title="npGLSolidCone" alt="" coords="723,157,835,184"/>
+<area shape="rect" id="node14" href="$npglut_8c.html#ab76d07f1585491b71b747798043e5ff9" title="npGLSolidSphere" alt="" coords="717,208,840,235"/>
+<area shape="rect" id="node16" href="$npgeometry_8c.html#ab612f24429be5e0fab9bde26ef1690d3" title="DrawPinWireDL" alt="" coords="491,259,605,285"/>
+<area shape="rect" id="node17" href="$npglut_8c.html#a19e03caf8fe9e2518eb475e23126aa50" title="npGLWireCone" alt="" coords="723,259,834,285"/>
+<area shape="rect" id="node18" href="$npglut_8c.html#a91dac7de25126b8ef91955d0e77e6776" title="npGLWireSphere" alt="" coords="718,309,839,336"/>
+<area shape="rect" id="node20" href="$npgeometry_8c.html#a5f3c093fd010633894e8140178338b01" title="DrawTorusDL" alt="" coords="499,715,597,741"/>
+<area shape="rect" id="node21" href="$npglut_8c.html#a5990e5d357cb766828cccafc03b96cdc" title="npGLSolidTorus" alt="" coords="721,639,836,665"/>
+<area shape="rect" id="node23" href="$npgeometry_8c.html#a071dc8a702273b670e7abd2f7b261978" title="DrawTorusWireDL" alt="" coords="485,309,611,336"/>
+<area shape="rect" id="node24" href="$npglut_8c.html#a30e00052d3f9137489ac77cdc62bacc0" title="npGLWireTorus" alt="" coords="723,537,835,564"/>
+<area shape="rect" id="node26" href="$npgeometry_8c.html#afdc13649c5549fc24969dba6727c37b1" title="DrawSphereWireDL" alt="" coords="481,664,615,691"/>
+<area shape="rect" id="node27" href="$npgeometry_8c.html#aee069279b1a6cbe3d5291dff6fc9878f" title="DrawSphereDL" alt="" coords="494,360,602,387"/>
+<area shape="rect" id="node28" href="$npglut_8c.html#afceed00d943d03a83039a67bb55cc03e" title="npGlutPrimitive" alt="" coords="493,411,603,437"/>
+<area shape="rect" id="node29" href="$npgeometry_8c.html#a2a99f3cc7ccddf74d459ec51845873ad" title="DrawCylinderWireDL" alt="" coords="477,461,619,488"/>
+<area shape="rect" id="node30" href="$npgeometry_8c.html#ae8a695a60f5dc16ce5a5730ff18ad8a0" title="DrawCylinderDL" alt="" coords="491,512,605,539"/>
+</map>

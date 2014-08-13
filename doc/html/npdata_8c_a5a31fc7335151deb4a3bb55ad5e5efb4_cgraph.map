@@ -1,0 +1,8 @@
+<map id="npInitDataDB" name="npInitDataDB">
+<area shape="rect" id="node2" href="$npdb_8c.html#aad728f8204eca912e8097ddaecfa172a" title="npInitDB" alt="" coords="152,107,223,133"/>
+<area shape="rect" id="node3" href="$npmysql_8c.html#ae938b8c5b4cdfaf5d33f7daf105f4e28" title="npInitMySQL" alt="" coords="284,5,381,32"/>
+<area shape="rect" id="node4" href="$npostgresql_8c.html#a0a53827fe9bfa295bfc25042db67c30c" title="npInitPostgreSQL" alt="" coords="271,56,395,83"/>
+<area shape="rect" id="node5" href="$npsqlite_8c.html#a0e701f14bd3d8172770580c72553b7e1" title="npInitSQLite" alt="" coords="286,107,379,133"/>
+<area shape="rect" id="node6" href="$npmongo_8c.html#a963e5b212d7e615bf94e6ff9c077dcdb" title="npInitMongoDB" alt="" coords="277,157,388,184"/>
+<area shape="rect" id="node7" href="$npdbz_8c.html#a48b8790a8a63ebebc074e075a011f8f8" title="npAddDb" alt="" coords="295,208,370,235"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="npFileReadBlocks" name="npFileReadBlocks">
+<area shape="rect" id="node2" href="$npdata_8c.html#a68ad58ecffd383e4e9140750f8c9a56c" title="npPostMsg" alt="" coords="441,11,529,38"/>
+<area shape="rect" id="node3" href="$npfile_8c.html#a2992502e8cb1ccee23ce340003f080cf" title="npFileOpen" alt="" coords="181,36,269,63"/>
+<area shape="rect" id="node6" href="$npfile_8c.html#a9acb741081b836e45690597c5dd4c2f2" title="npFileRead" alt="" coords="182,87,269,114"/>
+<area shape="rect" id="node7" href="$npos_8h.html#a5486d5e81e06b7e0fab70ff892817c2f" title="nposSleep" alt="" coords="184,138,267,164"/>
+<area shape="rect" id="node8" href="$npfile_8c.html#adb642a83987989626f06f091e4c0d303" title="npFileClose" alt="" coords="180,188,271,215"/>
+<area shape="rect" id="node4" href="$npmap_8c.html#a6bce2f8f42a20c172ccc4f132a60a715" title="npMalloc" alt="" coords="319,62,393,88"/>
+<area shape="rect" id="node5" href="$npmap_8c.html#aface12b6cf40d6b874d6fdfb90aa67ca" title="npFree" alt="" coords="325,112,387,139"/>
+</map>
