@@ -28,33 +28,51 @@
 #include "io/npch.h"
 #include "io/npmouse.h"
 #include "io/npconsole.h"
-#include "io/npdb.h"
 #include "io/net/nposc.h"
-#include "io/db/npdbz.h"
+
+#include "io/db/npdb.h"
 
 
+/*! Initialize IO systems
+*
+*	@param dataRef is a global map reference instance
+*
+*	@todo add shared resource handling for multiple global map instances
+*
+*/
 //-----------------------------------------------------------------------------
-void npInitIO (void* dataRef)
+void npInitIO( void* dataRef )
 {
+	/// init the local IO devices
 
-	//init the local IO devices
+	/// launch file services and updates hard-coded global variables from file
+	npInitFile( dataRef );
+
+	/// Plugin Manager for native libraries and 3rd party modules.
+	/// Once loaded, plugins can modify any method or data.
+	npInitPlugin( dataRef );
+
+	/// IO channels use both local drives and networking
+	npInitCh( dataRef );	
+
+	/// keyboard mapping and event handling
 //	npInitKeyboard (dataRef);		//zz
-	npInitMouse (dataRef);
+
+	/// mouse event handling
+	npInitMouse( dataRef );
 //	npInitSerial (dataRef);			//zz support terminal based system boot-up
 
-	//launch file services and updates hard-coded global variables from file
-	npInitFile (dataRef);
-
-	//IO channels use both local drives and networking
-	npInitCh (dataRef);													//zz-JJ
-
-	//audio video input and output
+	/// audio video input and output
 //  npInitAV (dataRef);				//zz
+	npInitVideo( dataRef );
 
-	//start network connections which in turn can further update init state
-	npInitOSC (dataRef);			//zz-osc
+	/// start network connections which in turn can further update init state
+	npInitOSC( dataRef );			//zz-osc
 
-	npConnectDB (dataRef);				//zzsql
+	/// @todo change npConnectDB over to npInitDB
+//	npInitDB( dataRef );
+
+	npConnectDB( dataRef );				//zzsql
 }
 
 
@@ -73,8 +91,6 @@ void npUpdateIO (void* dataRef)
 {
 	pData data = (pData) dataRef;
 
-	pNPdb db = &data->io.db[0];		//zz db
-
 	data->io.cycleCount++;
 
 	//we double buffer the mouse delta movement to maintain engine cycle sync
@@ -82,21 +98,10 @@ void npUpdateIO (void* dataRef)
 	
 	npUpdateConsole (dataRef);
 
-	npUpdateCh (dataRef);	//zz-JJ
+	npUpdateCh (dataRef);			//zz-JJ
 
-//	npUpdateDB( dataRef );
-	//zzsql //zz db
-	if( db->autoUpdate )
-	{
-		if( data->io.cycleCount % db->updatePeriod == 0 )
-			db->update = true;
-	}
+	npUpdateDB( dataRef );			//zz db
 
-	if( db->update )
-	{
-		npdbUpdateAntzStateFromDatabase( dataRef );
-		db->update = false;
-	}
 }
 
 
@@ -121,15 +126,23 @@ void npdbLoadMenuItem (int menuItem, void* dataRef);
 //------------------------------------------------------------------------------
 void npdbLoadMenuItem (int menuItem, void* dataRef)
 {
+	char msg[kNPurlMax];
 
 	pData data = (pData) dataRef;											//zzsql
 	pNPdatabases dbList = ((struct databases*)data->io.dbs)->dbList;
-	char *selectedItem = NULL;
+	char selectedItem[kNPurlMax];
 
 	//load database by item index using same list that generated the menu
-	selectedItem = dbList->list[menuItem];
+	strcpy( selectedItem, dbList->list[menuItem] );
 	
+	sprintf(msg,"Loading DB: %s", selectedItem);
+	npPostMsg( msg, kNPmsgDB, dataRef );
+	
+	// @todo replace this with npdbLoad() and support tags, globals, etc.
 	npdbLoadNodeTbl(menuItem, dataRef);
+
+	sprintf( msg,"Done Loading DB: %s", selectedItem );
+	npPostMsg( msg, kNPmsgDB, dataRef );
 }
 //zz dbz
 /*
@@ -168,7 +181,7 @@ void npdbLoadMenuItem (int menuItem, void* dataRef)
 }
 */
 //zz debug, test function can be used as a template
-pNPmenu npdbGetMenu (void* dataRef);
+
 //------------------------------------------------------------------------------
 pNPmenu npdbGetMenu (void* dataRef)
 {
@@ -177,19 +190,22 @@ pNPmenu npdbGetMenu (void* dataRef)
 
 //	char name[256] = "antz1209111652\0";
 	char* name = NULL;
-	char path[kNPmaxPath] = "127.0.0.1\0"; //data->io.db.list[i]			//zzsql
+//	char path[kNPmaxPath] = "127.0.0.1\0"; //data->io.db.list[i]			//zzsql
+	char path[kNPmaxPath]; 
 
 	pNPdatabases dbList = NULL;
 	pNPmenu menu = NULL;
 
 	pData data = (pData) dataRef;
 
-	//get current list of databases and store it in the global data struct
-	printf("\nnpdbGetList");
-//	dbList = (pNPdatabases)npdbGetList(dataRef);
-	dbList = (pNPdatabases)npdbGetList(&data->io.dbs->myDatabase[0]);
 
-	printf("\nAfter npdbGetList");
+	//get current list of databases and store it in the global data struct
+//	printf("\nnpdbGetList");
+//	dbList = (pNPdatabases)npdbGetList(dataRef);
+	dbList = (pNPdatabases)npdbGetList(&data->io.dbs->myDatabase[0], data );
+	if( !dbList ) return NULL;
+
+//	printf("\nAfter npdbGetList");
 //	data->io.db.list = dbList;
 //	data->io.dbs->dbList->list = dbList;
 
@@ -198,7 +214,7 @@ pNPmenu npdbGetMenu (void* dataRef)
 //	((struct dbNewConnect*)data->io.dbs)->dbList = dbList;				//zzsql
 	
 	menu = malloc(sizeof(NPmenu));
-	if (!menu)
+	if( !menu )
 	{
 		npPostMsg("err 2255 - malloc failed npdbGetMenu", kNPmsgErr, dataRef);
 		return NULL;
@@ -207,30 +223,41 @@ pNPmenu npdbGetMenu (void* dataRef)
 //	itemCount = ((struct dbNewConnect*)data->io.dbs)->dbList->size;		//zzsql
 	itemCount = ((struct databases*)data->io.dbs)->dbList->size;
 	menu->list = malloc(sizeof(char*) * itemCount);
+	if( !menu->list )
+	{
+		npPostMsg("err 2256 - malloc failed npdbGetMenu", kNPmsgErr, dataRef);
+		return NULL;
+	}
 
 	//set the menubar fields
-	menu->name = npNewStrcpy("DB Name", data);
-	menu->details = npNewStrcpy("Location", data);
+	menu->name = npNewStrcpy("Database", data);
+	menu->details = npNewStrcpy("Location               |   Nodes", data);
+	if( !menu->name || !menu->details ) return NULL;
 
 	//copy the db list to the menu format
 	for (i=1; i <= itemCount; i++)
 	{
-		menu->list[i] = malloc(80 + 1);
+		menu->list[i] = malloc( 80 + kNPurlMax );	//host can be a URL
 		if (!menu)
 		{
-			npPostMsg("err 2256 - malloc failed npdbGetMenu", kNPmsgErr, dataRef);
+			npPostMsg("err 2257 - malloc failed npdbGetMenu", kNPmsgErr, dataRef);
 			return NULL;
 		}
 //		name = ((struct dbNewConnect*)data->io.dbs)->dbList->list[i];		  //zzsql
+		//get the host address, can be URL, IPv4 or IPv6 as a string
+		strcpy( path, data->io.dbs->myDatabase[0].hostIP );
+
 		name = ((struct databases*)data->io.dbs)->dbList->list[i];
-		sprintf (menu->list[i], "|%4.0d.| %16s | %40s |", i, (const char*)name, path); //zzsql
-		printf("\n%s", menu->list[i]);
+		sprintf (menu->list[i], "|%4.0d.| %-33s| %-23s|%10d |", i, (const char*)name, path, 123456 ); //zzsql
+//		printf("\n%s", menu->list[i]);
 //		sprintf (menu->list[i], "|%4.0d.| %16s | %40s |", i, name, path);	//zzsql
 		//dbList->list[i].name, dbList->list[i].details
 	}
 
 	//set the list size
 	menu->count = itemCount;
+
+	npPostMsg( "Loaded DB List!", kNPmsgDB, dataRef );
 
 	return menu;
 }
@@ -373,4 +400,5 @@ void npPostNodeID( pNPnode node, void* dataRef )
 			
 		npPostMsg (msg, kNPmsgCtrl, dataRef);
 }
+
 

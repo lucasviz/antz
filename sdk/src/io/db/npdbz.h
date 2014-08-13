@@ -22,6 +22,9 @@
 *
 * --------------------------------------------------------------------------- */
 
+#ifndef NPDBZ_H_
+#define NPDBZ_H_
+
 #include "../../npdata.h"
 
 #include <my_global.h>
@@ -83,14 +86,15 @@ struct dbFunction {
 // Perhaps a sub-structure inside database which deals with database specific stuff
 struct database {
 	char dbType[kNPurlMax];   // "mysql" "oracle" "postgresql", etc...
-	int connid;     // Might be better for this to be void*
+	int id;     // Might be better for this to be void*
 	int port;       // Default for MySQL is 3306
 
 	char hostIP[kNPurlMax];   // This could be static
 	char user[kNPurlMax];     // root
 	char password[kNPurlMax]; // admin 
 	char currentlyUsedDatabase[kNPurlMax];
-	int idMap[kNPnodeMax];
+	int* idMap;
+	//int idMap[kNPnodeMax];
 
 	struct dbFunction *db;
 };
@@ -119,13 +123,25 @@ int dbHook(struct dbFunction *db, char* filePath, int dbtype);
 //int npConnectToDatabaseServer(struct dbNewConnect *connect, void* dataRef);
 void main2(void* dataRef);
 
-int npAddDb(struct databases *dbs, char* dbType, char* hostIP, char* user, char* pass, char* dbname, void* dataRef);
-int npUseDatabase2(int connid, struct dbFunction *db, char* dbname);
-int npSelect(int connid, struct dbFunction *db, char* tblname); //Add field(s) choice later
+int npAddDb(struct databases *dbs, char* dbType, char* hostIP, char* user, char* pass, char* dbName, void* dataRef);
+int npUseDatabase2(int connid, struct dbFunction *db, char* dbName);
+int npSelect(int connid, struct dbFunction *db, char* table); //Add field(s) choice later
 void npNewFreeChunks(struct newChunksObj * chunks, void* dataRef);
-char* npMysqlInsertStatement(char* tblname, struct newChunkObj *value);
+char* npMysqlInsertStatement(char* table, struct newChunkObj *value);
 int npdbLoadNodeTbl(int menuItem, void* dataRef);
-void npdbSaveAntzStateToDatabase(void* dataRef);
+void npdbSaveScene(void* dataRef);
 int npOpenDb(struct database *db);
 int npAttachDbsToDataRef(struct databases *dbs, void* dataRef);
+
+void* npdbGetList( struct database *db, void* dataRef );				//zz db
+int npdbUpdateAntzStateFromDatabase( void* dataRef );	//zz db
+
+//int npdbSaveAs( int connectID, const char* dbName, void* dataRef )
+
+int npdbTruncate(int dbID, struct dbFunction *db, char* table); //zz db
+int npdbPushScene ( int dbID, const char* dbName, void* dataRef );
+int npDropDatabase(int dbID, struct dbFunction *db, const char* dbName, void* dataRef );
+int npdbSaveAs( int dbID, const char* dbName, void* dataRef );
+
+#endif
 

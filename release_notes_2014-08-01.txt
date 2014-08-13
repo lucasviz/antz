@@ -1,6 +1,24 @@
 - Release Notes -                                        http://openantz.com
 
-         also see 'Tickets - Bugs' and 'Wiki' on sf.net/p/openantz
+         also see 'Issues' and 'Wiki' on http://github.com/openantz
+
+----------------------------------------------------------------------------
+antz_msw_2014-08-01
+
+1) Press '/' (question '?' key) to access new Database Tools:
+ a) SAVE 'example_name' to create a new DB.
+ b) USE command to switch which DB to update from or to.
+ c) DROP command to delete a database forever.
+ d) SELECT command to select nodes using MySQL 'WHERE' syntax.
+ e) SET command to set node attributes using MySQL syntax.
+ f) As before, can enter a menu item # to load a DB.
+2) Press SHIFT+'/' to Save a time-stamped DB, as before.
+3) Press ALT+'/' to Load Update from the DB.
+4) Press SHIFT+ALT+'/' to Save an Update to the DB from the Scene.
+5) New remote MySQL host support, edit antzglobals.csv to set host.
+6) Fixed issue#109 - MySQL breaks if you change login in antzglobals.csv
+
+*Note the MySQL host server may restrict certain tools such as SAVE new DB.
 
 ----------------------------------------------------------------------------
 antz_msw_2014-06-29

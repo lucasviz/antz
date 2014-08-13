@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 *
-*  npio.h
+*  npvideo.c
 *
 *  ANTz - realtime 3D data visualization tools for the real-world, based on NPE.
 *
@@ -22,33 +22,26 @@
 *
 * --------------------------------------------------------------------------- */
 
-#ifndef NPIO_H_
-#define NPIO_H_
+#include "npvideo.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
 
-#include "npdata.h"
-#include "io/npconsole.h"
-#include "io/plugin/npplugin.h"
+//------------------------------------------------------------------------------
+void npInitVideo (void* dataRef)
+{
+	return;
+}
 
-void npInitIO (void* data);			// may update default init from pref file
+//------------------------------------------------------------------------------
 
-void npCloseIO (void* data);
+void npCloseVideo (void* dataRef)
+{
+	return;
+}
 
-void npUpdateIO (void* dataRef);
+//------------------------------------------------------------------------------
+void npUpdateVideo (void* dataRef)
+{
+	return;
+}
 
-void npViewer (void* dataRef);
-void npConsole (void* dataRef);
-
-//
-void npPostNodeID( pNPnode node, void* dataRef );	//zz debug move -> io/...
-
-pNPmenu npdbGetMenu (void* dataRef);
-
-#ifdef __cplusplus
-	}
-#endif
-#endif
 

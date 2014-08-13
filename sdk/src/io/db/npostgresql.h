@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 *
-*  npdb.c
+*  npostgresql.h
 *
 *  ANTz - realtime 3D data visualization tools for the real-world, based on NPE.
 *
@@ -22,31 +22,17 @@
 *
 * --------------------------------------------------------------------------- */
 
-#ifndef NPDB_H_
-#define NPDB_H_
+#ifndef NPOSTGRES_H_
+#define NPOSTGRES_H_
 
-#include "../npdata.h"
+//#include <postgresql.h>
 
-// #include "db/npmysql.h"	//zz debug move to npdb.c and re-direct dependencies	//zz dbz
+/// @todo Implement PostGreSQL database client library.
 
-//------------------------------------------------------------------------------
-void npInitDB (void* dataRef);
-void npConnectDB (void* dataRef);	//zz db2
-void npCloseDB (void* dataRef);
 
-void npUpdateDB (void* dataRef);
-
-//get list of databases by name
-pNPdatabases npdbGetDatabases (void* dataRef);
-
-//format list of DBs as a menu struct
-pNPmenu npdbFormatMenu (pNPdatabases dbList, void* dataRef);
-
-//returns pointer to the migrated table
-void* npMigrateTable(void* tablePtr, int size, int formatID, void* dataRef);
-
-//prompt user for migration source dataset and to select format mapping prefs	//zz debug
-void npMigrate(int tableMap, void* dataRef);
+void npInitPostgreSQL (void* dataRef);
+void npClosePostgreSQL (void* dataRef);
+void npUpdatePostgreSQL (void* dataRef);
 
 
 #endif

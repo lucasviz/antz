@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 *
-*  npdbgen.h
+*  npmongo.h
 *
 *  ANTz - realtime 3D data visualization tools for the real-world, based on NPE.
 *
@@ -22,8 +22,18 @@
 *
 * --------------------------------------------------------------------------- */
 
-int npGenMysqlFields(char* fields, int count, int type, void* dataRef);
-void npGenMysqlQuery(struct mysqlObject *object, void* dataRef);
-void npGenMysqlDatabaseQuery(struct mysqlObject *object);
-void npGenMysqlTableQuery(struct mysqlObject *object, void* dataRef);
+#ifndef NPMONGO_H_
+#define NPMONGO_H_
+
+//#include <postgresql.h>
+
+/// @todo Implement MongoDB client library.
+
+
+void npInitMongoDB (void* dataRef);
+void npCloseMongoDB (void* dataRef);
+void npUpdateMongoDB (void* dataRef);
+
+
+#endif
 

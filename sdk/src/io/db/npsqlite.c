@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 *
-*  npdbinit.h
+*  npsqlite.c
 *
 *  ANTz - realtime 3D data visualization tools for the real-world, based on NPE.
 *
@@ -22,8 +22,25 @@
 *
 * --------------------------------------------------------------------------- */
 
-struct mysqlObject* npInitMySQLDatabase(char* name);
-struct mysqlObject* npNewInitMySQLTable(char *name);
-struct mysqlObject* npInitMysqlQuery();
-void npInitDbConnectMySQL (struct dbConnectMysql *connection, char* host, char* user, char* pass, char* db);
+#include "npsqlite.h"
+
+
+//------------------------------------------------------------------------------
+void npInitSQLite (void* dataRef)
+{
+	return;
+}
+
+//------------------------------------------------------------------------------
+void npCloseSQLite (void* dataRef)
+{
+	return;
+}
+
+//------------------------------------------------------------------------------
+void npUpdateSQLite (void* dataRef)
+{
+	return;
+}
+
 

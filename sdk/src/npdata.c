@@ -32,6 +32,7 @@
 #include "io/npgl.h"
 #include "os/npos.h"
 
+#include "io/db/npdb.h"		//zz db
 
 void* gData;
 
@@ -633,6 +634,7 @@ data->io.connectCount = 0;
 	osc->size = sizeof(NPosc) + size;
 }
 
+
 //------------------------------------------------------------------------------
 void npInitDataDB (struct databases* dbs, void* dataRef)
 {
@@ -642,6 +644,7 @@ void npInitDataDB (struct databases* dbs, void* dataRef)
 
 	pNPdb db = NULL;
 
+	/// @todo move InitDB() to npmysql.h
 	npInitDB (dataRef);				//zz db
 
 	for( i=0; i < kNPdbMax; i++ )

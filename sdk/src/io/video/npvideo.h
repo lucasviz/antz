@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 *
-*  npdbformat.h
+*  npvideo.h
 *
 *  ANTz - realtime 3D data visualization tools for the real-world, based on NPE.
 *
@@ -22,8 +22,18 @@
 *
 * --------------------------------------------------------------------------- */
 
-char** npFinalFormatChunks(char **buffer, int *numberOfChunks);
-int npFormatChunk(char *buffer, char* formattedValues, char* values);
-char** npNewChunkAllValues(char* buffer, int *numOfChunks, void* dataRef);
-int fixedChunkValues(char* buffer, char* chunked, int chunkSize);
+#ifndef NPVIDEO_H_
+#define NPVIDEO_H_
+
+/*! @todo add Video IO support for live capture, record and playback. <br>
+*		Calls upon OS specific and hardware specific libraries. <br>
+*		Provides video pipeline between the GPU and CPU.					  */
+
+
+void npInitVideo (void* dataRef);
+void npCloseVideo (void* dataRef);
+void npUpdateVideo (void* dataRef);
+
+
+#endif
 

@@ -28,7 +28,7 @@
 #include "../../os/npos.h"
 #include "../npfile.h"
 
-#include "../db/npdbz.h"			//zz db2 added to access member elements
+#include "../db/npdb.h"			//zz db2 added to access member elements
 
 #include "../gl/nptags.h"
 #include "../npgl.h"

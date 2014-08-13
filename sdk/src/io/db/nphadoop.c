@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 *
-*  npdb.c
+*  nphadoop.c
 *
 *  ANTz - realtime 3D data visualization tools for the real-world, based on NPE.
 *
@@ -22,55 +22,25 @@
 *
 * --------------------------------------------------------------------------- */
 
-#include "npdb.h"
+#include "nphadoop.h"
 
-// #include "db/npmysql.h"		//zz dbz
-#include "db/npdbz.h"			//zz dbz
 
 //------------------------------------------------------------------------------
-void npInitDB (void* dataRef)
-{
-	pData data = (pData) dataRef;
-
-	//zzsql moved this from npio.c
-//	struct dbNewConnect *connect = malloc(sizeof(struct dbNewConnect)); // debug db //zzsql
-
-//zz dbz	
-	struct databases *dbs = malloc(sizeof(struct databases));
-	data->io.dbs = dbs;
-	
-//zz dbz	
-	dbs->numberOfDatabases = 0;
-//zz dbz	
-	npAddDb(dbs, "mysql", "localhost", "root", "admin", "", dataRef);
-
-	//((npInitDbConnection(connect, MySQL, "127.0.0.1", "root", "admin", "antz");))
-//	npOpenDb()
-//zz db2	npOpenDb( &data->io.dbs->myDatabase[0] );
-	//npOpenDbConnect(connect, dataRef);
-	//npAttachMySQLtoDataRef(connect, dataRef); // debug db // This can be generalized later, debug db
-//zz dbz	npAttachDbsToDataRef(dbs, dataRef);
-}
-
-//------------------------------------------------------------------------------
-void npConnectDB (void* dataRef)
-{
-	pData data = (pData) dataRef;
-
-	npOpenDb( &data->io.dbs->myDatabase[0] );
-
-//zz dbz	npAttachDbsToDataRef(dbs, dataRef);
-}
-
-//------------------------------------------------------------------------------
-void npCloseDB (void* dataRef)		//clean-up
+void npInitHadoop (void* dataRef)
 {
 	return;
 }
 
 //------------------------------------------------------------------------------
-void npUpdateDB (void* dataRef)							//add to ctrl loop, debug zz
+void npCloseHadoop (void* dataRef)
 {
 	return;
 }
+
+//------------------------------------------------------------------------------
+void npUpdateHadoop (void* dataRef)
+{
+	return;
+}
+
 

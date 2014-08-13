@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 *
-*  npdbget.h
+*  npplugin.h
 *
 *  ANTz - realtime 3D data visualization tools for the real-world, based on NPE.
 *
@@ -22,7 +22,17 @@
 *
 * --------------------------------------------------------------------------- */
 
-void npGetTextTagsFromMySQL(MYSQL_RES *result, void* dataRef);
-char** npGetRetrieveTextTagsValues(char** buffer, int *numberOfChunks, int debug, void* dataRef);
-char** npGetNodesValues(char **buffer, int *numberOfChunks, void* dataRef);
+#ifndef NPPLUGIN_H_
+#define NPPLUGIN_H_
+
+/*! @todo add Plugin support for native libraries and 3rd party addons <br>
+*	Plugin types include import filters, draw routines, control methods, etc. */
+
+
+void npInitPlugin (void* dataRef);
+void npClosePlugin (void* dataRef);
+void npUpdatePlugin (void* dataRef);
+
+
+#endif
 

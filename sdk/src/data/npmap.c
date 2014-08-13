@@ -26,11 +26,13 @@
 
 
 //------------------------------------------------------------------------------
-//npmap contains the methods for manipulating the data tree structure.
-//can traverse the tree and change its structure, move branches, attach nodes
-//remove nodes, sort and build a tree structure using externally generated lists
-//------------------------------------------------------------------------------
+/** @file npmap.h 
+*  Methods for managing the global 'map' data structure.
+*  Can traverse the map tree and edit its structure, move branches, attach nodes
+*  remove nodes, sort objects and build custom graphs.
+*/
 
+/// @param dataRef is a global data reference instance for the scene graph map.
 //------------------------------------------------------------------------------
 void npInitMap (void* dataRef)
 {

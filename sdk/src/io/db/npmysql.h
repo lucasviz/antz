@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 *
-*  npdbload.h
+*  npmysql.h
 *
 *  ANTz - realtime 3D data visualization tools for the real-world, based on NPE.
 *
@@ -22,7 +22,16 @@
 *
 * --------------------------------------------------------------------------- */
 
-void npLoadMysqlNodeStateResultsIntoAntz(struct mysqlObject *object, void* dataRef);
-void npLoadMysqlResultsIntoAntz(struct dbConnectMysql *connect, struct mysqlObject *object, int tableType, void* dataRef);
-void npLoadNodeStateResultIntoAntz(MYSQL_RES *result, void* dataRef);
+#ifndef NPMYSQL_H_
+#define NPMYSQL_H_
+
+
+/// @todo move all MySQL function calls here, from npdbz.c and elsewhere
+
+void npInitMySQL (void* dataRef);
+void npCloseMySQL (void* dataRef);
+void npUpdateMySQL (void* dataRef);
+
+
+#endif
 

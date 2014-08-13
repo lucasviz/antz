@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 *
-*  npio.h
+*  npostgres.c
 *
 *  ANTz - realtime 3D data visualization tools for the real-world, based on NPE.
 *
@@ -22,33 +22,25 @@
 *
 * --------------------------------------------------------------------------- */
 
-#ifndef NPIO_H_
-#define NPIO_H_
+#include "npostgresql.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
 
-#include "npdata.h"
-#include "io/npconsole.h"
-#include "io/plugin/npplugin.h"
+//------------------------------------------------------------------------------
+void npInitPostgreSQL (void* dataRef)
+{
+	return;
+}
 
-void npInitIO (void* data);			// may update default init from pref file
+//------------------------------------------------------------------------------
+void npClosePostgreSQL (void* dataRef)
+{
+	return;
+}
 
-void npCloseIO (void* data);
+//------------------------------------------------------------------------------
+void npUpdatePostgreSQL (void* dataRef)
+{
+	return;
+}
 
-void npUpdateIO (void* dataRef);
-
-void npViewer (void* dataRef);
-void npConsole (void* dataRef);
-
-//
-void npPostNodeID( pNPnode node, void* dataRef );	//zz debug move -> io/...
-
-pNPmenu npdbGetMenu (void* dataRef);
-
-#ifdef __cplusplus
-	}
-#endif
-#endif
 

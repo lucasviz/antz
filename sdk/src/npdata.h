@@ -80,7 +80,7 @@ void npInitDataRecordTag( pNPrecordTag recordTag, void* dataRef );
 
 void npPostMsg( char* message, int type, void* dataRef );
 
-void npInitPropertyTracks( pNPnodePropertyTracks propertyTracks ); //JJ - added, is this right place?
+void npInitPropertyTracks( pNPnodePropertyTracks propertyTracks ); //JJ - added, is this right place
 
 
 #ifdef __cplusplus
