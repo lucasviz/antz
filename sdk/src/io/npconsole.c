@@ -744,10 +744,12 @@ void npConsoleMenuText( pNPconsole console, void* dataRef )
 			//exit menu mode
 			console->mode = kNPconsoleMessage;
 			console->cursorShow = false;
-			npPostMsg( "Exit Console", kNPmsgCtrl, dataRef );			//send as kNPmsgCtrl
-			npPostMsg( "Keyboard: Game Mode", kNPmsgCtrl, dataRef );
+		//	npPostMsg( "Exit Console", kNPmsgCtrl, dataRef );			//send as kNPmsgCtrl
+		//	npPostMsg( "Keyboard: Game Mode", kNPmsgCtrl, dataRef );
 
+			///call the menu item event processing function to load selected item
 			console->pMenuCallback( itemChosen, dataRef );
+			npPostMsg( "Exit Console - Keyboard: Game Mode", kNPmsgCtrl, dataRef );
 		}
 		else
 		{						
@@ -1321,11 +1323,11 @@ void npUpdateConsoleMenu (pNPconsole console, void* dataRef)
 	npPostMsg ("+-----------------------------------------------------------------------------+", kNPmsgView, dataRef);
 	npPostMsg ("|                         Database Command Console                            |", kNPmsgView, dataRef);
 	npPostMsg ("+-----------------------------------------------------------------------------+", kNPmsgView, dataRef);
-//	npPostMsg ("| LOAD [name or #] load or sync update from DB    LOAD antz_world             |", kNPmsgView, dataRef);
+	npPostMsg ("| LOAD [name or #] load or sync update from DB    LOAD antz_world             |", kNPmsgView, dataRef);
 	npPostMsg ("| SAVE [name or #] update or create new DB        SAVE my_antz                |", kNPmsgView, dataRef);
 	npPostMsg ("| DROP [name or #] will destroy a DB forever      DROP 42                     |", kNPmsgView, dataRef);
-//	npPostMsg ("| SYNC [name or #] sync from DB at RATE [secs]    SYNC my_antz RATE 3.5       |", kNPmsgView, dataRef);
-//	npPostMsg ("| AUTO [name or #] auto SAVE to DB                AUTO my_antz rate=15        |", kNPmsgView, dataRef);
+	npPostMsg ("| SYNC [name or #] update from DB at RATE [secs]  SYNC my_antz RATE 3.5       |", kNPmsgView, dataRef);
+	npPostMsg ("| AUTO [name or #] save scene to DB RATE          AUTO my_antz RATE 15        |", kNPmsgView, dataRef);
 //	npPostMsg ("| VIEW [name or #] subsample a preview            VIEW my_antz LIMIT 4096     |", kNPmsgView, dataRef);
 	npPostMsg ("| USE  [name or #] switches Active DB             USE my_antz                 |", kNPmsgView, dataRef);
 //	npPostMsg ("| QUERY a raw statement using the Active DB       Q TRUNCATE node_tbl         |", kNPmsgView, dataRef);

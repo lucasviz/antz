@@ -132,7 +132,25 @@ void npUpdateDB (void* dataRef)							//add to ctrl loop, debug zz
 //------------------------------------------------------------------------------
 int npdbLoadUpdate( void* dataRef )							//add to ctrl loop, debug zz
 {
+	char msg[kNPurlMax *2];
+	char* dbName;//[kNPurlMax];
+	char host[kNPurlMax];
+
 	pData data = (pData) dataRef;
+
+	npdbActiveHost( host, data );
+	dbName = npdbActiveDB( data );
+
+	if( !dbName || !host )
+	{
+		printf("host: %s   db: %s\n", host, dbName);
+		npPostMsg( "cannot load update - No Active DB", kNPmsgDB, data );
+		npPostMsg( "LOAD, SAVE or USE a DB to make Active!", kNPmsgDB, data );
+		return 4244;
+	}
+
+	sprintf( msg, "Update Scene from DB: %s  host: %s", dbName, host );
+	npPostMsg( msg, kNPmsgDB, data );
 
 	//set update flag for all databases related to the scene
 	data->io.db[0].update = true;
@@ -380,5 +398,73 @@ void npdbSelect( char* dbName, char* tblName, char* selectWhere, void* dataRef)
 							tblName, selectWhere );
 
 	result = (int)(*db->query)(dbID, statement);
+}
+
+
+//---------------------------------------------------------------------------
+void npdbSaveScene( void* dataRef )
+{
+	int err = 0;
+	int dbID = 0;
+	char dbName[kNPurlMax];	//max db identifier is 64 chars
+	char host[kNPurlMax];
+	char msg[kNPurlMax + kNPurlMax];
+
+	pData data = (pData) dataRef;
+
+	dbID = data->io.dbs->myDatabase[0].id;
+
+	nposTimeStampName( dbName );
+
+	npdbActiveHost( host, data );
+/*
+	strcpy( question, "Save New Database As?");
+	strcpy( defaultAnswer, dbName );
+	err = npConsoleAskUser( dbName, "Save Database As?", data );
+*/
+	sprintf(msg,"Saving New Database: %s  host: %s", dbName, host );
+	npPostMsg(msg, kNPmsgView, dataRef);
+	err = npdbSaveAs( dbID, dbName, data );
+	if( err )
+	{
+		sprintf( msg, "err 5588 - failed to Save DB, return code: %d", err);
+		npPostMsg( msg, kNPmsgView, data );
+	}
+	else
+	{
+		sprintf(msg,"Done Saving Database: %s", dbName );
+		npPostMsg(msg, kNPmsgView, dataRef);
+	}
+}
+
+int npdbLoadScene( char* dbName, void* dataRef )
+{
+	int err = 0;
+
+	char msg[kNPurlMax * 2];
+
+	char host[kNPurlMax];
+
+	pData data = (pData) dataRef;		
+
+	/// @todo add support for multiple DB hosts
+	npdbActiveHost( host, data );
+
+	//	sprintf(msg,"Loading DB: %s", selectedItem);
+	sprintf( msg,"Loading Database: %s  host: %s", dbName, host );
+	npPostMsg( msg, kNPmsgView, data );
+
+	/// @todo change npdbLoadNodeTbl to npdbLoadScene( dbName, host, data );
+	/// @todo add support for all tables, especially tags
+	err = npdbLoadNodeTbl( dbName, dataRef);
+
+	if( err )
+		sprintf( msg,"Failed to Load DB: %s  code: %d", dbName, err );
+	else
+		sprintf( msg,"Done Loading DB: %s", dbName );
+
+	npPostMsg( msg, kNPmsgDB, dataRef );
+
+	return err;
 }
 

@@ -399,15 +399,15 @@ void npCtrlFile (int command, void* dataRef)
 		case kNPcmdViewer :
 			if (data->io.key.modAlt )
 			{
-				if (data->io.key.modShift) //save to default server with default timestamp DB name
-					npdbSaveUpdate( dataRef );					//zz db
+				if (data->io.key.modShift)
+					npdbSaveUpdate( dataRef );	/// save scene to active DB
 				else
-					npdbLoadUpdate( dataRef );					//zz db
+					npdbLoadUpdate( dataRef );	/// load scene update from DB
 			}
-			else if (data->io.key.modShift) //save to default server with default timestamp DB name
-				npdbSaveScene( dataRef );						//zz db
+			else if (data->io.key.modShift)
+				npdbSaveScene( dataRef );		/// save scene to new DB
 			else
-				npViewer( dataRef );	//load scene from menu list
+				npViewer( dataRef );			/// enter DB command console
 			break;
 
 		case kNPcmdFileOpen :

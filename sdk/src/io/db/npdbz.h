@@ -128,8 +128,8 @@ int npUseDatabase2(int connid, struct dbFunction *db, char* dbName);
 int npSelect(int connid, struct dbFunction *db, char* table); //Add field(s) choice later
 void npNewFreeChunks(struct newChunksObj * chunks, void* dataRef);
 char* npMysqlInsertStatement(char* table, struct newChunkObj *value);
-int npdbLoadNodeTbl(int menuItem, void* dataRef);
-void npdbSaveScene(void* dataRef);
+int npdbLoadNodeTbl( char*, void* dataRef );
+
 int npOpenDb(struct database *db);
 int npAttachDbsToDataRef(struct databases *dbs, void* dataRef);
 

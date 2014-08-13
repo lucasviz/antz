@@ -75,7 +75,7 @@
 
 #define	kNPnodeMax			2097152			//!< 4194304 16MB with set of 32bit ptr, 16MB if 64bit	//!<zzhp
 #define kNPnodeRootMax		2097152			//!< 1048576 4MB with 32bit ptr, 8MB if 64bit	//!<zzhp 262144
-#define kNPnodeChildMax		512				//!< 1KB RAM each node with 32bit OS	//!<zzhpa
+#define kNPnodeChildMax		4000			//!< 4000 uses 16KB per node	//zz hpc
 											//!< C99 max fixed array size is 16383
 											//!< 266 fills a sphere at 15 deg, possibly switch data structure to GTK.org zz
 
@@ -139,7 +139,7 @@
 											//! link to journal article LENGTH statistics for title and abstract
 											//! http://!<www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0049476
 #define kNPtagTitleMax			333			//!< tag title max length
-#define kNPtagDescMax			8			//!< tag description max length 	//zzhpa // 4096
+#define kNPtagDescMax			8			//!< tag description max length 	//zz hpc // 4096
 #define	kNPtagMax				kNPnodeMax	//!< max number of record Tags
 #define	kNPtagDrawMax			16383		//!< max number tags allowed to draw
 

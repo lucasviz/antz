@@ -968,7 +968,7 @@ void npDataPreset (int preset, void* dataRef)
 			// draw 6x6 grid of pins
 			for(i = -16; i < 16; i++)		//zzhp
 				for(j=-16; j < 16; j++)		//zzhp
-					for(k=0; k < 32; k++)		//zzhp
+					for(k=0; k < 24; k++)		//zzhp
 				{
 					// create the root pin
 					node = npNodeNew (kNodePin, NULL, dataRef);

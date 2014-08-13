@@ -121,67 +121,35 @@ void npViewFiles (void* dataRef)
 
 //void npdbLoadByName (int item, void* dataRef);
 
-//zz debug, test function can be used as a template
+//zz db
 void npdbLoadMenuItem (int menuItem, void* dataRef);
 //------------------------------------------------------------------------------
 void npdbLoadMenuItem (int menuItem, void* dataRef)
 {
-	char msg[kNPurlMax];
+	int err = 0;
+	char msg[kNPurlMax * 2];
+	char name[kNPurlMax];			/// item name
 
-	pData data = (pData) dataRef;											//zzsql
+//	char host[kNPurlMax];
+
+	pData data = (pData) dataRef;		
+	
 	pNPdatabases dbList = ((struct databases*)data->io.dbs)->dbList;
-	char selectedItem[kNPurlMax];
 
 	//load database by item index using same list that generated the menu
-	strcpy( selectedItem, dbList->list[menuItem] );
-	
-	sprintf(msg,"Loading DB: %s", selectedItem);
-	npPostMsg( msg, kNPmsgDB, dataRef );
-	
-	// @todo replace this with npdbLoad() and support tags, globals, etc.
-	npdbLoadNodeTbl(menuItem, dataRef);
+	strcpy( name, dbList->list[menuItem] );
 
-	sprintf( msg,"Done Loading DB: %s", selectedItem );
-	npPostMsg( msg, kNPmsgDB, dataRef );
+	//	npdbActiveHost( host, data ); // dbID will replace dbName and host
+	err = npdbLoadScene( name, data );
+
+	if( err )
+	{
+		sprintf( msg, "err 6688 - menu item function fail code: %d", err);
+		npPostMsg( msg, kNPmsgErr, data );
+	}
 }
-//zz dbz
-/*
-//zz debug, test function can be used as a template
-void npdbLoadMenuItem (int menuItem, void* dataRef);
-//------------------------------------------------------------------------------
-void npdbLoadMenuItem (int menuItem, void* dataRef)
-{
-//	char msg[4096];
 
-	pData data = (pData) dataRef;											//zzsql
-	char *selectedItem = NULL;
-	//pNPmenu menu = data->io.gl.hud.console.menu;
-	struct databaseObject *dbResult = NULL;
-	pNPdatabases dbList = ((struct dbNewConnect*)data->io.connect)->dbList;
-	
-	selectedItem = dbList->list[menuItem];
-	
-	
-	//load database by item index using same list that generated the menu
-//	sprintf (msg, "Loading: %d", item);
-//	npPostMsg (msg, kNPmsgView, dataRef);
-
-	printf("\n-----YOU SELECTED %s-----\n", selectedItem);
-	
-	npdbCtrl(data->io.connect, DATABASE, 0, selectedItem, NULL, NULL, 0, NULL, Use, dataRef);
-	
-	dbResult = npdbCtrl(data->io.connect, TABLE, NODE_STATE_TABLE, "node_tbl", NULL, NULL, 0, NULL, Select, dataRef);
-	
-	//dbTagsResult = npdbCtrl(connect, TABLE, TAGS_TABLE, "tagsTable", NULL, NULL, NULL, NULL, Select, dataRef);
-	
-	npNewLoadNodeStateResultIntoAntz(dbResult->dbObject, dataRef);			//zzsql
-
-	npSelectNode(data->map.node[kNPnodeRootPin], data);
-	npPostMsg("Done Loading Database", kNPmsgDB, data);
-}
-*/
-//zz debug, test function can be used as a template
-
+/// @todo move npdbGetMenu to npdb.h
 //------------------------------------------------------------------------------
 pNPmenu npdbGetMenu (void* dataRef)
 {
@@ -262,7 +230,7 @@ pNPmenu npdbGetMenu (void* dataRef)
 	return menu;
 }
 
-
+/// @todo move npViewDatabases, related to: DB, ctrl, map, gl scene, hud, file
 //view catalog of DBs from pathmap
 //------------------------------------------------------------------------------
 void npViewDatabases (void* dataRef)

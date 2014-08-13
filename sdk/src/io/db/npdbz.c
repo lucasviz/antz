@@ -24,9 +24,11 @@
 
 #include "npdbz.h"
 
+#include "npdb.h"
+
 //#include "../../npdata.h"							//defines which OS to compile for
 
-#include <windows.h>		//DLL loader...	//zz dbz debug move DLL win code to /npos/...
+#include <windows.h>		/// @todo move msw DLL loader code to ../os/msw/npmsw.h
 //#include <errno.h>
 
 #include "../../os/npos.h"
@@ -1511,8 +1513,9 @@ void npInsertAllChunks(struct newChunksObj *chunks, int dbID, struct database *d
 		npInsert(dbID, db->db, table, &chunks->chunk[index]);
 }
 
-int npdbLoadNodeTbl(int menuItem, void* dataRef)
+int npdbLoadNodeTbl(char* dbName, void* dataRef)
 {
+	int err = 0;
 	char msg[4096];
 	pData data = (pData) dataRef;
 	struct database *myDb = &data->io.dbs->myDatabase[0];
@@ -1523,33 +1526,34 @@ int npdbLoadNodeTbl(int menuItem, void* dataRef)
 
 	pNPdatabases dbList = ((struct databases*)data->io.dbs)->dbList;
 
-	char* selectedItem = dbList->list[menuItem];
+//	char* selectedItem = dbList->list[menuItem];
 	MYSQL_RES *myResult;
 
-//	sprintf(msg,"Loading DB: %s", selectedItem);
-//	npPostMsg( msg, kNPmsgDB, dataRef );
 	
-	success = npUseDatabase2(myConnid, myDbFuncs, selectedItem);
-	strcpy(myDb->currentlyUsedDatabase, selectedItem);
+	err = npUseDatabase2(myConnid, myDbFuncs, dbName);
+	if( err ) return err;
 
-	npSelect(myConnid, myDbFuncs, "node_tbl");
+	strcpy(myDb->currentlyUsedDatabase, dbName);
+
+	err = npSelect( myConnid, myDbFuncs, "node_tbl");
+	if( err ) return err;
 
 	if( (myResult = (*data->io.dbs->myDatabase[0].db->storeResult)(myConnid)) == NULL )
-		printf("\nError storing result");
+	{
+		printf("err 5582 - database failed to store result", kNPmsgErr, dataRef );
+		return 5582;
+	}
 	
 	//dbTagsResult = npNewdbCtrl(connect, TABLE, TAGS_TABLE, "tagsTable", NULL, NULL, NULL, NULL, Select, dataRef);
 	
 	npLoadNodeStateResultIntoAntz(myResult, dataRef);
 
 	/// @todo replace nodeCount with actual DB load node count
-	sprintf( msg, "node count: %d", (data->map.nodeCount)-31 ); //This isn't accurate super accurate, please disregard it...I'll fix it later.
+	sprintf( msg, "database node count: %d", (data->map.nodeCount)-31 ); //This isn't accurate super accurate, please disregard it...I'll fix it later.
 	npPostMsg( msg, kNPmsgDB, dataRef );
 
+	/// After database loaded then select the first pin root node.
 	npSelectNode(data->map.node[kNPnodeRootPin], data);
-
-//	sprintf( msg,"Done Loading DB: %s", selectedItem );
-//	npPostMsg( msg, kNPmsgDB, dataRef );
-	//npPostMsg("Done Loading Database", kNPmsgDB, data);
 
 	return 0;
 }
@@ -1662,37 +1666,6 @@ int npdbSaveAs( int dbID, const char* dbName, void* dataRef )
 }
 
 
-//---------------------------------------------------------------------------
-void npdbSaveScene( void* dataRef )
-{
-	int err = 0;
-	int dbID = 0;
-	char dbName[256];	//max db identifier is 64 chars
-	char msg[512];
-//	char defaultAnswer[256];
-//	char question[256];
-
-	pData data = (pData) dataRef;
-
-	dbID = data->io.dbs->myDatabase[0].id;
-
-	nposTimeStampName( dbName );
-/*
-	strcpy( question, "Save New Database As?");
-	strcpy( defaultAnswer, dbName );
-	dbName = npConsoleAskUser( question, defaultAnswer, data );
-*/
-	sprintf(msg,"Saving New Database: %s", dbName );
-	npPostMsg(msg, kNPmsgView, dataRef);
-	err = npdbSaveAs( dbID, dbName, data );
-	if( err )
-	{
-		sprintf( msg, "err 5588 - failed to Save DB, return code: %d", err);
-		npPostMsg( msg, kNPmsgView, data );
-	}
-	else
-		npPostMsg( "Done!", kNPmsgView, data );
-}
 
 void npNewFreeChunks(struct newChunksObj * chunks, void* dataRef)
 {

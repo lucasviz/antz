@@ -26,6 +26,7 @@
 #define NPDB_H_
 
 #include "../../npdata.h"
+#include "../../os/npos.h"	
 
 #include "npdbz.h"
 
@@ -63,7 +64,8 @@ void npMigrate(int tableMap, void* dataRef);
 //int npdbDrop( int serverID, const char* dbName, void* dataRef );
 
 //loads scene from specified database and (any) referenced databases/sources
-int npdbLoadScene( int dbID, void* dataRef );
+/// @todo make DB functions use a dbID ref instead of string names
+int npdbLoadScene( char* dbName, void* dataRef );
 int npdbLoadRange( int minNodeID, int maxNodeID, void* dataRef );
 int npdbLoadList( int dbID, pNPnodeList nodes, void* dataRef );
 
@@ -72,6 +74,8 @@ int npdbLoadUpdate( dataRef );
 
 	//	data->io.db[0].update = true;
 int npdbSaveUpdate( void* dataRef );
+
+void npdbSaveScene(void* dataRef);
 
 //save entire scene to specified database
 //if DB exists then overwrites all of it
