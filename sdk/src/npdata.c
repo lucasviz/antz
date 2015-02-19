@@ -763,7 +763,7 @@ void npInitDataDB (void* dataRef)
 	
 	printf("\nnpdbAddHost");
 //	npdbAddHost( "mysql", "localhost", 3306, "root", "admin", data );
-	npdbAddHost("mysql", "127.0.0.1", 3306, "root", "admin", &err, data);
+//	npdbAddHost("mysql", "127.0.0.1", 3306, "root", "admin", &err, data); // temp commented, lde 
 //	npdbAddHost("mysql", "192.168.1.130", 3306, "root", "admin", data);
 
 	
