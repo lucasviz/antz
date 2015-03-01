@@ -247,7 +247,7 @@ void npNodeTraverseTree ( void (*nodeFunc)(pNPnode node, void* dataRef),
 void npUpdateTag (pNPtag tag)
 {
 	int lineCount = 1;
-	float charWidth = 9.0f;		//add procedure based on font type
+	float charWidth = 9.0f;		/// @todo add procedure based on font type
 	float charHeight = 15.0f;
 
 //	if(tag->titleSize == 0)											//zz debug
@@ -376,9 +376,10 @@ void npSyncTags (void* dataRef)
 	for (i=0; i < j; i++)
 	{	npTagNode(nodes[i], data);
 	node = (pNPnode)nodes[i];
-	//printf("id: %d  tag: %s\n",  node->id, node->tag->title); // Was flooding console, lde
+	//printf("id: %d  tag: %s\n",  node->id, node->tag->title); // Was flooding console, lde /// @todo change so it prints the first few tags
 	}
 	printf("tag count J: %d\n", j);
+	//data->io.gl.hud.tags.count = j;
 	//loop through all nodes and attach tagPtr based on recordID and tableID
 //	for (i=0; i < data->map.nodeRootCount; i++)
 //		npNodeTraverseTree (npTagNode, data->map.node[i], dataRef);

@@ -1475,12 +1475,14 @@ int npCSVtoC (pNPrecordSet recSet, const char* read, int size, void* dataRef);
 //zz debug, use a func ptr to npLoadCSV() from generic parent file IO process	
 int npCSVtoC (pNPrecordSet recSet, const char* read, int size, void* dataRef)
 {
+	pData data = (pData)dataRef;
 	int recordCount = 0;
 
 	switch(recSet->type)
 	{
 		case kNPmapTag :
 			recordCount = npLoadTags (read, size, dataRef);
+			data->map.tagCount = recordCount; /// @todo temp
 			break;
 		case kNPmapNode :
 			recordCount = npLoadNodesCSV (read, size, recSet->type, dataRef);
@@ -1895,7 +1897,7 @@ void npPostMap (pNPrecordSet recSet, void* dataRef)
 
 		printf ("Map Sort...\n");	//attach orphan nodes
 		npMapSort (data);
-	
+
 		data->io.file.loading = false;											//zzhp
 		npSelectNode(data->map.node[kNPnodeRootPin], data);			//zzhp
 
