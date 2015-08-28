@@ -667,6 +667,7 @@ struct NPnode
 	int			formatID;					//!<DB translation to antz field, label
 	int			tableID;					//!<DB table
 	int			recordID;					//!<DB recordID
+	int			modelId;					//!<Assimp ID, if 0 then none else meshIndex, le, /// @todo: Set node's model id @ console, le
 
 	int			size;
 
@@ -1440,6 +1441,7 @@ struct NPfile
 
 	char		appPath[kNPmaxPath];
 	char		csvPath[kNPmaxPath];
+	char		modelPath[kNPmaxPath];  //!<stores path to 3d models
 	char		mapPath[kNPmaxPath];
 	char		currentOpenPath[kNPmaxPath];
 //!<	char		cwdPath[4096];			//!<zz debug, maybe better to use GetCWD
@@ -2016,6 +2018,15 @@ struct NPgithub {
 typedef struct NPgithub NPgithub;
 typedef NPgithub* pNPgithub;
 
+struct NPtexmap {
+	void* image;
+	int width;
+	int height;
+	int channels;
+};
+typedef struct NPtexmap NPtexmap;
+typedef NPtexmap* pNPtexmap;
+
 struct NPio {
 	void* coreNode; ///< core nodes tie global structures to the scene graph
 						//!< each global struct has a corresponding base node.
@@ -2032,11 +2043,10 @@ struct NPio {
 	NPch		ch;
 	NPfile		file;
 
-//!<	struct	dbNewConnect *connect;	//!<zzsql							//!<zz debug	//!<zz dbz
-//	struct databases *dbs;			//!<zz dbz
 	NPdbs		db;
 	NPgithub    github;
-//	NPgithubIssues issues;
+	void* assimp;
+	NPtexmap texmap;
 
 //!<	NPoscPackListener oscListener;		//!<JJ-zz
 	pNPconnect	connect[kNPmaxConnect];	//!<zz osc
@@ -3264,6 +3274,7 @@ enum kNP_GEOMETRY_TYPES
 
 	kNPgeoCylinderWire,
 	kNPgeoCylinder,			//!<radius 1, height 2
+	kNPgeoAssimp,           //!<Assimp Model Geometry , le
 
 //!<	kNPglutWireTeapot,
 //!<	kNPglutSolidTeapot,

@@ -28,6 +28,7 @@
 
 #include "../../npdata.h"
 
+#include "../file/npassimp.h"
 
 void npInitGLPrimitive (void* dataRef);
 void npCloseGLPrimitive (void* dataRef);
@@ -37,5 +38,6 @@ void npGLSurface (bool texture, pNPnode node, void* dataRef);
 void npGLPrimitive (int geometry, float ratio);
 
 void npGLTexture(pNPnode node, void* dataRef);
+
 
 #endif

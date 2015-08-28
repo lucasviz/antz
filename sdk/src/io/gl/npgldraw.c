@@ -161,17 +161,186 @@ void npAddTagToDraw (pNPnode node, void* dataRef)
 		data->io.gl.hud.tags.list[data->io.gl.hud.tags.count++] = node;
 }
 
+void set_float4(float f[4], float a, float b, float c, float d)
+{
+	f[0] = a;
+	f[1] = b;
+	f[2] = c;
+	f[3] = d;
+}
+
+void color4_to_float4(const struct aiColor4D *c, float f[4])
+{
+	f[0] = c->r;
+	f[1] = c->g;
+	f[2] = c->b;
+	f[3] = c->a;
+}
+
+void apply_material(const struct aiMaterial *mtl)
+{
+	float c[4];
+
+	GLenum fill_mode;
+	int ret1, ret2;
+	struct aiColor4D diffuse;
+	struct aiColor4D specular;
+	struct aiColor4D ambient;
+	struct aiColor4D emission;
+	struct aiString str;
+	float shininess, strength;
+	int two_sided;
+	int wireframe;
+	int test = 0;
+	unsigned int max;
+
+	test = aiGetMaterialTexture(mtl, aiTextureType_NORMALS, 0, &str, NULL, NULL, NULL, NULL, NULL, NULL);
+//	printf("\ntest : %d", test);	
+
+	set_float4(c, 0.8f, 0.8f, 0.8f, 1.0f);
+	if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
+		color4_to_float4(&diffuse, c);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, c);
+
+	set_float4(c, 0.0f, 0.0f, 0.0f, 1.0f);
+	if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_SPECULAR, &specular))
+		color4_to_float4(&specular, c);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c);
+
+	set_float4(c, 0.2f, 0.2f, 0.2f, 1.0f);
+	if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_AMBIENT, &ambient))
+		color4_to_float4(&ambient, c);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, c);
+
+	set_float4(c, 0.0f, 0.0f, 0.0f, 1.0f);
+	if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_EMISSIVE, &emission))
+		color4_to_float4(&emission, c);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, c);
+
+	max = 1;
+	ret1 = aiGetMaterialFloatArray(mtl, AI_MATKEY_SHININESS, &shininess, &max);
+	if(ret1 == AI_SUCCESS) {
+    	max = 1;
+    	ret2 = aiGetMaterialFloatArray(mtl, AI_MATKEY_SHININESS_STRENGTH, &strength, &max);
+		if(ret2 == AI_SUCCESS)
+			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess * strength);
+        else
+        	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+    }
+	else {
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.0f);
+		set_float4(c, 0.0f, 0.0f, 0.0f, 0.0f);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c);
+	}
+
+	max = 1;
+	if(AI_SUCCESS == aiGetMaterialIntegerArray(mtl, AI_MATKEY_ENABLE_WIREFRAME, &wireframe, &max))
+		fill_mode = wireframe ? GL_LINE : GL_FILL;
+	else
+		fill_mode = GL_FILL;
+	glPolygonMode(GL_FRONT_AND_BACK, fill_mode);
+
+	max = 1;
+	if((AI_SUCCESS == aiGetMaterialIntegerArray(mtl, AI_MATKEY_TWOSIDED, &two_sided, &max)) && two_sided)
+		glDisable(GL_CULL_FACE);
+	else 
+		glEnable(GL_CULL_FACE);
+}
+
+//------------------------------------------------------------------------------
+void npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPassimp assimp = data->io.assimp;
+	struct aiMatrix4x4 m = node->mTransformation;
+	struct aiFace* face = NULL;
+	struct aiMesh* mesh = NULL;
+	GLenum face_mode = 0;
+	int index = 0;
+	int z = 0, x = 0, i = 0;
+
+	glDisable (GL_LIGHTING);	//draw 100% ambient white
+	for(z = 0; z < node->mNumMeshes; z++)
+	{
+		mesh = scene->mMeshes[node->mMeshes[z]];
+		//apply_material(scene->mMaterials[mesh->mMaterialIndex]);
+		for(x = 0; x < (int)mesh->mNumFaces; x++)
+		{
+			face = &mesh->mFaces[x];
+			switch(face->mNumIndices) {
+				case 1: face_mode = GL_POINTS; break;
+				case 2: face_mode = GL_LINES; break;
+				case 3: face_mode = GL_TRIANGLES; break;
+				default: face_mode = GL_POLYGON; break;
+			}
+
+			glEnable( GL_TEXTURE_2D );
+			glBegin(face_mode);
+
+			//printf("\ntexture id : %d", hasTexture);
+			/*
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			*/
+	//		printf("\nwidth : %d & Height : %d", data->io.texmap.width, data->io.texmap.height);
+		//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, data->io.texmap.width, data->io.texmap.height, 0, GL_RGB, GL_UNSIGNED_BYTE, data->io.texmap.image);
+	//		glGenerateMipmap(GL_TEXTURE_2D);
+
+			for(i = 0; i < face->mNumIndices; i++) {
+				index = face->mIndices[i];
+
+				if( mesh->mTextureCoords[0] != NULL ) {
+			    glTexCoord2f(mesh->mTextureCoords[0][index].x, mesh->mTextureCoords[0][index].y); //mTextureCoords[channel][vertex]
+				}
+
+				if( mesh->mColors[0] != NULL )
+				{
+				//	glColor4fv((GLfloat*)&mesh->mColors[0][index]);
+					glColor4f( 1.0, 1.0, 1.0, 1.0);
+				}
+
+				if( mesh->mNormals != NULL )
+					glNormal3fv( &mesh->mNormals[index].x );
+
+				glVertex3fv( &mesh->mVertices[index].x );
+			}
+			glEnd();
+			glDisable( GL_TEXTURE_2D );
+	}
+
+	//glPopMatrix();
+	}
+
+	glEnable( GL_LIGHTING );
+
+	for (i = 0; i < (int)node->mNumChildren; ++i) {
+		npDrawAssimpModel(scene, node->mChildren[i], dataRef);
+	}
+
+
+	return;
+}
 
 //------------------------------------------------------------------------------
 void DrawPin (int selectedRootNode, pNPnode node, void* dataRef)
 {
 	int i = 0;
+	int x = 0;
+	int z = 0;
+	int index = 0;
 	int idRed = 0, idGrn = 0, idBlu = 0;
 
 	//zzhp can comment out the modelview if links not used
 	GLfloat modelView[16];													//zz-link
 
 	pData data = (pData) dataRef;
+	pNPassimp assimp = data->io.assimp;
+	struct aiFace* face = NULL;
+	struct aiMesh* mesh = NULL;
+	GLenum face_mode = 0;
+	
 
 	pNPnode nodeChild = data->map.currentNode;
 	pNPnode rootGrid = data->map.node[kNPnodeRootGrid];
@@ -313,6 +482,26 @@ void DrawPin (int selectedRootNode, pNPnode node, void* dataRef)
 		node->world.x = node->translate.x * rootGrid->scale.x;
 		node->world.y = node->translate.y * rootGrid->scale.y;
 		node->world.z = node->translate.z * rootGrid->scale.z;
+	}
+
+
+	if(node->geometry == kNPgeoAssimp)
+	{
+//		printf("\nnode geometry is assimp model"); /// @todo remove later , le
+		if(node->modelId != 0)
+		{
+			if(node->textureID == 0)
+			{
+				/*
+				node->color.r = 50;
+				node->color.g = 101;
+				node->color.b = 101;
+				*/
+			}
+
+			npDrawAssimpModel(assimp->scene[node->modelId], assimp->scene[node->modelId]->mRootNode, dataRef);
+		}
+			//		npGLSurface (true, node, data);
 	}
 		
 //zzoff
@@ -759,7 +948,14 @@ void DrawPinChild (pNPnode node, void* dataRef)
 	if (!node->hide)
 	{
 		glLineWidth(node->lineWidth);
-
+/*
+		if( node->geometry == kNPgeoAssimp)
+		{
+			printf("\nchild has geometry of kNPgeoAssimp");
+			if(node->modelId != 0)
+				npDrawAssimpModel(((pNPassimp)data->io.assimp)->scene[node->modelId], ((pNPassimp)data->io.assimp)->scene[node->modelId]->mRootNode, dataRef); 
+		}
+*/
 		if ( node->topo == kNPtopoPin
 			&& !(node->geometry == kNPgeoPin || node->geometry == kNPgeoPinWire) )
 		{
@@ -778,6 +974,13 @@ void DrawPinChild (pNPnode node, void* dataRef)
 		}
 		else
 			npGLSurface (true, node, data);	//default for all other topo types
+
+		if( node->geometry == kNPgeoAssimp)
+		{
+			printf("\nchild has geometry of kNPgeoAssimp");
+			if(node->modelId != 0)
+				npDrawAssimpModel(((pNPassimp)data->io.assimp)->scene[node->modelId], ((pNPassimp)data->io.assimp)->scene[node->modelId]->mRootNode, dataRef); 
+		}
 
 		glLineWidth(1.0f);
 	}

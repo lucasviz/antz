@@ -208,6 +208,7 @@ pNPnode npNodeNew (int nodeType, pNPnode nodeParent, void* dataRef)
 
 	//give it an ID and set type
 	node->id = npNewNodeID();
+	node->modelId = 0; /// added by le
 	node->type = nodeType;	
 
 	// if root node then add to end of node array and increment root count
