@@ -65,11 +65,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib SOIL.lib libmysql.lib mysqlclient.lib libcurld.lib jansson_d.lib wldap32.lib ws2_32.lib"
+				AdditionalDependencies="opengl32.lib jansson_d.lib ws2_32.lib wldap32.lib SOIL.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;../../libs/curl/build/Win32/VC9/LIB Debug - DLL Windows SSPI/&quot;;../../libs/freeglut/lib/x86;../../libs/oscpack;../../libs/mysql;../../libs/jansson/make/lib/Debug;../../libs/soil/lib"
+				AdditionalLibraryDirectories="../../libs/jansson/make/lib/Debug;../../libs/freeglut/lib/x86/Debug;../../libs/oscpack;../../libs/mysql;../../libs/soil/lib"
 				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames="LIBCMT"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				LargeAddressAware="2"
@@ -145,14 +145,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib SOIL.lib libmysql.lib mysqlclient.lib ws2_32.lib libcurl.lib jansson.lib wldap32.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib SOIL.lib libmysql.lib mysqlclient.lib jansson.lib ws2_32.lib wldap32.lib"
 				OutputFile="$(OutDir)\..\..\..\..\$(ProjectName).exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="../../libs/jansson/make/lib/Release;&quot;../../libs/curl/build/Win32/VC9/LIB Release - DLL Windows SSPI&quot;;../../libs/freeglut/lib/x86;../../libs/oscpack;../../libs/soil/lib;../../libs/mysql"
+				AdditionalLibraryDirectories="../../libs/jansson/make/lib/Release;../../libs/curl;../../libs/freeglut/lib/x86;../../libs/oscpack;../../libs/soil/lib;../../libs/mysql"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				LargeAddressAware="2"
-				OptimizeReferences="2"
+				OptimizeReferences="1"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
 			/>
@@ -794,7 +794,15 @@
 					<File
 						RelativePath="..\..\src\io\plugin\npplugin.h"
 						>
-					</File>
+						<File
+							RelativePath="..\..\src\io\plugin\npplugin.c"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\io\plugin\npplugin.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter

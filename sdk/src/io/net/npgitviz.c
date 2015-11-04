@@ -24,10 +24,9 @@
 #include "npgitviz.h"
 #include "../../data/npmap.h"
 #include "../gl/nptags.h"
-
-#include "SOIL.h"			//zz switch to nptexmap.c		
-
-#include <time.h>			//zz remove this and use npos.h
+//#include "npGithub.h"
+#include <time.h>
+#include <soil.h>
 /// @todo npCreateTimeDayViz2 should be npInitTimeDayViz2
 
 char* dumpTill(char* dump_from, char* dump_to, char* till)
@@ -480,7 +479,7 @@ void theNew_npGitVizIssue2(pNPgithub github, int issueIndex, void* dataRef)
 	time_closed  = *localtime(&now);
 
 //	printf("\nissue index : %d", issueIndex);
-	if(issueIndex < 0 || issueIndex >= 500)
+	if(issueIndex < 0 || issueIndex >= kNPgithubMaxIssues)
 	{
 		printf("\nissue index : out of domain");
 		getchar();

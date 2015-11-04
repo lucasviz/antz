@@ -33,7 +33,7 @@
 
 #include "stdbool.h"
 #include "npdbTypes.h"
-
+//#include <stdint.h>
 #include "../io/net/nposcpack.h"  //JJ	//! @todo zz remove this dependency
 
 
@@ -2044,8 +2044,6 @@ struct NPio {
 //	NPjson     json;
 //	new_NPjson json2;
 	new2_NPjson json2;
-
-	char		urlGitviz[kNPurlMax];	//!< URL for gitviz
 
 	int			connectCount;
 	NPosc		osc;				//!<OSC stuff uses io que for thread safety

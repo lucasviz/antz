@@ -396,8 +396,8 @@ void npConsoleCmdText( pNPconsole console, void* dataRef )
 		npPostMsg ("|                                                                   |", kNPmsgView, dataRef);	
 		npPostMsg ("| gitviz        - visualize issues from github                      |", kNPmsgView, dataRef);
 	//	npPostMsg ("| (current) selection attributes: geo, topo, color and branch       |", kNPmsgView, dataRef);
-	//	npPostMsg ("| *future support for all attributes and boolean logic.             |", kNPmsgView, dataRef);
-	//	npPostMsg ("| ie: sel 42:99 with geo = 3:7 and branch >= 1 and not color = 4    |", kNPmsgView, dataRef);
+		npPostMsg ("| *future support for all attributes and boolean logic.             |", kNPmsgView, dataRef);
+		npPostMsg ("| ie: sel 42:99 with geo = 3:7 and branch >= 1 and not color = 4    |", kNPmsgView, dataRef);
 		npPostMsg ("|                                                                   |", kNPmsgView, dataRef);
 		npPostMsg ("+-------------------------------------------------------------------+", kNPmsgView, dataRef);
 		
@@ -822,7 +822,7 @@ void npConsoleMenuText( pNPconsole console, void* dataRef )
 			return;
 		}
 
-		data->io.github.issues->running = true;
+//		data->io.issues.running = true;
 		/*
 		sprintf(msg,"USE Database %s", dbItem->name);
 		npPostMsg(msg, kNPmsgView, dataRef);

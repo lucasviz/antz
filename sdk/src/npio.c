@@ -29,6 +29,9 @@
 #include "io/npmouse.h"
 #include "io/npconsole.h"
 #include "io/net/nposc.h"
+#include "io/net/npcurl.h"
+#include "io/net/npGithub.h"
+#include "io/file/npjson.h"
 
 #include "io/db/npdb.h"
 
