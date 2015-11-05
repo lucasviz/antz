@@ -1,0 +1,3 @@
+
+
+void npAssimpTest(void* dataRef);
