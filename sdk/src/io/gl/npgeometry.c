@@ -82,7 +82,73 @@ void DeleteCircle (NPcirclePtr circle);
 
 GLuint npCreatePrimitiveDL (void);
 
+/*
+void recursive_render (const struct aiScene *sc, const struct aiNode* nd, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPassimp assimp = data->io.assimp;
+	unsigned int i;
+	unsigned int n = 0, t;
+	GLenum face_mode;
+	struct aiMatrix4x4 m = nd->mTransformation;
 
+	printf("\nrecursive_render");
+	// update transform
+	aiTransposeMatrix4(&m);
+	glPushMatrix();
+	glMultMatrixf((float*)&m);
+
+	// draw all meshes assigned to this node
+	for (; n < nd->mNumMeshes; ++n) {
+		const struct aiMesh* mesh = assimp->scene->mMeshes[nd->mMeshes[n]];
+
+	//	apply_material(sc->mMaterials[mesh->mMaterialIndex]);
+
+		if(mesh->mNormals == NULL) {
+			glDisable(GL_LIGHTING);
+		} else {
+			glEnable(GL_LIGHTING);
+		}
+
+		for (t = 0; t < mesh->mNumFaces; ++t) {
+			const struct aiFace* face = &mesh->mFaces[t];
+		//	GLenum face_mode;
+
+			switch(face->mNumIndices) {
+				case 1: face_mode = GL_POINTS; break;
+				case 2: face_mode = GL_LINES; break;
+				case 3: face_mode = GL_TRIANGLES; break;
+				default: face_mode = GL_POLYGON; break;
+			}
+
+			glBegin(face_mode);
+
+			for(i = 0; i < face->mNumIndices; i++) {
+				int index = face->mIndices[i];
+				if(mesh->mColors[0] != NULL)
+				{
+					glColor4fv((GLfloat*)&mesh->mColors[0][index]);
+				}
+				if(mesh->mNormals != NULL) 
+				{
+					glNormal3fv(&mesh->mNormals[index].x);
+				}
+				glVertex3fv(&mesh->mVertices[index].x);
+			}
+
+			glEnd();
+		}
+
+	}
+
+	// draw all children
+	for (n = 0; n < nd->mNumChildren; ++n) {
+		recursive_render(sc, nd->mChildren[n], dataRef);
+	}
+
+	glPopMatrix();
+}
+*/
 //------------------------------------------------------------------------------
 void npInitGLPrimitive (void* dataRef)
 {
@@ -192,7 +258,7 @@ void npGLTexture (pNPnode node, void* dataRef)
 
 	//use different texturing for the gluSphere
 	if ( node->geometry == kNPgeoSphere // || geometry == kNPgeoSphereWire		//zz debug
-		|| node->geometry == kNPgeoCylinder ) // || geometry == kNPgeoCylinderWire
+		|| node->geometry == kNPgeoCylinder || node->geometry == kNPgeoAssimp ) // || geometry == kNPgeoCylinderWire
 	{
 		glDisable( GL_TEXTURE_GEN_S );	//prevents intermittent texture anomally
 		glDisable( GL_TEXTURE_GEN_T );

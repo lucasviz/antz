@@ -23,6 +23,7 @@
 * --------------------------------------------------------------------------- */
 
 #include "npio.h"
+#include "io/file/npassimp.h"
 
 #include "io/npfile.h"
 #include "io/npch.h"
@@ -52,6 +53,11 @@
 void npInitIO( void* dataRef )
 {
 	pData data = (pData) dataRef;
+	int assimpSuccess = 0;
+
+	/// Init assimp library
+	data->io.assimp = NULL;
+	npAssimpInit( dataRef );
 
 	npInitOS( dataRef );
 	/// init the local IO devices

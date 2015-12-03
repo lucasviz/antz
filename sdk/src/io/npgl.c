@@ -301,6 +301,7 @@ void npGLDrawScene (void* dataRef)
 	npGLLighting (dataRef);				//set lights
 	npGLShading (dataRef);				//set transparency
 	npDrawNodes (dataRef);				//draws mesh, graphs, pins, etc...
+//  npDrawAssimpModels(dataRef);        /// @todo: npDrawAssimpModels(dataRef);
 
 	//	glOrtho ( -20.0f, 20.0f, -20.0f, 20.0f, -1.0f, 1.0f); // gluOrtho2D	//zz debug
 

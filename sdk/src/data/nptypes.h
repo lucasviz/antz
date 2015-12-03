@@ -10,7 +10,7 @@
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
-*  To the extent possible under law, the author(s) have dedicated all copyright 
+*  To the extent possible under law, the author(s) have dedicated all copyright
 *  and related and neighboring rights to this software to the public domain
 *  worldwide. This software is distributed without any warranty.
 *
@@ -84,11 +84,11 @@
 //! #define NP_ADDON_KISSFFT		///< FFT analysis for int and float
 //! #define NP_ADDON_MINIZ			///< ZIP file compression
 
-/// Addons to support Python and C Plugins based on (GLib) GObjects 
+/// Addons to support Python and C Plugins based on (GLib) GObjects
 //! #define NP_ADDON_GLib			///< Provides GObject data structures
 //! #define NP_ADDON_LIBPEAS		///< GObject based plugins engine
 
-/// Plugins 
+/// Plugins
 //! #define NP_PLUGINS_PYTHON		///< Python scripting and plugins
 
 
@@ -116,7 +116,7 @@
 
 #define kNPkeyMapSize		256				//!< keyboard map
 #define kNPkeyEventTypeSize 8				//!< SHIFT, CTRL and ALT combos
-						  // 67108864 = 64MB 2^26	
+						  // 67108864 = 64MB 2^26
 #define kNPmapFileBufferMax	34000000		//!< 512MB = 536870912, was 128MB current file size limit  //!<zzhp
 #define kNPfileBlockSize	4194304			//!< 65535 4MB 2^22 = 4194304 //!<65535 //!<
 
@@ -184,7 +184,7 @@
 #define kNPconsoleInputMax		4096		//!< max user input string
 #define kNPmsgQueMax			250			//!< max messages stored in que
 #define kNPmsgLengthMax			255			//!< max message length
-											
+
 											//! link to journal article LENGTH statistics for title and abstract
 											//! http://!<www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0049476
 #define kNPtagTitleMax			333			//!< tag title max length
@@ -195,7 +195,7 @@
 #define kNPlinkQueMax			kNPnodeMax	//!< max in draw que, not total nodes
 
 #define kNPsingleClickTime		0.45		//!<max duration considered to be a click
-#define kNPdoubleClickTime		0.45		//!<max duration for double click 
+#define kNPdoubleClickTime		0.45		//!<max duration for double click
 
 #define kNPinputStrMax			4096		//!<console max length user input
 
@@ -239,7 +239,7 @@
 */
 struct NPnode2 {
 	long long int	id;			///< node id
-	
+
 	int				type;		///< node type defines the data pointer type
 
 	void*			parent;		///< parent node
@@ -362,18 +362,18 @@ typedef struct NPmapType *pNPmapType;
 struct NPmapLink
 {
 	//!< C-struct mapPtr to the data in memory with ID and type mapping
-	void*	mapPtr;	 //!<element ptr		//!<pointer to an element of the C data map structure	
+	void*	mapPtr;	 //!<element ptr		//!<pointer to an element of the C data map structure
 //!<	int		idA;
 	int		typeA;
 	int		elementID;	//!<typeA		//!<mapPtr = npGetMapID(mapID); //!<and vice versa
 
-//!<	void*	mapPtrB;		//!<element ptr	//!<add this for channel ptr-pair updates? or separate list...	
+//!<	void*	mapPtrB;		//!<element ptr	//!<add this for channel ptr-pair updates? or separate list...
 //!<	int		idListB;		//!<id lists with range {22, 23, 44, [55:65]}
 //!<	int		typeB;			//!<element base type
 //!<	void**	elementListB;	//!<element type, could be a pointer offset, but a list is faster to process
 
 //!<	int		typeA;			//!<base data type //!<mapPtr (c-struct) data type
-	//!< human-readable Descriptor 
+	//!< human-readable Descriptor
 
 	int		permissions;		//!<input output direction +1 = A->B, 0 = A<->B, -1 = B->A   //!<
 
@@ -611,7 +611,7 @@ struct NPtag
 
 	char		title[kNPtagTitleMax + 1];	//!<one line with max width of 63 characters
 	char		desc[kNPtagDescMax + 1];	//!<allows for newline in desc
-	
+
 	int			titleSize;		//!<number of characters in title
 	int			descSize;		//!<number of characters in description
 
@@ -644,16 +644,16 @@ typedef struct NPnode NPnode;
 typedef struct NPnode *pNPnode;
 struct NPnode
 {
-	int			id;							//!<local node ID 
+	int			id;							//!<local node ID
 	int			type;						//!<node type, point, pin, cam, video
 
 	void*		data;						//!<node type specific data
-	
+
 	int			selected;					//!<true if node currently selected
 
 	pNPnode		parent;						//!<parent node, binary tree of nodes
 	int			branchLevel;				//!<0 is the trunk, 1 is 1st branch
-											
+
 	pNPnode		child[kNPnodeChildMax];		//!<children attached to this one	//!<zz debug, update to use a circular linked list
 	pNPnode		next;						//!<next sibling node in linked list, N
 	pNPnode		prev;						//!<previous sibling in ring
@@ -679,7 +679,7 @@ struct NPnode
 
 	NPfloatXYZ	rotateRate;					//!<rotation rate
 	NPfloatXYZ	rotate;						//!<rotation angle in polar radians
-	NPfloatXYZ	scaleRate;					//!<scale rate 
+	NPfloatXYZ	scaleRate;					//!<scale rate
 	NPfloatXYZ	translateRate;				//!<node velocity
 	NPfloatXYZ	translateVec;				//!<velocity unit vector
 
@@ -711,13 +711,14 @@ struct NPnode
 
 	NPfloatXYZ	proximity;					//!<collision engine boundary extent
 	NPintXYZ	proximityMode;				//!<particle, wave and matter interactions
-		
+
 	NPintXYZ	segments;					//!<geometry segments, facets, grid lines
 
 	int			tagMode;					//!<billboard tag
 	int			formatID;					//!<DB translation to antz field, label
 	int			tableID;					//!<DB table
 	int			recordID;					//!<DB recordID
+	int			modelId;					//!<Assimp ID, if 0 then none else meshIndex, le, /// @todo: Set node's model id @ console, le
 
 	int			size;
 
@@ -743,7 +744,7 @@ struct NPmapNodeID {
 	pNPmapItemNodeID*	list;	///< list of items that pair ID to node Ptr
 	int					count;	///< number of items in the list
 	int					size;	///< allocated size of list
-};							
+};
 typedef struct NPmapNodeID NPmapNodeID;
 typedef struct NPmapNodeID *pNPmapNodeID;
 
@@ -772,7 +773,7 @@ struct NPkey {
 	bool	modAltRight;
 	bool	modCommandLeft;
 	bool	modCommandRight;
-	
+
 	int		skipCount;
 
 	int		map[kNPkeyEventTypeSize][kNPkeyMapSize];	//!<key command map
@@ -801,7 +802,7 @@ struct NPtool {
 
 	NPfloatXYZ	coordA;			//!<start point, mouse down
 	NPfloatXYZ	coordB;			//!<second point to define region
-	
+
 	NPfloatXYZA	rotateA;		//!<support for 6DOF devices
 	NPfloatXYZA rotateB;
 
@@ -900,7 +901,7 @@ struct NPmenu {
 typedef struct NPmenu NPmenu;
 typedef struct NPmenu* pNPmenu;
 
-struct NPconsole {	
+struct NPconsole {
 	void* coreNode; ///< core nodes tie global structures to the scene graph
 						//!< each global struct has a corresponding base node.
 
@@ -941,7 +942,7 @@ struct NPconsole {
 	int			page;						//!<active page, page = 0 for current
 	int			selectIndex;				//!<user selected line
 
-	int			selectText;	
+	int			selectText;
 	int			insertText;	//!<//!<selectText
 
 	int			cursorLine;					//!<current cursor line number
@@ -976,7 +977,7 @@ struct NPtags {
 	void**		list;
 	int			count;	//!<zz debug, change to listCount
 
-	
+
 	void**		recordList;		//!<zz debug, change name?
 	int			recordCount;
 
@@ -1016,7 +1017,7 @@ struct NPgl {
 	void* coreNode; ///< core nodes tie global structures to the scene graph
 						//!< each global struct has a corresponding base node.
 
-	int			id;				//!<the node ID used to store this GL item 
+	int			id;				//!<the node ID used to store this GL item
 
 	int			windowID;		//!<multiple GL contexts can share a windowID
 	int			glContext;		//!<multiple windows can share a GL context
@@ -1045,7 +1046,7 @@ struct NPgl {
 
 	int			pickPass;
 	int			pickID;
-	
+
 	int			screenGrab;		//!<flag for screenGrab
 	char		datasetName[kNPmaxPath];	//!<used by screenGrab
 
@@ -1089,9 +1090,9 @@ struct NPmap {
 	int			nodeCount;				//!<total for root and children nodes
 	int			nodeRootCount;			//!<number of root nodes
 	int			nodeRootIndex;			//!<the active node root
-	
+
 	int			tagCount;				//!<number of tags
-	
+
 	pNPnode		previousNode;			//!<used for clicking away...
 	pNPnode		currentNode;			//!<active node, commands, traversing tree
 	pNPnode		currentCam;				//!<active camera used for zsort distance
@@ -1113,8 +1114,8 @@ struct NPmap {
 	pNPmapType	typeMapCamera;
 	pNPmapType	typeMapPin;
 	pNPmapType	typeMapGrid;
-		
-	pNPmapType	typeMapTag;				//!< debug db //!<zzssql 
+
+	pNPmapType	typeMapTag;				//!< debug db //!<zzssql
 	pNPmapType	typeMapChMap;			//!< debug db //!<zzssql
 
 	pNPmapType	typeMapPalette;				//!<zz color
@@ -1147,7 +1148,7 @@ typedef struct NPxref * pNPxref;
 //!< the pointer logic is same in all cases, processing requires different casting for the "void*" and "void**"
 //!< for example, when processing float properties, these have to be cast to "float*" and "float**"
 struct NPnodePropertyTracks {
-	//!< for mapping track-to-node-attribute -- set up when a Node subscribes to a channel 
+	//!< for mapping track-to-node-attribute -- set up when a Node subscribes to a channel
 	void*		nodePropertyMemoryLocations[kNPmaxFloatProperties];		//!< memory address of each node property fed from track data
 	void**		nodePropertyMemoryNextLocation;							//!< next available location for a float property memory address
 	int			propertyTracks[kNPmaxFloatProperties];					//!< offset of the tracks that feed each peroperty
@@ -1183,7 +1184,7 @@ struct NPtrackDataSource {
 	char*		fullFilePath;
 	FILE*		channelFP;
 
-	//!< when dataSourceType is kDataFromUDP, we use the oscPackListener in NPio as the data source, the message itself 
+	//!< when dataSourceType is kDataFromUDP, we use the oscPackListener in NPio as the data source, the message itself
 	//!< then routes data to the tracks
 };
 typedef struct NPtrackDataSource NPtrackDataSource;
@@ -1201,7 +1202,7 @@ struct NPch {
 	NPxref		xref[kNPmaxTrackToAttributeMappings];
 	int			xrefIndex;
 	char		channelFileTokenBuffer[kNPmaxLineLength];
-	char*		channelFileTokens[kNPmaxTokens];			
+	char*		channelFileTokens[kNPmaxTokens];
 
 	//!<
 	//!< LOADED FROM TRACKS FILES
@@ -1209,7 +1210,7 @@ struct NPch {
 	//!< data source for the tracks
 	NPtrackDataSource trackDataSource;
 	char		trackFileTokenBuffer[kNPmaxLineLength];
-	char*		trackFileTokens[kNPmaxTokens];			
+	char*		trackFileTokens[kNPmaxTokens];
 
 	//!< properties apply to all tracks on the channel
 	bool		updateData;				//!< true when we need to update data (either read from track to update node, or vice versa)
@@ -1218,7 +1219,7 @@ struct NPch {
 	int			channelDataSize;		//!< amount of data in each track, any value between 0 and kNPtrackBufferSize
 	int			channelSampleRate;		//!< sample rate for this channel, # of milliseconds to keep same channel data, e.g. 50 === 20 changes per second (1000 ms/50 ms)
 	long long	channelNextDataChangeTime;	//!< next time to change data (by updating channelReadIndex) on this channel, used with sample rate to determine when to change data
-	
+
 	//!< track specific data, data loaded from the track file
 	int			numberTracks;			//!< number of tracks in this channel
 	char**		trackNames;				//!< each track has a name, name indicates node attribute (multiple allowed, separated by anything except ",")
@@ -1251,6 +1252,7 @@ struct NPfile
 
 	char		appPath[kNPmaxPath];
 	char		csvPath[kNPmaxPath];
+	char		modelPath[kNPmaxPath];  //!<stores path to 3d models
 	char		mapPath[kNPmaxPath];
 	char		currentOpenPath[kNPmaxPath];
 //!<	char		cwdPath[4096];			//!<zz debug, maybe better to use GetCWD
@@ -1313,6 +1315,15 @@ typedef struct NPos NPos;
 typedef struct NPos* pNPos;
 
 
+struct NPtexmap {
+	void* image;
+	int width;
+	int height;
+	int channels;
+};
+typedef struct NPtexmap NPtexmap;
+typedef NPtexmap* pNPtexmap;
+
 struct NPio {
 	void* coreNode; ///< core nodes tie global structures to the scene graph
 						//!< each global struct has a corresponding base node.
@@ -1321,7 +1332,7 @@ struct NPio {
 	char**		argv;
 
 	NPos		os;					//!< Operating System specific	//zzd
-	
+
 	NPmessage	message;
 	NPkey		key;
 	NPmouse		mouse;
@@ -1329,14 +1340,14 @@ struct NPio {
 	NPch		ch;
 	NPfile		file;
 
-//!<	struct	dbNewConnect *connect;	//!<zzsql							//!<zz debug	//!<zz dbz
-//	struct databases *dbs;			//!<zz dbz
 	NPdbs		db;
-	
+	NPgithub    github;
+	void* assimp;
+	NPtexmap texmap;
+
 //!<	NPoscPackListener oscListener;		//!<JJ-zz
 	pNPconnect	connect[kNPmaxConnect];	//!<zz osc
 
-	NPgithub	github;
 	NPcurl		curl;
 	NPjson		json;
 
@@ -1430,7 +1441,7 @@ typedef struct NPuserEnvironment* pNPuserEnvironment;
 
 /// List of users, stores account and other session info.
 #define kNPuserMax 256
-struct NPuser{	
+struct NPuser{
 	void* coreNode; ///< core nodes tie global structures to the scene graph
 						//!< each global struct has a corresponding base node.
 						//!<zz select
@@ -1453,9 +1464,9 @@ struct NPctrl {
 	pNPuser user[kNPuserMax];			//!< List of users, stores session info.
 
 	int userCount;
-	
+
 	float	slow;						//!< slow velocity, shift not pressed //!<zz move this to io or npengine
-	float	fast;						//!< fast velocity, shift key pressed 
+	float	fast;						//!< fast velocity, shift key pressed
 
 	NPcpu	cpu;
 
@@ -1519,7 +1530,7 @@ struct NPcamera
 	int			format;						//!<320p, 480i, 720p, 4K full app
 	int			interlaced;					//!<interlaced field order
 	int			stereo3D;						//!<stereoscopic 3D
-	float		aspectRatio;				//!<1.0, 1.333, 1.777, 1.85, 2.25... 
+	float		aspectRatio;				//!<1.0, 1.333, 1.777, 1.85, 2.25...
 	float		fps;						//!< 15, 24, 29.97, 30, 59.94, 120...
 	int			colorSpace;					//!<8, 12bit, YUV, RGBA, XYZ, CMYK...
 	int			width;						//!<res in pixels
@@ -1528,7 +1539,7 @@ struct NPcamera
 	float		fov;						//!<FOV 35mm, 70mm...
 	float		clipNear;
 	float		clipFar;
-	
+
 	//!< real world camera parameters
 	float		aperture;					//!<F stop
 	float		exposure;					//!<in seconds
@@ -1552,7 +1563,7 @@ struct NPvideo
 	int			format;						//!<320p, 480i, 720p, 4K full app
 	int			interlaced;					//!<interlaced field order
 	int			stereo3D;						//!<stereoscopic 3D
-	float		aspectRatio;				//!<1.0, 1.333, 1.777, 1.85, 2.25... 
+	float		aspectRatio;				//!<1.0, 1.333, 1.777, 1.85, 2.25...
 	float		fps;						//!< 15, 24, 29.97, 30, 59.94, 120...
 	int			colorSpace;					//!<8, 12bit, YUV, RGBA, XYZ, CMYK...
 	int			width;						//!<res in pixels
@@ -1640,7 +1651,7 @@ struct NPpin
 
 	int			radiusRatioIndex;			//!<sorts pre-loaded GPU toriods
 	int			screenSizeIndex;			//!<same as above for detail level
-	
+
 	int			slices;						//!<calculated from radiusRatioIndex
 	int			stacks;						//!<...and from the screenSizeIndex
 
@@ -1749,11 +1760,11 @@ enum kNP_SELECT_COMMANDS
 enum kNP_MAP_TYPE
 {
 	kNPmapNull = 0,			//!<default native handler
-		
+
 	kNPmapNP,				//!<map descriptor to build maps
 
 	kNPmapRoot,				//!<1 root to rule them all
-	kNPmapMultiverse,		//!<collection of universes		
+	kNPmapMultiverse,		//!<collection of universes
 	kNPmapUniverse,
 	kNPmapGalaxyCluster,
 	kNPmapGalaxy,
@@ -1763,9 +1774,9 @@ enum kNP_MAP_TYPE
 	kNPmapRegion,			//!< < 30 ms latency, < 4000km  kNPmapLocation,			//!< < 3 ms latency, < 400km   kNPmapCluster,			//!< < 1 ms latency, < 40km
 	kNPmapSpot,				//!< < 1 ms latency, //!< < 4m, CPU node, not scene node
 
-	kNPmapSystem, 
+	kNPmapSystem,
 	kNPmapIO,				//!< typically a bus device if a node
-						
+
 	kNPmapBUS,				//!< Node maps
 	kNPmapCPU,
 	kNPmapRAM,
@@ -1787,14 +1798,14 @@ enum kNP_MAP_TYPE
 	//!<zz  above is physical context, perhaps below should be separate list
 
 	kNPmapNPE,
-	kNPmapDraw,				//!<a list of objects to draw in a GL context 
+	kNPmapDraw,				//!<a list of objects to draw in a GL context
 	kNPmapQuadsort,			//!<break scene into quadrants, cluster and NPE
 	kNPmapZsort,				//!<GL draw order, for correct alpha rendering
 
 	kNPmapTree,
 	kNPmapList,
 	kNPmapArray,
-	
+
 //!<	kNPmapNodeNull,
 
 	kNPmapGlobals,
@@ -1871,7 +1882,7 @@ enum kNP_VIDEO_HZ									//!<add DPX format support, zz
 	kVideoFPS_24HZ,			//!<Film
 	kVideoFPS_25HZ,			//!<PAL
 	kVideoFPS_29_97HZ,		//!<NTSC
-	kVideoFPS_30HZ,			
+	kVideoFPS_30HZ,
 	kVideoFPS_59_94HZ,		//!<1080i, 60i, 60
 	kVideoFPS_60HZ,
 	kVideoFPS_72HZ,			//!<experimental format
@@ -1904,7 +1915,7 @@ enum kNP_COLOR_SPACE
 	kColorSpaceRGB_12,
 	kColorSpaceRGB_16,
 	kColorSpaceRGB_24,
-	kColorSpaceRGB_32,	
+	kColorSpaceRGB_32,
 	kColorSpaceRGBA_8,			//!<bits per channel
 	kColorSpaceRGBA_10,
 	kColorSpaceRGBA_12,
@@ -2016,7 +2027,7 @@ enum kNP_COMMAND_TRIGGER {
 	//!<global graph commands
 	kNPcmdMenu = 4242,
 	kNPcmdTagMode,
-	
+
 	kNPcmdNew,
 	kNPcmdDelete,
 
@@ -2061,22 +2072,22 @@ enum kNP_COMMAND_TRIGGER {
 
 	//!<translate, rotate and scale selected objects
 	kNPcmdSelectAxes,
-	
+
 	kNPcmdXincrease,
 	kNPcmdXincreaseOff,
 	kNPcmdXdecrease,
 	kNPcmdXdecreaseOff,
-	
+
 	kNPcmdYincrease,
 	kNPcmdYincreaseOff,
 	kNPcmdYdecrease,
 	kNPcmdYdecreaseOff,
-	
+
 	kNPcmdZincrease,
 	kNPcmdZincreaseOff,
 	kNPcmdZdecrease,
 	kNPcmdZdecreaseOff,
-	
+
 	kNPcmdRotateLeft,
 	kNPcmdRotateLeftOff,
 	kNPcmdRotateRight,
@@ -2094,10 +2105,10 @@ enum kNP_COMMAND_TRIGGER {
 
 	kNPcmdZoomOn,
 	kNPcmdZoomOff,
-	
+
 	kNPcmdClearFrameBuffer,
 	kNPcmdBackground,
-	
+
 	//!<node specific graph commands
 	kNPcmdSampleInterval,
 	kNPcmdChannelDown,
@@ -2113,7 +2124,7 @@ enum kNP_COMMAND_TRIGGER {
 	kNPcmdColorFade,
 	kNPcmdAltColor,
 	kNPcmdColorPalette,
-	
+
 	kNPcmdAlphaUp,
 	kNPcmdAlphaDown,
 	kNPcmdBiasUp,
@@ -2127,11 +2138,11 @@ enum kNP_COMMAND_TRIGGER {
 	kNPcmdFreeze,
 	kNPcmdHide,
 	kNPcmdClear,
-	
+
 	kNPcmdCenter,
 	kNPcmdScroll,
 
-	kNPcmdPoints,	
+	kNPcmdPoints,
 	kNPcmdLines,
 	kNPcmdSegments,
 	kNPcmdShader,
@@ -2242,7 +2253,7 @@ enum kNP_KEY_CODES_OSX
 				kKeyCodeDelete = 0x33,
 				kKeyCodeBackSpace,
 				kKeyCodeESC = 0x35,
-				
+
 				kKeyCodeF1 = 0x7A,
 				kKeyCodeF2 = 0x78,
 				kKeyCodeF3 = 0x63,
@@ -2253,23 +2264,23 @@ enum kNP_KEY_CODES_OSX
 				kKeyCodeF8 = 0x64,
 				kKeyCodeF13 = 0x69,
 				kKeyCodeF16 = 0x6A,
-				
+
 				kKeyCodeHelp = 0x72,
 				kKeyCodeHome = 0x73,
 				kKeyCodePageUp = 0x74,
 				kKeyCodeDeleteRight = 0x75,
 				kKeyCodeEnd = 0x77,
 				kKeyCodePageDown = 0x79,
-				
+
 				kKeyCodeLeft = 0x7B,
-				kKeyCodeRight = 0x7C, 
+				kKeyCodeRight = 0x7C,
 				kKeyCodeDown = 0x7D,
 				kKeyCodeUp = 0x7E,
-				
+
 				kKeyCodeNumPadPeriod = 0x41,
 				kKeyCodeNumPadStar = 0x43,
 				kKeyCodeNumPadPlus = 0x45,
-				kKeyCodeNumPadClear = 0x47, 
+				kKeyCodeNumPadClear = 0x47,
 				kKeyCodeNumPadEnter = 0x4C,
 				kKeyCodeNumPadSlash = 0x4B,
 				kKeyCodeNumPadMinus = 0x4E,
@@ -2325,7 +2336,7 @@ enum kNP_NATIVE_DATA_TYPES
 	kNPcamera,
 	kNPgrid,
 	kNPpin,			//!< @todo zz remove this, too easily confused with kNodePin
-	kNPchMap,		//!< @todo remove this, should not be here //!<zzsql 
+	kNPchMap,		//!< @todo remove this, should not be here //!<zzsql
 
 	//!< fundamental C types
 	kNPfloat,
@@ -2359,7 +2370,7 @@ enum kNP_NATIVE_DATA_TYPES
 	kNPfloatRGBA,
 
 	kNPcstrPtr,
-	
+
 	//!< GL types
 	kNPGLboolean,
 	kNPGLubyte,
@@ -2404,19 +2415,19 @@ enum kNP_NATIVE_DATA_TYPES
 
 	kNPshader,
 	kNPgeometry,
-	
+
 	kNPlineWidth,
 	kNPpointSize,
 	kNPratio,
-	
+
 	kNPcolorIndex,
 	kNPcolor,
 	kNPcolorFade,
 	kNPtextureID,
-	
+
 	kNPhide,
 	kNPfreeze,
-	
+
 	kNPtopo,
 	kNPfacet,
 
@@ -2426,7 +2437,7 @@ enum kNP_NATIVE_DATA_TYPES
 	kNPtriggerLo,
 	kNPsetHi,
 	kNPsetLo,
-	
+
 	kNPproximity,
 	kNPproximityMode,
 
@@ -2477,7 +2488,7 @@ enum kNP_NATIVE_DATA_TYPES
 	kNPtrackID,
 	kNPattribute,
 	kNPtrackTableID,
-	kNPchMapTableID,	
+	kNPchMapTableID,
 
 	//!< map file
 	kNPversion,
@@ -2489,7 +2500,7 @@ enum kNP_NATIVE_DATA_TYPES
 	kNPgNull,
 	kNPgAlphaMode,
 	kNPfullscreen,
-	kNPgFullscreen,		//!<zz-globals redundant... 
+	kNPgFullscreen,		//!<zz-globals redundant...
 
 	kNPgBackground,
 	kNPgBackgroundR,
@@ -2564,6 +2575,7 @@ enum kNP_GEOMETRY_TYPES
 
 	kNPgeoCylinderWire,
 	kNPgeoCylinder,			//!<radius 1, height 2
+	kNPgeoAssimp,           //!<Assimp Model Geometry , le
 
 //!<	kNPglutWireTeapot,
 //!<	kNPglutSolidTeapot,
@@ -2577,7 +2589,7 @@ enum kNP_GEOMETRY_TYPES
 };
 
 enum kNP_GL_NORMALS
-{	
+{
 	kNPglNormalNull = 0,
 	kNPglRescaleNormal,
 	kNPglNormalize,
@@ -2586,7 +2598,7 @@ enum kNP_GL_NORMALS
 };
 
 enum kNP_GL_SHADER_MODE
-{	
+{
 	kNPglShadeNull = 0,
 	kNPglShadeSmooth,
 	kNPglShadeFlat,
@@ -2605,7 +2617,7 @@ enum kNP_MOUSE_MODE
 
 	kNPmouseModeCamExamXZ,
 	kNPmouseModeCamExamXY,
-	
+
 	kNPmouseModeDragXZ,
 	kNPmouseModeDragXY,
 	kNPmouseModeDragWorld,
@@ -2716,7 +2728,7 @@ enum kNP_HUD_ELEMENT
 //!<			kNPhudRotate
 		kNPhudCoordY,
 		kNPhudCoordZ,
-		
+
 	kNPhudMode,
 	kNPhudTool,
 	kNPhudSave,			//!<zz select
@@ -2739,7 +2751,7 @@ enum kNP_HUD_ELEMENT
 
 
 //!<concept of default topo is in flux, think in terms of //!<zz debug
-//!<cut and paste various bramches, including making a 
+//!<cut and paste various bramches, including making a
 //!<sub-branch a root pin determined by parent node type
 //!<may not be worth it and do away with topoNull pins, CSVverOne
 enum kNP_TOPOLOGY_TYPE
@@ -2794,7 +2806,7 @@ enum kNP_CONSOLE_MODE
 	kNPconsoleCmd,
 	kNPconsoleTag,				//!<set the tag names
 	kNPconsoleEdit,				//!<code editor
-	kNPconsoleMenu,				//!<generic menu list	
+	kNPconsoleMenu,				//!<generic menu list
 	kNPconsoleMySQL				//!<DB Browser
 };
 
@@ -2836,7 +2848,7 @@ enum kNP_QUADRANT
 	kNPpositionTop,
 								//!<kNPmiddle,
 	kNPpositionBottom,
-	
+
 	kNPpositionCount
 };
 
@@ -2855,7 +2867,7 @@ enum kNP_CONSOLE_COMMAND_LINE_FLAG
 {
 	kNPflagNull = 0,
 	kNPflagN,					//!<any native parameter, mapItem desc format
-	kNPflagCmd,					//!<commands 
+	kNPflagCmd,					//!<commands
 	kNPflagURL,
 	kNPflagFile,
 	kNPflagUDP,
@@ -2894,7 +2906,7 @@ enum kNP_FILE_TYPE
 
 	kNPfileMPG,		//!<MPEG 1 and 2 video
 	kNPfileMP4,		//!<MPEG 4
-	
+
 	kNPfileBMP,
 	kNPfileDDS,		//!< Native GPU compressed image format
 	kNPfileGIF,
@@ -2944,4 +2956,3 @@ enum kNP_DATA_FORMAT
 };
 
 #endif
-
