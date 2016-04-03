@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2015 by Shane Saxon - saxon@openantz.com
+*  Written in 2010-2016 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -59,40 +59,36 @@ int npLoadTexture( const char* filePath, int fileType, void* dataRef)
 	int textureID = 0;
 	pData data = (pData) dataRef;
 
-	// determine the file type
+	/// Determine the format using the file extension.
 	if( !fileType )
 		fileType = npGetFileTypeCat( NULL, filePath, dataRef );
 
-	/// Using SOIL for efficient direct memory DDS file loading.
+	/// Use SOIL for efficient direct memory DDS file loading.
 	if( fileType == kNPfileDDS ) 
 	{
 		textureID = SOIL_load_OGL_texture ( filePath,
 			SOIL_LOAD_AUTO,
 			SOIL_CREATE_NEW_ID,
 			SOIL_FLAG_INVERT_Y |
-			SOIL_FLAG_MIPMAPS );	//disabling breaks RGBA textures
+			SOIL_FLAG_MIPMAPS * kNPglMipmaps );	// multiply to turn ON/OFF
+			// | SOIL_FLAG_NTSC_SAFE_RGB	// we want the entire RGB spectrum
 	}
 	else	
-	{	/// Using FreeImage (addon) for all other image types.
+	{	/// Use FreeImage (addon) for all other (non-DDS) images.
 #ifdef NP_ADDON_FREEIMAGE
-	textureID = npfiLoadTexture( filePath, data );
+		textureID = npfiLoadTexture( filePath, data );
 #else
-	textureID = SOIL_load_OGL_texture
-	(
-		filePath,
-		SOIL_LOAD_AUTO,
-		SOIL_CREATE_NEW_ID,
-		SOIL_FLAG_INVERT_Y |
-		SOIL_FLAG_MIPMAPS //|			//disabling breaks RGBA textures
-		// | SOIL_FLAG_NTSC_SAFE_RGB	//we want the entire RGB spectrum
-		// | SOIL_FLAG_COMPRESS_TO_DXT	//no lossy compression, faster too
-	);
+		textureID = SOIL_load_OGL_texture ( filePath,
+			SOIL_LOAD_AUTO,
+			SOIL_CREATE_NEW_ID,
+			SOIL_FLAG_INVERT_Y |
+			SOIL_FLAG_MIPMAPS * kNPglMipmaps );
 #endif
 	}
 
-	//the last texture loaded is the texture count, non-loads return a texture=0
+	// If success then increment the texture count.
 	if( textureID )
-		data->io.gl.textureCount = textureID;
+		data->io.gl.textureCount++;
 	else
 		printf ("err 4301 - failed to load image: %s\n", filePath);
 
@@ -157,6 +153,7 @@ void npLoadTextures(void* dataRef)
     }
 	while( nposFindNextFile( fRef ) );	// next file within limits
 
+	//------------------------------------------------------------------
 	/// Now we load all other textures
 	result = nposFindFirstFile( fRef, "usr/images/", "*.*", data );
 	if( result != 1 )
@@ -164,7 +161,7 @@ void npLoadTextures(void* dataRef)
 
 	do
     {
-		// handle legacy support by skipping the ones we just laoded
+		// legacy support by skipping the ones we just laoded
 		if( strncmp(fRef->name, "map", 3) == 0
 			&& npGetFileTypeCat(NULL, fRef->name, data) == kNPfileJPG )
 			continue;
