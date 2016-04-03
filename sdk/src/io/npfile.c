@@ -233,8 +233,10 @@ int npFileRead (void* readBuffer, int elementSize, int elementCount,
 
 	count = fread (readBuffer, elementSize, elementCount, file);
 	
+	/*
 	if ( count <= 0 )
 		printf(" warn 7218 - empty file\n", file);
+	*/
 
 	return count;
 }
@@ -667,11 +669,15 @@ int npSaveScene( int format, char* datasetName, void* dataRef)
 	npScreenGrabThumb( datasetName, kNPformatDDS,
 						0, 0, kNPthumbWidth, kNPthumbHeight, data );
 
-	result += npSaveMapToCSV( datasetName, kNPmapGlobals, data );
+	result += npSaveMapToCSV( datasetName, kNPmapGlobals, data ); /// save globals
 
-	result += npSaveMapToCSV( datasetName, kNPmapNode, data );
+	result += npSaveMapToCSV( datasetName, kNPmapNode, data ); /// save nodes
 
-	result += npSaveMapToCSV( datasetName, kNPmapTag, data );
+	result += npSaveMapToCSV( datasetName, kNPmapTag, data );  /// save tags
+
+	result += npSaveMapToCSV( datasetName, kNPmapTextures, data ); /// lv save textures
+
+	result += npSaveMapToCSV( datasetName, kNPmapModels, data ); /// lv save models
 
 	return result;
 }
@@ -834,3 +840,141 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	return result;
 }
 
+void npGetFileNameFromPath(const char* filepath, char* filename, void* dataRef)
+{
+	char* p_filepath = NULL; // lv, p_ prefix denotes pointer
+	char delimit[1] = "\\";
+	int pathLen = 0; // lv, Len suffix denotes length
+	int pathX = 0; // lv, X suffix denotes an index
+
+	filename[0] = '\0';
+
+	if(filepath == NULL)
+	{
+		printf("filepath is NULL");
+		return;
+	}
+	
+	pathLen = strlen(filepath); // lv, Len suffix denotes length
+	if(pathLen == 0)
+	{
+		printf("\nString has zero length");
+		return;
+	}
+
+	p_filepath = strstr(filepath, ".");
+	if(!p_filepath)
+	{
+		printf("\nfile does not have extension");
+		return;
+	}
+
+	pathX = pathLen - strlen(p_filepath);
+
+//	delimit = nposGetFolderDelimit();
+
+	while( (*p_filepath) != '\\' && pathX >= 0)
+	{
+		p_filepath--;
+		pathX--;
+	}
+
+	p_filepath++;
+//	delimit = nposGetFolderDelimit();
+//	delimit = "/";
+	if(pathX == -1 && (strstr(filepath, "/") != NULL) )
+	{
+//		delimit = '/';
+		p_filepath = strstr(filepath, ".");
+		pathX = pathLen - strlen(p_filepath);	
+
+		while( (*p_filepath) != '/' && pathX >= 0)
+		{
+			p_filepath--;
+			pathX--;
+		}
+		p_filepath++;
+		
+	}
+
+	pathX++;
+
+	strcpy(filename, p_filepath);
+}
+
+char* npSearchPathsForFile(char* filename, void* dataRef)
+{
+	char* filepath = NULL;
+	char* searchpaths[4];
+	int index = 0;
+	pData data = (pData) dataRef;
+
+//	searchpaths
+	searchpaths[0] = data->io.file.appPath;
+	searchpaths[1] = data->io.file.modelPath;
+	searchpaths[2] = data->io.file.csvPath;
+	searchpaths[3] = data->io.file.mapPath;
+
+	if(filename[0] != '\0' && filename != NULL)
+	{
+		for(index = 0; index < 4; index++)
+		{
+			if( nposFileExistsAtDir(searchpaths[index], filename, dataRef ) == true )
+			{
+				filepath = malloc(sizeof(char) *  (strlen(searchpaths[index]) + strlen(filename) + 1) );
+				if(filepath != NULL)
+				{
+					filepath[0] = '\0';
+					sprintf(filepath, "%s%s", searchpaths[index], filename);
+//					printf("\nfilepath : %s", filepath);
+					return filepath;
+				}
+				else
+				{
+					return "\0";
+				}
+			}
+		}
+	}
+
+	return "\0"; 
+}
+// lv model start
+char* npFilePathRelToAbs(char* rel, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	char* abs = NULL;
+	abs = malloc(sizeof(char) * 256);
+	abs[0] = '\0';
+	strcpy(abs, data->io.file.appPath);
+	strcat(abs, rel);
+	return abs;
+}
+
+char* npFilePathAbsToRel(char* abs, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	char* rel = NULL;
+	char temp[256] = {'\0'};
+	char* z = NULL;
+	int i = 0;
+	rel = malloc(sizeof(char) * 256);
+	
+	strcpy(temp, abs);	
+	for(;i < strlen(temp); i++)
+		temp[i] = tolower(temp[i]);
+	
+	if( strcmp(temp, data->io.file.appPath) == 0 )
+		rel[0] = '\0';
+	else if( strcmp(temp, data->io.file.appPath) > 0 )
+	{
+		rel[0] = '\0';
+		strcpy(rel, &temp[strlen(data->io.file.appPath)]);
+		//printf("rel path : %s\n", rel);
+
+	}
+//	z = strstr(temp, data->io.file.appPath);
+
+	return rel;
+}
+// lv model end

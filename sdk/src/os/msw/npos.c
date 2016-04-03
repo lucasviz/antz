@@ -10,7 +10,7 @@
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
-*  To the extent possible under law, the author(s) have dedicated all copyright 
+*  To the extent possible under law, the author(s) have dedicated all copyright
 *  and related and neighboring rights to this software to the public domain
 *  worldwide. This software is distributed without any warranty.
 *
@@ -25,7 +25,7 @@
 /* -----------------------------------------------------------------------------
 *
 *  THERE are TWO separate npos.c files!!!
-* 
+*
 *  THIS IS msw/npos.c and NOT posix/npos.c
 *
 * --------------------------------------------------------------------------- */
@@ -66,7 +66,7 @@ void* nposLoadLibrary( char* filePath )
 		printf( "err 9933 - failed to load library: %s\n", filePath);
 		return NULL;
 	}
-	
+
 	return library;
 }
 
@@ -100,13 +100,69 @@ void nposGetAppPath (char* buffer, int* size)
 		nposGetCWD (appPath, size);
 		firstTimeCalled = false;
 	}
-	
+
 	//copy the app path to the passed in buffer
 	strcpy (buffer, appPath);
 
 	//set the length
-	*size = strlen(buffer); 
+	*size = strlen(buffer);
 }
+
+/// new function lv
+bool nposDirExists(const char* dir, void* dataRef)
+{
+	unsigned int attribs = 0;
+
+	if(dir[0] == '\0')
+		return false;
+
+	attribs = GetFileAttributes(dir);
+	if(attribs == INVALID_FILE_ATTRIBUTES)
+		return false; /// Invalid Path
+
+	if(attribs & FILE_ATTRIBUTE_DIRECTORY)
+		return true; /// is a directory
+
+	return false;
+}
+
+bool nposFileExists(const char* filepath, void* dataRef)
+{
+	unsigned int attribs = 0;
+
+	attribs = GetFileAttributes(filepath);
+	if( (attribs != INVALID_FILE_ATTRIBUTES) && (attribs != 0) && (attribs != FILE_ATTRIBUTE_DIRECTORY) )
+		return true;
+
+	return false;
+}
+
+bool nposFileExistsAtDir(const char* dir, char* filename, void* dataRef)
+{
+	bool dirExists = false;
+	char filepath[256] = {'\0'};
+	unsigned int attribs = 0;
+
+	dirExists = nposDirExists(dir, dataRef);
+
+	if(dirExists == true)
+	{
+		sprintf(filepath, "%s%s", dir, filename);
+		attribs = GetFileAttributes(filepath);
+		if( (attribs != INVALID_FILE_ATTRIBUTES) )
+			return true;
+
+//		if( (attribs != INVALID_FILE_ATTRIBUTES) && (attribs != 0) && (attribs != FILE_ATTRIBUTE_DIRECTORY) )
+//			return true;
+	}
+	else
+	{
+		return false;
+	}
+
+	return false;
+}
+
 
 // current working directory is OS specific
 //-----------------------------------------------------------------------------
@@ -133,13 +189,13 @@ void nposGetCWD (char* buffer, int* size)
 
 		// ll, Need to do some string processing, remove current running application filename from path
 		for(i = (*size)-1; i >= 0; i--)
-		{	
+		{
 	//		printf("\nbuffer[%d] : %c\n", i, buffer[i]);
 
 			if ( buffer[i] == '.' || buffer[i] == '\\' )
 			{
 	//			printf("Found %c", buffer[i]);
-			
+
 				if ( buffer[i] == '.' )
 					buffer[i] = '\0';
 				else
@@ -152,7 +208,7 @@ void nposGetCWD (char* buffer, int* size)
 		}
 		// ll , End
 
-	//	printf("File Path Size : %d\n", strlen(str)); 
+	//	printf("File Path Size : %d\n", strlen(str));
 
 	printf("CWD Path: ");
 	for(i = 0; i < *size; i++)
@@ -217,7 +273,7 @@ FILE* SaveFileDialog( char* fileChosen, const char* initialDir )
 	LPTSTR testString[260];
 	LPCTSTR* filterStr = (LPCTSTR*)"All\0*.*\0\0";
 //	const TCHAR* filterStr = "All\0*.*\0\0";
-	
+
 	int i = 0;
 
 	ZeroMemory(&tmpOfn, sizeof(tmpOfn));
@@ -270,24 +326,24 @@ FILE* SaveFileDialog( char* fileChosen, const char* initialDir )
 /*
 enum
 {
-	parameterNULL,  
+	parameterNULL,
 	includeAllFiles,
 	kNPfileDialogCount
 
 };
 */
 
-int OpenFileDialog( char* fileChosen, const char* initialDir, 
+int OpenFileDialog( char* fileChosen, const char* initialDir,
 					int dialogType, void* dataRef );
 //------------------------------------------------------------------------------
-int OpenFileDialog( char* fileChosen, const char* initialDir, 
+int OpenFileDialog( char* fileChosen, const char* initialDir,
 					int dialogType, void* dataRef )
 {
 	FILE* filePtr = NULL;
 	int h = 0;
 	int pathSize = 0;
 	char msg[kNPmaxPath];
-	
+
 	OPENFILENAME ofn;					// common dialog box structure
 	char szFile[MAX_PATH] = {'\0'};		// buffer for file name
 
@@ -310,7 +366,7 @@ int OpenFileDialog( char* fileChosen, const char* initialDir,
 	ofn.nMaxFileTitle = 0;
 	ofn.lpstrInitialDir = (LPCSTR)initialDir;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-	
+
 	/// Display the Open dialog box.
 	if( GetOpenFileName(&ofn) != TRUE )
 		return false;
@@ -322,9 +378,9 @@ int OpenFileDialog( char* fileChosen, const char* initialDir,
 	return true;	// success
 
 	// previous code returned FILE*
-	//	hf = CreateFile(ofn.lpstrFile, GENERIC_READ, 0, 
+	//	hf = CreateFile(ofn.lpstrFile, GENERIC_READ, 0,
 	//					(LPSECURITY_ATTRIBUTES) NULL, OPEN_EXISTING,
-	//					FILE_ATTRIBUTE_NORMAL, (HANDLE) NULL);			
+	//					FILE_ATTRIBUTE_NORMAL, (HANDLE) NULL);
 	 //prevents crash if app exited while dialog is open
 	//	hf = CreateFile(ofn.lpstrFile, GENERIC_READ, 0, (LPSECURITY_ATTRIBUTES)
 	//			NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, (HANDLE) NULL);
@@ -339,7 +395,7 @@ int OpenFileDialog( char* fileChosen, const char* initialDir,
 // Take file path returned from microsoft createFile, put into fopen and return File Pointer
 int nposFileDialog( char* fileChosen, const char* initialDir,
 					  int dialogType, void* dataRef )
-{	
+{
 	int i = 0;
 
 	switch (dialogType)
@@ -348,27 +404,27 @@ int nposFileDialog( char* fileChosen, const char* initialDir,
 			i = nposFileDialog (fileChosen, initialDir, kNPfileDialogOpen, dataRef);
 			break;
 
-		case kNPfileDialogOpen : 
-			i = OpenFileDialog (fileChosen, initialDir, kNPfileDialogOpen, dataRef); 
+		case kNPfileDialogOpen :
+			i = OpenFileDialog (fileChosen, initialDir, kNPfileDialogOpen, dataRef);
 			break;
 
-		case kNPfileDialogClose : 
+		case kNPfileDialogClose :
 			i = nposFileDialog (fileChosen, initialDir, kNPfileDialogSaveAs, dataRef);
 			break;
 
-		case kNPfileDialogSave : 
-			i = nposFileDialog (fileChosen, initialDir, kNPfileDialogSaveAs, dataRef); 
+		case kNPfileDialogSave :
+			i = nposFileDialog (fileChosen, initialDir, kNPfileDialogSaveAs, dataRef);
 			break;
 
-		case kNPfileDialogSaveAs : 
+		case kNPfileDialogSaveAs :
 			SaveFileDialog(fileChosen, initialDir); /// @todo make this return int
 			break;
 
-		case kNPfileDialogImport : 
+		case kNPfileDialogImport :
 			i = nposFileDialog (fileChosen, initialDir, kNPfileDialogOpen, dataRef);
 			break;
-		case kNPfileDialogExport : 
-			i = nposFileDialog (fileChosen, initialDir, kNPfileDialogSaveAs, dataRef); 
+		case kNPfileDialogExport :
+			i = nposFileDialog (fileChosen, initialDir, kNPfileDialogSaveAs, dataRef);
 			break;
 
 		default : break;
@@ -402,17 +458,17 @@ int nposGetKey (void)
 
 //-----------------------------------------------------------------------------
 double nposGetTime (void)
-{	
+{
 	LARGE_INTEGER frequency;		// ticks per second
 	LARGE_INTEGER ticks;			// ticks
 	double seconds;
-	
+
 	// get ticks per second
 	QueryPerformanceFrequency(&frequency);
-	
+
 	// get the count in ticks
 	QueryPerformanceCounter(&ticks);
-	
+
 	// convert ticks to seconds
 	if (frequency.QuadPart)
 		seconds = (double) ((double)ticks.QuadPart / (double)frequency.QuadPart);
@@ -424,17 +480,17 @@ double nposGetTime (void)
 void nposUpdateTime (void* dataRef)
 {
 	pData data = (pData) dataRef;
-	
+
 	LARGE_INTEGER frequency;		// ticks per second
 	LARGE_INTEGER ticks;			// ticks
 	double seconds;
-	
+
 	// get ticks per second
 	QueryPerformanceFrequency(&frequency);
-	
+
 	// get the count in ticks
 	QueryPerformanceCounter(&ticks);
-	
+
 	// convert ticks to seconds
 	if (frequency.QuadPart)
 		seconds = (double) ((double)ticks.QuadPart / (double)frequency.QuadPart);
@@ -443,7 +499,7 @@ void nposUpdateTime (void* dataRef)
 		data->io.timeStart = seconds;
 	else
 		data->io.cycleDelta = seconds - data->io.time;
-	
+
 	data->io.time = seconds;
 }
 
@@ -469,11 +525,11 @@ void nposTimeStampName (char* fileName)
 //------------------------------------------------------------------------------
 bool WGLExtensionSupported (const char *extension_name)
 {
-/*  
+/*
 Note that we will probably add GLEW lib to handle our extensions
 
  http://stackoverflow.com/questions/589064/how-to-enable-vertical-sync-in-opengl
-	
+
  pointer to a function that returns pointer to a string with all wgl extensions
   PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
 
@@ -487,7 +543,7 @@ Note that we will probably add GLEW lib to handle our extensions
         return false;
     }
 */
-    // extension is supported 
+    // extension is supported
 	return true;
 }
 
@@ -518,7 +574,7 @@ void npInitFileRef( pNPfileRef fileRef )
 
 	fileRef->handle = NULL;
 	fileRef->name = NULL;
-	
+
 	fileRef->isDir = false;
 	fileRef->sizeHi = 0;
 	fileRef->sizeLo = 0;
@@ -528,7 +584,7 @@ void npInitFileRef( pNPfileRef fileRef )
 pNPfileRef nposNewFileRef( void* dataRef)
 {
 	pNPfileRef fileRef = NULL;
-	
+
 	fileRef = npMalloc( 0, sizeof(NPfileRef), dataRef );
 
 	npInitFileRef( fileRef );
@@ -540,7 +596,7 @@ pNPfileRef nposNewFileRef( void* dataRef)
 int nposFindNextFile( pNPfileRef fileRef )
 {
 	int result = 0;
-	
+
 	result = FindNextFile( fileRef->handle, &fileRef->fdFile );
 	if( !result )
 		return 0;
@@ -574,7 +630,7 @@ void nposFindClose( pNPfileRef fileRef, void* dataRef )
 
 /// Takes a base directory path as argument and returns a handle to the first file
 //------------------------------------------------------------------------------
-int nposFindFirstFile( pNPfileRef fileRef, const char* dirPath, 
+int nposFindFirstFile( pNPfileRef fileRef, const char* dirPath,
 					   const char* fileFilter, void* dataRef )
 {
 	int result = 0;
@@ -620,12 +676,18 @@ void nposConsoleStart( void* sysCmd )
 	system( (char*)sysCmd );
 }
 
+char nposGetFolderDelimit(void)
+{
+	return '\\';
+//	return "\\";
+}
+
 //MSW file attributes
 /*
 
  Use FileTimeToSystemTime() to convert FILETIME
 
-	DWORD dwFileAttributes;	
+	DWORD dwFileAttributes;
     FILETIME ftCreationTime;
     FILETIME ftLastAccessTime;
     FILETIME ftLastWriteTime;
@@ -636,37 +698,36 @@ void nposConsoleStart( void* sysCmd )
     CHAR   cFileName[ MAX_PATH ];
     CHAR   cAlternateFileName[ 14 ];
 
-	#define FILE_SHARE_READ                 0x00000001  
-	#define FILE_SHARE_WRITE                0x00000002  
-	#define FILE_SHARE_DELETE               0x00000004  
-	#define FILE_ATTRIBUTE_READONLY             0x00000001  
-	#define FILE_ATTRIBUTE_HIDDEN               0x00000002  
-	#define FILE_ATTRIBUTE_SYSTEM               0x00000004  
-	#define FILE_ATTRIBUTE_DIRECTORY            0x00000010  
-	#define FILE_ATTRIBUTE_ARCHIVE              0x00000020  
-	#define FILE_ATTRIBUTE_DEVICE               0x00000040  
-	#define FILE_ATTRIBUTE_NORMAL               0x00000080  
-	#define FILE_ATTRIBUTE_TEMPORARY            0x00000100  
-	#define FILE_ATTRIBUTE_SPARSE_FILE          0x00000200  
-	#define FILE_ATTRIBUTE_REPARSE_POINT        0x00000400  
-	#define FILE_ATTRIBUTE_COMPRESSED           0x00000800  
-	#define FILE_ATTRIBUTE_OFFLINE              0x00001000  
-	#define FILE_ATTRIBUTE_NOT_CONTENT_INDEXED  0x00002000  
-	#define FILE_ATTRIBUTE_ENCRYPTED            0x00004000  
-	#define FILE_ATTRIBUTE_VIRTUAL              0x00010000  
+	#define FILE_SHARE_READ                 0x00000001
+	#define FILE_SHARE_WRITE                0x00000002
+	#define FILE_SHARE_DELETE               0x00000004
+	#define FILE_ATTRIBUTE_READONLY             0x00000001
+	#define FILE_ATTRIBUTE_HIDDEN               0x00000002
+	#define FILE_ATTRIBUTE_SYSTEM               0x00000004
+	#define FILE_ATTRIBUTE_DIRECTORY            0x00000010
+	#define FILE_ATTRIBUTE_ARCHIVE              0x00000020
+	#define FILE_ATTRIBUTE_DEVICE               0x00000040
+	#define FILE_ATTRIBUTE_NORMAL               0x00000080
+	#define FILE_ATTRIBUTE_TEMPORARY            0x00000100
+	#define FILE_ATTRIBUTE_SPARSE_FILE          0x00000200
+	#define FILE_ATTRIBUTE_REPARSE_POINT        0x00000400
+	#define FILE_ATTRIBUTE_COMPRESSED           0x00000800
+	#define FILE_ATTRIBUTE_OFFLINE              0x00001000
+	#define FILE_ATTRIBUTE_NOT_CONTENT_INDEXED  0x00002000
+	#define FILE_ATTRIBUTE_ENCRYPTED            0x00004000
+	#define FILE_ATTRIBUTE_VIRTUAL              0x00010000
 
 	HANDLE WINAPI FindFirstChangeNotification(
 							 _In_  LPCTSTR lpPathName,
 							 _In_  BOOL bWatchSubtree,
 							 _In_  DWORD dwNotifyFilter );
 
-	#define FILE_NOTIFY_CHANGE_FILE_NAME    0x00000001   
-	#define FILE_NOTIFY_CHANGE_DIR_NAME     0x00000002   
-	#define FILE_NOTIFY_CHANGE_ATTRIBUTES   0x00000004   
-	#define FILE_NOTIFY_CHANGE_SIZE         0x00000008   
-	#define FILE_NOTIFY_CHANGE_LAST_WRITE   0x00000010   
+	#define FILE_NOTIFY_CHANGE_FILE_NAME    0x00000001
+	#define FILE_NOTIFY_CHANGE_DIR_NAME     0x00000002
+	#define FILE_NOTIFY_CHANGE_ATTRIBUTES   0x00000004
+	#define FILE_NOTIFY_CHANGE_SIZE         0x00000008
+	#define FILE_NOTIFY_CHANGE_LAST_WRITE   0x00000010
 */
 
 
 #endif
-

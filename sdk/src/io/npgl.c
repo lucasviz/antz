@@ -23,6 +23,7 @@
 * --------------------------------------------------------------------------- */
 
 #include "npgl.h"
+#include "file/npmodels.h"
 
 #include "../npio.h"
 #include "../npctrl.h"
@@ -43,13 +44,15 @@ void npInitGL(void* dataRef)
 	npInitGLPrimitive (dataRef);
 
 	printf("before npInitGeoList(dataRef)");
-	npInitGeoList(dataRef);
+	npInitModels(dataRef);
 	printf("after npInitGeoList(dataRef)");
 
 	npInitTags (dataRef);		//do this before loading textures
 
+	npInitTexMap(dataRef);
 //	nposBeginThread (npLoadTextures, dataRef);	//zz debug, add thread worker func wrapper
 	npLoadTextures(dataRef);
+	npLoadGeos(dataRef);
 
 //	glShadeModel (GL_FLAT);
 //	glDepthFunc (GL_LEQUAL);

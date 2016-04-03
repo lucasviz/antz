@@ -1027,6 +1027,8 @@ void npMapTypeInit (void* dataRef)
 	{ 0,	kNPmapGL,		"gl",			"OpenGL context specific parameters" },
 	{ 0,	kNPmapCSV,		"csv",			"CSV table descriptor" },
 	{ 0,	kNPmapJSON,		"json",			"JSON data descriptor" },
+	{ 0,	kNPmapModels,   "models",		"Models data descriptor" },
+	{ 0,    kNPmapTextures, "textures",     "Textures data descriptor" },
 	{ 0,	kNPmapCount,	"count",		"Item count for this list" }
 	};
 
@@ -1091,6 +1093,8 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 
 	char str[4096];			//temp memory for value string, optimize this out, //zz debug			
 
+	char* dslash = NULL;
+	char* rel = NULL;
 	int i = 0, j = 0;		//node tag sort stuff
 	int count = 0;
 	void** nodes;
@@ -1100,6 +1104,8 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 
 	pNPnode node = NULL;
 	pNPtag tag = NULL;
+	pNPgeolist geolist = NULL;
+	pNPtexmap texmap = NULL;
 
 	pData data = (pData) dataRef;
 
@@ -1178,7 +1184,67 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 		// cleanup					//zz debug, add handling for &index with file blocks 
 		npFree( nodes, data );
 		return n;
+	} // lv models begin
+	else if(mapType == kNPmapModels)
+	{
+		//printf("kNPmapModels\n");
+		n += sprintf (curs, "np_geo_id,np_texture_id,type,object_name,file_name,path\n");
+		geolist = &data->io.gl.geolist[0];
+		for( i=1; i < 2000; i++ )
+		{
+			geolist = &data->io.gl.geolist[i];
+			if( geolist->geometryId != 0 )
+			{
+				rel = npFilePathAbsToRel(geolist->modelPath, dataRef);
+
+				printf(" i : %d \n tex id : %d\n\n", i, geolist->textureId); 
+				n += sprintf((curs + n), "%d,%d,%d,\"%s\",\"%s\",\"%s\"\n",	
+					geolist->geometryId,
+					geolist->textureId,
+					0,
+					geolist->name,
+					geolist->modelFile,
+					rel	
+					);
+				free(rel);
+			}
+		}
+		return n;
 	}
+	else if(mapType == kNPmapTextures)
+	{
+		printf("-------------Saving kNPmapTextures------------\n");
+		n += sprintf (curs, "np_texture_id,type,file_name,path\n");
+		// kNPtexListMax 2000
+		for( i = 1; i < 2000; i++ )
+		{
+			texmap = &data->io.gl.texmap[i];	
+
+			if(texmap->extTexId != 0 && texmap->filename[0] != '\0')
+			{
+				rel = npFilePathAbsToRel(texmap->path, dataRef);
+				if( (rel[strlen(rel)-1] == '\\') && (rel[strlen(rel)-2] == '\\') )
+				{
+//					printf("remove extra slash\n");
+					/// lv, remove extra slash
+					rel[strlen(rel)-1] = '\0';
+				}
+
+				printf("i %d texture rel path : %s\n", i, rel);
+
+				n += sprintf((curs + n), "%d,%d,\"%s\",\"%s\"\n",	
+					texmap->extTexId,
+					0,
+					texmap->filename,
+					rel
+					);
+
+				free(rel);
+			}
+		}
+
+		return n;
+	} // lv models end
 	else
 	{
 		npPostMsg("err 4545 - unknown mapType", kNPmsgErr, data);

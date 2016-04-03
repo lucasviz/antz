@@ -10,7 +10,7 @@
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
-*  To the extent possible under law, the author(s) have dedicated all copyright 
+*  To the extent possible under law, the author(s) have dedicated all copyright
 *  and related and neighboring rights to this software to the public domain
 *  worldwide. This software is distributed without any warranty.
 *
@@ -26,7 +26,7 @@
 
 
 //------------------------------------------------------------------------------
-/** @file npmap.h 
+/** @file npmap.h
 *  Methods for managing the global 'map' data structure.
 *  Can traverse the map tree and edit its structure, move branches, attach nodes
 *  remove nodes, sort objects and build custom graphs.
@@ -89,7 +89,7 @@ void npInitMap (void* dataRef)
 	{ kNPparent,			kNPvoidPtr,		"parent_id",		"parent node in a data tree" },
 	{ kNPbranchLevel,		kNPint,			"branch_level",		"branch depth on tree, 0 is root node" },
 	{ kNPchild,				kNPvoidPtr,		"child_id",			"list ID of attached child nodes" },
-	{ kNPchildIndex,		kNPint,			"child_index",		"specifies the current child" }, 
+	{ kNPchildIndex,		kNPint,			"child_index",		"specifies the current child" },
 	{ kNPchildCount,		kNPint,			"child_count",		"current number of children" },
 
 	{ kNPchInputID,			kNPint,			"ch_input_id",		"channel input maps tracks to node" },
@@ -106,7 +106,7 @@ void npInitMap (void* dataRef)
 	{ kNPauxB,				kNPintXYZ,		"aux_b",			"reserved for future use" },		//zz grid NO change
 
 	{ kNPcolorShift,		kNPfloat,		"color_shift",		"color shift is akin to hue" },
-	
+
 	{ kNProtateVec,			kNPfloatXYZS,	"rotate_vec",		"rotation unit vector" },
 	{ kNPscale,				kNPfloatXYZ,	"scale",			"scale node XYZ" },
 	{ kNPtranslate,			kNPfloatXYZ,	"translate",		"position relative to parent node" },
@@ -132,12 +132,12 @@ void npInitMap (void* dataRef)
 
 	{ kNPhide,				kNPbool,		"hide",				"hide the node, data stays active" },
 	{ kNPfreeze,			kNPbool,		"freeze",			"freezes data and physics updates" },
-	
+
 	{ kNPtopo,				kNPint,			"topo",				"topography, cube, sphere, torus, etc" },
 	{ kNPfacet,				kNPint,			"facet",			"topo face number" },
-	
+
 	{ kNPautoZoom,			kNPintXYZ,		"auto_zoom",		"scales node to fit screen" },
-	
+
 	{ kNPtriggerHi,			kNPintXYZ,		"trigger_hi",		"trigger if high setpoint hit" },
 	{ kNPtriggerLo,			kNPintXYZ,		"trigger_lo",		"trigger if low setpoint hit" },
 	{ kNPsetHi,				kNPfloatXYZ,	"set_hi",			"trigger high setpoint" },
@@ -160,7 +160,7 @@ void npInitMap (void* dataRef)
 
 	{ kNPid,				kNPint,			"id",				"node ID" },
 	{ kNPtype,				kNPint,			"type",				"node type" },
-		
+
 	{ kNPformat,			kNPint,			"format",			"320p, 480i, 720p, 4K full app" },
 	{ kNPinterlaced,		kNPint,			"interlaced",		"interlaced field order" },
 	{ kNPstereo,			kNPint,			"stereo_3d",		"stereoscopic 3D" },
@@ -220,7 +220,7 @@ void npInitMap (void* dataRef)
 		{ kNPtitle,			kNPcharArray,	"title",			"Title" },
 		{ kNPdesc,			kNPcharArray,	"description",		"Description" }
 	}; // debug db
-	
+
 	static NPmapType ChMap[] = {
 
 		{ kNPid,			kNPint,			"id",				"Channel Map ID" },
@@ -231,7 +231,7 @@ void npInitMap (void* dataRef)
 		{ kNPchMapTableID,	kNPint,			"ch_map_table_id",	"Channel Map Table ID"},
 		{ kNPrecordID,		kNPint,			"record_id",		"Record ID"		}
 	}; // debug db //zzsql
-	
+
 	//zz color
 	static NPmapType palette[] = {
 
@@ -241,7 +241,7 @@ void npInitMap (void* dataRef)
 		{ kNPtitle,			kNPint,			"blue",				"Blue" },
 		{ kNPdesc,			kNPint,			"alpha",			"Alpha Transparency" }
 	};
-/*	
+	/*
 	//zz tex
 	static NPmapType texture[] = {
 
@@ -250,19 +250,34 @@ void npInitMap (void* dataRef)
 		{ kNPfileName,		kNPcharArray,	"file_name",		"File Name" },
 		{ kNPpath,			kNPcharArray,	"path",				"File Path" }
 	};
+	*/
 	
+	//zz tex
+	//lv tex begin
+	// Path is separate from file name because path may change.
+	static NPmapType texture[] = {
+
+		{ kNPid,			kNPint,		"np_texture_id",		"Texture ID" },
+		{ kNPtype,			kNPint,		"type",				"Type: 2D, 3D, Cubemap, Video" },
+		{ kNPfile,			kNPcharArray,	"name",				"Texture name" },
+		{ kNPpath,			kNPcharArray,	"path",				"Path" }
+	};
+	//lv tex end
+
 	//zz mod
+	//lv mod begin
+    // Path is separate from file name because path may change.
 	static NPmapType models[] = {
 
-		{ kNPid,			kNPint,			"np_models_id",		"3D Models ID" },
-		{ kNPid,			kNPint,			"np_geometry_id",	"Geometry ID" },
-		{ kNPid,			kNPint,			"np_texture_id",	"Texture ID" },
-		{ kNPtype,			kNPint,			"type",				"Type: Mesh, Terrain, etc." },
-		{ kNPobjName,		kNPcharArray,	"object_name",		"3D Scene Object Name" },
-		{ kNPfileName,		kNPcharArray,	"file_name",		"File Name" },
-		{ kNPpath,			kNPcharArray,	"path",				"File Path" }
+		{ kNPid,			kNPint,				"np_geo_id",	"Geometry ID" },
+		{ kNPid,			kNPint,				"np_texture_id",	"Texture ID" },
+		{ kNPtype,			kNPint,				"type",			"Type: Mesh, Terrain, etc." },
+		{ kNPobjName,		kNPcharArray,		"object_name",		"3D Scene Object Name" },
+		{ kNPfile,			kNPcharArray,		"name",			"Texture name" },
+		{ kNPpath,			kNPcharArray,		"path",			"Path" }
 	};
-*/	
+	//lv mod end
+//};
 
 	//-------
 	//-------
@@ -284,13 +299,13 @@ void npInitMap (void* dataRef)
 	data->map.typeMapGrid		= grid;
 	data->map.typeMapTag		= tag;		// debug db //zzsql
 	data->map.typeMapChMap		= ChMap;	// debug db //zzsql
-	
+
 	data->map.typeMapPalette	= palette;
 //	data->map.typeMapTexture	= texture;	//zz tex
-//	data->map.typeMapModels		= models;	//zz mod
+	data->map.typeMapModel		= models;	//zz mod
 
 	data->map.typeMapGlobals	= NULL;		//zz debug
-	
+
 	data->map.mapTypeList = NULL;
 	data->map.mapTypeCount = 0;
 
@@ -316,7 +331,7 @@ void npInitMap (void* dataRef)
 	data->map.previousNode		= NULL;
 	data->map.currentNode		= NULL;
 	data->map.currentCam		= NULL;
-	
+
 	data->map.selectedGrid		= NULL;
 	data->map.selectedPinNode	= NULL;
 	data->map.selectedPinIndex	= 0;
@@ -324,7 +339,7 @@ void npInitMap (void* dataRef)
 
 	data->map.syncNodes			= false;
 	data->map.syncTagsReady		= false;
-		
+
 	data->map.sortSwap			= 0;						//zzhp debug
 	data->map.sortSwapFlag		= 0;						//zzhp debug
 
@@ -454,7 +469,7 @@ void npNodeTagModeOff( pNPnode node, void* dataRef)
 pNPnode npMapNodeNext (void* dataRef){return NULL;}			//select next sibling node
 pNPnode npMapNodePrevious (void* dataRef){return NULL;}		//previous sibling
 pNPnode npMapNodeUp (void* dataRef){return NULL;}				//select parent
-pNPnode npMapNodeDown (void* dataRef){return NULL;}			//select 
+pNPnode npMapNodeDown (void* dataRef){return NULL;}			//select
 
 //------------------------------------------------------------------------------
 void* npGetNodeByID (int id, void* dataRef)
@@ -472,7 +487,7 @@ void* npGetNodeByID (int id, void* dataRef)
 //recursive tree traversal process may be configured for parent first or last
 //also, can avoid processing the root node by moving nodeFuncPtr inside the loop
 //------------------------------------------------------------------------------
-void npTraverseTree (void (*pNodeFunc)(pNPnode node, void* dataRef), 
+void npTraverseTree (void (*pNodeFunc)(pNPnode node, void* dataRef),
 					 pNPnode node, void* dataRef)
 {
 	int i = 0;
@@ -522,8 +537,8 @@ void npUpdateMalloc(void* dataRef)
 {}
 
 //npmemory.h architecture roadmap
-//provides a memory pool with intelligent caching between CPU, RAM and storage 
-//optimized for large high-bandwidth block transfers and high random IOPS to 
+//provides a memory pool with intelligent caching between CPU, RAM and storage
+//optimized for large high-bandwidth block transfers and high random IOPS to
 //groups node elements based on thread process with support for NUMA systems
 //will use Solid State Arrays and SSD based storage as a NUMA memory pool
 //data structure are intelligently mapped to RAM to optimize process order
@@ -555,7 +570,7 @@ void* npMalloc(int type, int size, void* dataRef)
 			memPtr = malloc(size);		//NPnode
 			if (memPtr == NULL)
 				npPostMsg ("err 1012 - malloc failed NPnode", kNPmsgErr, data);
-			break;	
+			break;
 		case kNPtag :
 			memPtr = malloc(size);		//NPtag
 			if (memPtr == NULL)
@@ -572,32 +587,32 @@ void* npMalloc(int type, int size, void* dataRef)
 				npPostMsg ("err 1015 - malloc failed kNPlist", kNPmsgErr, data);
 			break;		//such as node lists
 		case kNPglobal :
-			memPtr = malloc(size);	//global variables (not arrays) 
+			memPtr = malloc(size);	//global variables (not arrays)
 			if (memPtr == NULL)
 				npPostMsg ("err 1011 - malloc failed kNPglobal", kNPmsgErr, data);
 			break;
 		case kNPque :
-			memPtr = malloc(size);	//global variables (not arrays) 
+			memPtr = malloc(size);	//global variables (not arrays)
 			if (memPtr == NULL)
 				npPostMsg ("err 1011 - malloc failed kNPque", kNPmsgErr, data);
 			break;
 		case kNPqueItem :
-			memPtr = malloc(size);	//global variables (not arrays) 
+			memPtr = malloc(size);	//global variables (not arrays)
 			if (memPtr == NULL)
 				npPostMsg ("err 1011 - malloc failed kNPqueItem", kNPmsgErr, data);
 			break;
 		case kNPmapItem :
-			memPtr = malloc(size);	//global variables (not arrays) 
+			memPtr = malloc(size);	//global variables (not arrays)
 			if (memPtr == NULL)
 				npPostMsg ("err 1011 - malloc failed kNPmapItem", kNPmsgErr, data);
 			break;
-		default : 
+		default :
 			memPtr = malloc(size);
 			if (memPtr == NULL)
 				npPostMsg ("err 1010 - malloc failed default", kNPmsgErr, data);
 			break;
 	}
-	
+
 	if (!memPtr)
 		printf ("err 1010 - malloc failed at size: %d\n", size);
 
@@ -692,7 +707,7 @@ void npMapSortAdd (int id, int parentID, void* nodeRef, void* dataRef)
 		printf ("err 4833 - id: %d out of range, npMapSortAdd()\n", id);
 		return;
 	}
-	
+
 	// check if id already used, if so replaces entry in orphanList
 	// perhaps change from overwrite and assign a new id update actual node, debug zz
 	if (data->map.sortID[id] != NULL)
@@ -704,7 +719,7 @@ void npMapSortAdd (int id, int parentID, void* nodeRef, void* dataRef)
 	// if orphan then add to list
 	if (node->parent == data->map.node[kNPnodeRootNull]
 		|| node->type == kNodeLink )				//always add link nodes
-	{	
+	{
 		// make sure in bounds of list max
 		count = data->map.orphanCount;
 
@@ -716,7 +731,7 @@ void npMapSortAdd (int id, int parentID, void* nodeRef, void* dataRef)
 
 		data->map.orphanList[count] = id;
 		data->map.parentID[count] = parentID;
-		
+
 		data->map.orphanCount++;
 
 		if( count < 5 )
@@ -735,7 +750,7 @@ pNPnode npMapSortID (int id, void* dataRef)
 	pData data = (pData) dataRef;
 
 	if (id < 0 || id >= kNPnodeMax)
-	{	
+	{
 		printf ("err 4834 - id: %d out of range, npMapSortAdd()\n", id);
 		return data->map.node[kNPnodeRootNull]; //NULL debug zz
 	}
@@ -755,7 +770,7 @@ void npNodeUpdateBranchLevel (pNPnode node)
 	int i = 0;
 
 	pNPnode parent = node->parent;
-	
+
 	if (parent == NULL)
 		node->branchLevel = 0;
 	else
@@ -786,7 +801,7 @@ void npNodeMoveBranch (pNPnode node, pNPnode newParent, void* dataRef)
 		printf ("err 4835 - node or nodeParent is NULL\n");
 		return;
 	}
-		
+
 	if (newParent->childCount >= kNPnodeChildMax)
 	{
 		sprintf(msg, "err 4836 - kNPnodeChildMax hit: %d max", kNPnodeChildMax);
@@ -799,14 +814,14 @@ void npNodeMoveBranch (pNPnode node, pNPnode newParent, void* dataRef)
 
 	//attach to new parent
 	node->parent = newParent;
-	
+
 	newParent->child[node->childCount] = node;
 	newParent->childCount++;
 
 	//updates branchLevel for child and any sub child nodes in the tree
 	npNodeUpdateBranchLevel (node);
 
-//	printf ("node id: %d  level: %d  parent id: %d\n", 
+//	printf ("node id: %d  level: %d  parent id: %d\n",
 //			node->id, node->branchLevel, newParent->id );
 }
 
@@ -835,7 +850,7 @@ void npMapSort(void* dataRef)
 			//we temporarily store link B childID in the childIndex
 			child = data->map.sortID[node->childIndex];
 			node->childIndex = 0;	//no longer need temp storage
-			
+
 			node->child[0] = child;
 		//	node->childCount++;
 
@@ -870,7 +885,7 @@ void npMapSort(void* dataRef)
 					node->topo = kNPtopoPin;
 			}
 
-			printf ("orphan id: %d attached to parent id: %d\n", 
+			printf ("orphan id: %d attached to parent id: %d\n",
 				data->map.orphanList[i], data->map.parentID[i] );
 		}
 		else
@@ -892,7 +907,7 @@ void npMapSort(void* dataRef)
 //creates a new node or updates some nodes like exisitng cameras and grids
 //need to call npMapSort() after all nodes added to attach orphan nodes
 //-----------------------------------------------------------------------------
-void* npMapNodeAdd (int id, int type, int branchLevel, int parentID, 
+void* npMapNodeAdd (int id, int type, int branchLevel, int parentID,
 					 int format, void* dataRef)
 {
 	int i = 0, count = 0;
@@ -907,10 +922,10 @@ void* npMapNodeAdd (int id, int type, int branchLevel, int parentID,
 	pNPnode nodeParent = NULL;
 	pNPnode node = NULL;
 	pNPnode nodeChild = NULL;
-	
+
 	pData data = (pData) dataRef;
 
-	
+
 	//process node logic based on type and branchLevel
 	//either updates existing node or create a new one to add to scene
 	//update based on user setting or node type and ID
@@ -930,7 +945,7 @@ void* npMapNodeAdd (int id, int type, int branchLevel, int parentID,
 				if (format == kNPmapNodeCSVvOne)					//zz debug, move this out a level
 					nodeChild = npNodeNew (type, node, dataRef);	//create primary torus
 				break;			//create Pin or other
-			case kNodeDefault : 
+			case kNodeDefault :
 				if (id == 1 && type == kNodeDefault)
 					node = data->map.node[kNPnodeRootNull];
 				else
@@ -978,7 +993,7 @@ void* npMapNodeAdd (int id, int type, int branchLevel, int parentID,
 	}
 
 	//New Sub Child Toroid
-	if( branchLevel >= 2 )		//Second Level (or greater) Toroid Sub Child  
+	if( branchLevel >= 2 )		//Second Level (or greater) Toroid Sub Child
 	{
 		nodeParent = npMapSortID (parentID, dataRef);	//if DNE return default node
 		node = npNodeNew (type, nodeParent, dataRef);
@@ -995,7 +1010,7 @@ void* npMapNodeAdd (int id, int type, int branchLevel, int parentID,
 //parallel qsort for large counts, divides list, assembled with merge sort
 //smaller counts use standard single thread qsort, less overhead
 //-----------------------------------------------------------------------------
-void npSort (void* base, int count, int elementSize, 
+void npSort (void* base, int count, int elementSize,
 			 int(*pCompareFunc)(const void* a, const void* b), void* dataRef )
 {
 	int i = 0;
@@ -1079,7 +1094,7 @@ void npTagSortAdd (pNPrecordTag recordTag, void* dataRef)
 
 		//reached end of list add record
 		if (searchTag == NULL)
-		{	
+		{
 			//add the tag to the end of the list
 			data->io.gl.hud.tags.recordList[i] = recordTag;
 			data->io.gl.hud.tags.recordCount++;
@@ -1129,7 +1144,7 @@ void npQueOverflow( pNPque que, void* dataRef );
 void npQueOverflow( pNPque que, void* dataRef )
 {
 	char msg[128];
-	
+
 	if ( !que->dynamic )
 	{
 		sprintf(msg, "err 5335 - fifo overflow, que type: %d", que->type);
@@ -1149,7 +1164,7 @@ void npQueMapItem( int queID, void* dest, void* srcData, int type, void* dataRef
 	pData data = (pData) dataRef;
 	pNPque que = NULL;
 	pNPqueItem item = NULL;
-	
+
 	// check if queID is inbounds
 	if( queID < data->io.fifo.count )
 	{
@@ -1161,7 +1176,7 @@ void npQueMapItem( int queID, void* dest, void* srcData, int type, void* dataRef
 	que = (pNPque)&data->io.fifo.list[queID];
 	if( que->type != kNPfifoMapItem )
 	{
-		npPostMsg("err 4677 - npQueMapItem has invalid queID", kNPmsgErr, data); 
+		npPostMsg("err 4677 - npQueMapItem has invalid queID", kNPmsgErr, data);
 		return;
 	}
 
@@ -1189,7 +1204,7 @@ void npQueMapItem( int queID, void* dest, void* srcData, int type, void* dataRef
 	item->mapPtr = dest;
 	item->data = srcData;
 	item->type = type;
-	
+
 	// increment the index and handle rollover, drop oldest data
 	que->enque++;
 	if( que->enque >= que->max )
@@ -1213,9 +1228,9 @@ int npQueResize( pNPque que, int newCount, void* dataRef )
 	NPqueItem** list = NULL;
 
 	if ( !newCount )
-	{	
+	{
 		newCount = 2 * que->max;			//auto-resize by doubling
-	
+
 		if ( !que->max )					//if 0 then set to default que size
 			newCount = kNPqueDefaultSize;
 	}
@@ -1239,12 +1254,12 @@ int npQueResize( pNPque que, int newCount, void* dataRef )
 		memcpy( list, que->list, que->max * sizeof( NPqueItem ) );
 	else
 		memcpy( list,		 //grab as much as we can from the end of the list
-				&que->list[que->max - newCount], 
+				&que->list[que->max - newCount],
 				newCount * sizeof( NPqueItem ) );
 
 	que->max = newCount;
 
-	return 1;	//succeeded result = 1 
+	return 1;	//succeeded result = 1
 }
 
 int npQueDel( pNPque que, void* dataRef );
@@ -1254,7 +1269,7 @@ int npQueDel( pNPque que, void* dataRef )
 	int queID = 0;
 
 	pData data = (pData) dataRef;
-	
+
 	//process que item list by freeing the data associated with each element
 
 	return queID;
@@ -1269,7 +1284,7 @@ int npQueNew( int queType, int itemCount, void* dataRef )
 
 	pData data = (pData) dataRef;
 	pNPque que = NULL;
-	
+
 	//zz could add routine to dynamically increase queMax
 	// check queMax, que[queID] = queID... for speed...
 	if( data->io.fifo.count >= data->io.fifo.max )
@@ -1313,15 +1328,15 @@ typedef struct NPfuncDesc* pNPfuncDesc;
 
 
 // will post function to the API list and expose any UI controls (if any)
-// 
+//
 int npCmdFuncNew (void* funcPtr, pNPfuncDesc descriptor, void* dataRef );
 //------------------------------------------------------------------------------
 int npCmdFuncNew( void* funcPtr, pNPfuncDesc descriptor, void* dataRef )
 {
 	pData data = (pData) dataRef;
-	pNPque que = (pNPque)data->io.fifo.list[kNPqueCmd]; 
+	pNPque que = (pNPque)data->io.fifo.list[kNPqueCmd];
 
-	return 0 ;	//funcID = 0 
+	return 0 ;	//funcID = 0
 }
 
 void npProcessQueItem( pNPqueItem item, void* dataRef );
@@ -1356,7 +1371,7 @@ void npProcessQueItem( pNPqueItem item, void* dataRef )
 		case kNPfloatRGB :
 			*(NPfloatRGB*)item->mapPtr = *(NPfloatRGB*)item->data;	//zz will this work?
 			break;
-		default : 
+		default :
 			npPostMsg( "err 5349 - unknown item in que", kNPmsgErr, dataRef );
 			break;
 	}
@@ -1379,7 +1394,7 @@ void npProcessQue(pNPque que, void* dataRef)
 //	pNPfloatXYZ floatXYZ = NULL;
 
 	item = que->list[0];
-	
+
 	//loop through all items in que and process them
 	//starts at last deque read index, increments deque while reading
 	if ( que->deque > que->enque )
@@ -1387,7 +1402,7 @@ void npProcessQue(pNPque que, void* dataRef)
 		//read from deque to end of buffer then from beginning up to the enque
 		for( i = que->deque; i < que->max; i++)
 			npProcessQueItem( que->list[i], data );		//zz optimize this to use ptr (list++)->type
-		
+
 		if ( que->enque == 0)
 			que->deque = que->max;
 		else
@@ -1395,8 +1410,8 @@ void npProcessQue(pNPque que, void* dataRef)
 	}
 
 	for( i = que->deque; i < que->enque; i++)
-		npProcessQueItem( que->list[i], data );	
-	
+		npProcessQueItem( que->list[i], data );
+
 
 	//zz debug, need to clear que and free item->data						//zz debug
 
@@ -1429,4 +1444,3 @@ void npSetMapItem( char* mapPath, char* item, char* element, char* typeTag,
 	//add mapItem with native (c-struct) value to the que
 	npQueMapItem( queID, mapItem->mapPtr, valuePtr, mapItem->typeA, dataRef );
 }
-
