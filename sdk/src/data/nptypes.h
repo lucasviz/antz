@@ -1093,6 +1093,7 @@ struct NPgl {
 	
 	NPtexmap texmap[2000]; // lv geolist
 	int			textureCount;
+	int			tAutoCount; // lv geolist 
 	int			maxTextureSize;
 	int			subsample;		//!<zzhp
 

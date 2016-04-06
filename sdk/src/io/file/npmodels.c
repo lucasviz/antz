@@ -75,6 +75,97 @@ void npGeolistSetLen(int length, void* dataRef)
 	data->io.gl.geoLen = length;
 }
 
+int npGeoLessId(int geometryId, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	int x = 0;
+
+    while ( (x = npSearchGeosId(geometryId, dataRef)) == 0 && (geometryId > 20) )
+		geometryId--;
+	
+	printf("x : %d\n", x);
+
+
+	return geometryId;
+}
+
+
+int npGeoMoreId(int geometryId, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	int x = 0;
+
+	if(geometryId == 20)
+	{
+		geometryId = 1000;
+	}
+
+	if(geometryId < 20)
+	{
+		return geometryId;
+	}
+
+	if( (x = npSearchGeosId(geometryId, dataRef)) != 0 && (geometryId > 20) && (geometryId < 2000) )
+	{
+		return geometryId;
+	}
+	else if(x == 0)
+	{
+		while ( (x = npSearchGeosId(geometryId, dataRef)) == 0 && (geometryId > 20) && (geometryId < 2000) )
+			geometryId++;
+	}
+
+/*
+    while ( (x = npSearchGeosId(geometryId, dataRef)) == 0 && (geometryId > 20) && (geometryId < 2000) )
+		geometryId++;
+*/
+
+	if(geometryId == 2000)
+		return 0;
+
+	printf("x : %d\n", x);
+
+
+	return geometryId;
+}
+
+/*
+int npGeoLessId(int geometryId, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	int x = 0;
+
+    while ( (x = npSearchGeosId(geometryId, dataRef)) == 0 && (geometryId > 20) )
+		geometryId--;
+	
+	printf("x : %d\n", x);
+
+
+	return geometryId;
+}
+*/
+
+// node->texture = npGeoTexId( node->geometry, dataRef );
+int npGeoTexId( int geometryId, void* dataRef )
+{
+	pData data = (pData) dataRef;
+	pNPgeolist geolist = &data->io.gl.geolist[0];
+	int i = kNPgeoListMax;
+	int geoId = geometryId;
+	
+	//npSearchGeosId(geometryId, dataRef)
+	for(; i > 0; i--)
+	{
+		geolist = &data->io.gl.geolist[i];
+		if(geolist->geometryId == geoId)
+			return npExtTexToIntTexId(geolist->textureId, dataRef);	
+			
+			//return geolist->textureId;
+	}
+
+	return 0;
+}
+
 pNPgeolist npSearchGeolistExtTexId(int extTexId, void* dataRef);
 pNPgeolist npSearchGeolistExtTexId(int extTexId, void* dataRef)
 {
@@ -158,25 +249,62 @@ void npNewGeoId(int* geoId, void* dataRef);
 void npNewGeoId(int* geoId, void* dataRef)
 {
 	int x = 0;
+	if( (*geoId) < 1000)
+		(*geoId) = 1000;
+
 	while( (x = npSearchGeosId((*geoId), dataRef) ) != 0 )
 		(*geoId)++;
+}
+
+pNPgeolist npSearchGeolistFile(char* fn, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPgeolist g = NULL;
+	int i = 1;
+
+	printf("81 npSearchGeolistFile : %s\n", fn);
+
+	for(i = 1; i < kNPgeoListMax; i++)
+	{
+		g = &data->io.gl.geolist[i];
+		if( strcmp(g->modelFile, fn) == 0 )
+		{
+
+			return g;
+		}
+	}
+
+	return NULL;
 }
 
 pNPgeolist npNewGeo(int* geoId, int* extTexId, char* geoname, char* filename, char* path, void* dataRef)
 {
 	pData data = (pData) dataRef;
 	pNPgeolist geo = NULL;
+	pNPgeolist geoA = NULL;
 
 	npNewGeoId(geoId, dataRef);
 
 	geo = npGetUnusedGeo(dataRef);
 
-	geo->geometryId = geoId;
+	geo->geometryId = (*geoId);
 
-	if(extTexId == 0)
-		geo->textureId = npGetUnusedExtTexId(dataRef);
+	if((*extTexId) == 0)
+	{
+		//npSearchGeolistModelFilePath(filename, path, dataRef);
+		//npSearchGeolistFile(
+		geoA = npSearchGeolistFile(filename, dataRef);
+
+		if(geoA && geoA->textureId > 0)
+		{
+			printf("33 FOUND IT.....\n");
+			geo->textureId = geoA->textureId;
+		}
+		else
+			geo->textureId = npGetUnusedExtTexId(dataRef);
+	}
 	else
-		geo->textureId = extTexId;
+		geo->textureId = (*extTexId);
 
 	strcpy(geo->modelFile, filename);
 	strcpy(geo->modelPath, path);
@@ -195,30 +323,163 @@ pNPgeolist npNewGeo(int* geoId, int* extTexId, char* geoname, char* filename, ch
 	return geo;
 }
 
+// geometryId
+int npGeoUsedId(int geoId, void* dataRef);
+int npGeoUsedId(int geoId, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPgeolist geolist = NULL;
+	int i = 1;
+
+	for(i = 1; i < kNPgeoListMax; i++)
+	{
+		geolist = &data->io.gl.geolist[i];
+		if(geolist->geometryId == geoId)
+			return i;
+	}
+
+	return 0;
+}
+
+
+pNPgeolist npGeoFind(int geoId, int extTexId, int type, char* objName, char* file, char* path, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPgeolist g = &data->io.gl.geolist[0];
+	int i = 1;
+	
+	for( i = 1; i < kNPgeoListMax; i++)
+	{
+		if( (g[i].geometryId == geoId) && (g[i].textureId == extTexId) && (strcmp(g[i].modelFile, file) == 0) && ( strcmp(g[i].modelPath, path) == 0))
+			return &g[i];
+	}
+
+	return NULL;
+}
+
+pNPgeolist npAddGeo(int geoId, int extTexId, int type, char* object_name, char* file_name, char* path, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPgeolist geolist = &data->io.gl.geolist[0];
+	pNPgeolist geo = NULL;
+	pNPgeolist geoB = NULL;
+	int i = 0;
+
+	geo = npGeoFind(geoId, extTexId, type, object_name, file_name, path, dataRef);
+	if(geo)
+		return geo;
+
+	geo = npNewGeo(&geoId, &extTexId, object_name, file_name, path, dataRef);
+	
+
+	return geo;
+	/*
+	if(geoId > 0)
+	{
+		geoA = npSearchGeolistExtTexId(extTexId, dataRef);
+		geoB = npSearchGeolistModelFilePath(file_name, path, dataRef);
+
+		if( (geoA && geoB) && (geoB->geometryId == geoA->geometryId == geoId) )
+		{
+			if( strcmp(geoA->modelFile, file_name) == 0 )
+			{
+				
+			}
+
+		}
+
+		if( (( i = npGeoUsedId(geoId, dataRef) ) > 0))/// tells you if geometryId is in the geolist
+		{ // it exists
+			geolist = &data->io.gl.geolist[i];
+			if( (extTexId > 0) && geoA )
+			{
+				
+
+			}
+
+
+			//geoB = npSearchGeolistExtTexId(extTexId, dataRef);
+
+		}
+		else
+		{
+			// if geometryId isn't in list
+		}
+	}
+	else if( geoId == 0 )
+	{
+
+	}
+	*/
+
+	//return geolist;
+}
+
 /** Loads models that are in the geolist 
 	@param geo is an element of the geolist
 	@param dataRef is a global map reference instance.
 	@return the model id
 */
+/*
 pNPgeolist npAddGeo(int geoId, int extTexId, int type, char* object_name, char* file_name, char* path, void* dataRef)
 {
 	pData data = (pData) dataRef;
 	pNPgeolist geolist = &data->io.gl.geolist[0];
 	pNPgeolist geoA = NULL;
 	pNPgeolist geoB = NULL;
+	pNPgeolist geoC = NULL;
 	pNPgeolist geo = NULL;
 	pNPtexmap texA = NULL;
+	char modelCSVpath[256] = {'\0'};
 	int i = 0;
 	int x = 0;
 //	data->io.gl.geolist
+
+	sprintf(modelCSVpath, "%susr\\model\\", data->io.file.appPath);
+	printf("modelCSVpath : %s", modelCSVpath);
+
+	printf(" AAA path : %s AAA\n", path);
+
+	
+	if( (geoId > 0) && ((i = npGeoUsedId(geoId, dataRef)) > 0) )
+	{
+		printf("238 GEOID %d IN USE 238\n", geoId);
+		if(extTexId == 0)
+			data->io.gl.geolist[i].textureId = npGetUnusedExtTexId(dataRef);
+		else
+		{
+			geoB = npSearchGeolistExtTexId(extTexId, dataRef);
+			if(geoB && geoB->geometryId == geoId)
+			{
+
+			}
+
+			data->io.gl.geolist[i].textureId = extTexId;
+		}
+
+	//	data->io.gl.geolist[i].textureId = extTexId;
+		return &data->io.gl.geolist[i];
+	}
+	
+	i = 0;
+
+//	geoB = npSearchGeolistExtTexId(extTexId, dataRef);
+//	if(geoB)
+//		return geoB;
+
+
+	geoC = npSearchGeolistModelFilePath(file_name, data->io.file.appPath, dataRef);
+	if(geoC && (geoC->textureId == extTexId))
+	{
+		printf("-----------------geoC->extTexId : %d----------------\n", geoC->textureId);
+		return geoC;
+	}
+
 
 	geoA = npSearchGeolistModelFilePath(file_name, path, dataRef);
 	if(geoA)
 		return geoA;
 
-	geoB = npSearchGeolistExtTexId(extTexId, dataRef);
-	if(geoB)
-		return geoB;
 
 	if(geoId == 0)
 	{
@@ -251,7 +512,7 @@ pNPgeolist npAddGeo(int geoId, int extTexId, int type, char* object_name, char* 
 
 	return geo;
 }
-
+*/
 int npExtTexToIntTexId(int extTexId, void* dataRef)
 {
 	pData data = (pData) dataRef;
@@ -259,15 +520,63 @@ int npExtTexToIntTexId(int extTexId, void* dataRef)
 	pNPtexmap texmap = &data->io.gl.texmap[0];
 	int i = 0;
 
+	if(!extTexId)
+	{
+		printf("no ext tex\n");
+		return 0;
+	}
+	
 	/// kNPtexListMax 2000
 	for(i = 1; i < 2000; i++)
 	{
 		texmap = &data->io.gl.texmap[i];
 		if(texmap->extTexId == extTexId)
+		{
+			printf("---int %d to ext %d---\n", texmap->intTexId, extTexId);
 			return texmap->intTexId;
+		}
 	}
 
 	return 0;
+}
+
+int npIntTexToExtTexId(int intTexId, void* dataRef);
+int npIntTexToExtTexId(int intTexId, void* dataRef)
+{
+	pData data = (pData) dataRef;
+//	pNPgeolist geolist = &data->io.gl.geolist[0];
+	pNPtexmap texmap = &data->io.gl.texmap[0];
+	int i = 0;
+
+	printf("npIntTexToExtTexId\n");
+	/// kNPtexListMax 2000
+	for(i = 1; i < 2000; i++)
+	{
+		texmap = &data->io.gl.texmap[i];
+		if(texmap->intTexId == intTexId)
+		{
+			printf("---int %d to ext %d---\n", intTexId, texmap->extTexId);
+			printf("---%s %s---\n", texmap->path, texmap->filename);
+			return texmap->extTexId;
+		}
+	}
+
+	return 0;
+}
+
+void npTexMapPrint(void* dataRef);
+void npTexMapPrint(void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPtexmap texmap = &data->io.gl.texmap[0];
+	int i = 1;
+
+	for(i = 1; i < 2000; i++)
+	{
+		texmap = &data->io.gl.texmap[i];
+		if(texmap->extTexId > 0)
+			printf("\nextTexId : %d\nintTexId : %d\n", texmap->extTexId, texmap->intTexId);
+	}
 }
 
 
@@ -294,6 +603,7 @@ int npLoadModel(pNPgeolist geo, void* dataRef)
 	pNPassimp assimp = (pNPassimp)data->io.assimp;
 	pNPgeolist geolist = &data->io.gl.geolist[0];
 	pNPgeolist geoMatch = NULL;
+	pNPtexmap tex = NULL;
 	char filePath[256] = {'\0'};
 	char fileName[256] = {'\0'};
 	char path[256] = {'\0'};
@@ -335,7 +645,7 @@ int npLoadModel(pNPgeolist geo, void* dataRef)
 		fileName[i] = tolower(fileName[i]);
 	}
 
-	npAddTexMap(geo->textureId, fileName, path, dataRef);
+	tex = npAddTexMap(geo->textureId, fileName, path, dataRef);
 	path[0] = '\0';
 	assimp->path.data[0] = '\0';
 
@@ -642,10 +952,11 @@ pNPgeo npModelNew(char* model_csvline, void* dataRef)
 	char filePath[256] = {'\0'};
 	int geometryId = 0;
 	int textureId = 0;
+	int intId = 0;
 	int typeId = 0;
 
 	curs = npModelNewGeoId( curs, &geometryId, dataRef );
-	curs = npModelNewTextureId( curs, &textureId, dataRef ); // lv, temp
+	curs = npModelNewTextureId( curs, &textureId, &intId, dataRef ); // lv, temp
 	curs = npModelNewTypeId( curs, &typeId, dataRef );
 
 
@@ -795,10 +1106,11 @@ char* npModelNewTypeId(char* csv_typeId, int* typeId, void* dataRef)
 }
 
 
-char* npModelNewTextureId(char* idVal, int* textureId, void* dataRef)
+char* npModelNewTextureId(char* idVal, int* textureId, int* intId, void* dataRef)
 {
 	pData data = (pData) dataRef;
 //	pNPgeolist geolist = npGetGeolist(dataRef);
+	pNPtexmap tex = NULL;
 	int match = 0;
 
 	(*textureId) = npstrtoi(&idVal);
@@ -809,6 +1121,13 @@ char* npModelNewTextureId(char* idVal, int* textureId, void* dataRef)
 		/// @todo: Find unused textureId from internal/external textureId map
 	}
 
+	tex = npTexlistSearchId(1, textureId, dataRef);
+	if(tex && (tex->intTexId > 0))
+	{
+		(*textureId) = tex->extTexId;
+		(*intId) = tex->intTexId;
+		printf("model csv tex (int %d) (ext %d)\n", (*intId), (*textureId));
+	}
 
 	/// @todo if textureId exists in geolist return it,
 	///		  if not then return csv's textureId
@@ -912,7 +1231,15 @@ char* npModelNewGeoId(char* idVal, int* geoId, void* dataRef)
 //	pNPgeolist geolist = npGetGeolist(dataRef);
 	pNPgeolist geolist = NULL;
 	int match = 0;
+	int x = 0;
 	(*geoId) = npstrtoi(&idVal); // lv, if letter, returns 0
+	
+	/// search the geolist 
+	if( x = npSearchGeosId((*geoId), dataRef) )
+	{
+		// if found
+		(*geoId)++;
+	}
 
 	/*
 	if( (*geoId) < 1000 || (*geoId) > 2000 )

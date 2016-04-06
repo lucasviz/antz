@@ -29,7 +29,8 @@
 
 //------------------------------------------------------------------------------
 void npInitTexMap (void* dataRef);
-
+void npUpdateTexMap (void* dataRef);
+int npGeoTexId( int geometryId, void* dataRef );
 pNPtexmap npAddTexMap(int extTexId, char* filename, char* path, void* dataRef);
 
 void npCloseTexMap (void* dataRef);
@@ -45,6 +46,8 @@ int npSetTexture( int textureID, void* dataRef);
 int npScreenGrab( char* filePath, int type, int x, int y, int w, int h, void* dataRef);
 
 int npScreenGrabThumb( char* name, int type, int x, int y, int w, int h, void* dataRef );
+
+
 
 #endif
 

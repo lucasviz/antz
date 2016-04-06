@@ -6,7 +6,7 @@
 *
 *  ANTz is hosted at http://openantz.com and NPE at http://neuralphysics.org
 *
-*  Written in 2010-2016 by Shane Saxon - saxon@openantz.com
+*  Written in 2010-2015 by Shane Saxon - saxon@openantz.com
 *
 *  Please see main.c for a complete list of additional code contributors.
 *
@@ -250,6 +250,7 @@ void apply_material(const struct aiMaterial *mtl)
 
 
 //------------------------------------------------------------------------------
+/*
 void npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef)
 {
 	pData data = (pData) dataRef;
@@ -280,12 +281,12 @@ void npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef
 			glBegin(face_mode);
 
 			//printf("\ntexture id : %d", hasTexture);
-			/*
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			*/
+			
+		//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+		//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			
 	//		printf("\nwidth : %d & Height : %d", data->io.texmap.width, data->io.texmap.height);
 		//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, data->io.texmap.width, data->io.texmap.height, 0, GL_RGB, GL_UNSIGNED_BYTE, data->io.texmap.image);
 	//		glGenerateMipmap(GL_TEXTURE_2D);
@@ -324,6 +325,50 @@ void npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef
 
 	return;
 }
+*/
+
+void npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPassimp assimp = data->io.assimp;
+	struct aiMatrix4x4 m = node->mTransformation;
+	struct aiFace* face = NULL;
+	struct aiMesh* mesh = NULL;
+	GLenum face_mode = 0;
+	int index = 0;
+	int z = 0, x = 0, i = 0;
+
+	glDisable (GL_LIGHTING);	//draw 100% ambient white
+//	glEnable (GL_TEXTURE_2D);
+
+
+
+	for(z = 0; z < node->mNumMeshes; z++)
+	{
+		mesh = scene->mMeshes[node->mMeshes[z]];
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glVertexPointer(3, GL_FLOAT, 0, mesh->mVertices);
+	 	glTexCoordPointer(3, GL_FLOAT, 0, mesh->mTextureCoords[0]);
+		glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);		
+	}
+
+//	glDisable(GL_TEXTURE_2D);
+	//	glVertexPointer(3, GL_FLOAT, 0, vertices);
+	
+
+	glEnable( GL_LIGHTING );
+
+	for (i = 0; i < (int)node->mNumChildren; ++i) {
+		npDrawAssimpModel(scene, node->mChildren[i], dataRef);
+	}
+
+
+	return;
+}
+
 // lv models end
 
 //------------------------------------------------------------------------------

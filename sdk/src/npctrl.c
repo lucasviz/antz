@@ -1436,6 +1436,7 @@ void npCtrlProperty (int command, void* dataRef)
 	pData data = (pData) dataRef;
 	pNPnode node = data->map.currentNode;
 	pNPnode nodeParent = NULL;
+	pNPgeolist geolist = &data->io.gl.geolist[0];
 	int geoId = 0; /// lv, models
 	int geoHigh = 0; // lv, models
 	int geoLast = 0; // lv, models
@@ -1522,96 +1523,43 @@ void npCtrlProperty (int command, void* dataRef)
 				node->geometry--;
 				if(node->geometry < 0)
 				{				
-					//node->geometry = data->io.gl.numModels+1000-1;
-
 					geoId = 2000;
 
-//					geoLast = 
 					for(i = geoId; i > 0; i--)
 					{
-						geoLast = data->io.gl.geolist[i].geometryId;
+//						geoLast = data->io.gl.geolist[i].geometryId;
+						geoLast = geolist[i].geometryId;
 						if(geoLast > geoHigh)
 						{
 							geoHigh = geoLast;
-							node->textureID = npExtTexToIntTexId( data->io.gl.geolist[i].textureId, dataRef);
+							//node->textureID = npExtTexToIntTexId( data->io.gl.geolist[i].textureId, dataRef);
+							//node->textureID = npExtTexToIntTexId( geolist[i].textureId, dataRef);
+							
+							// rename npExtTexToIntTexId to int npTexExtToInt( int id, void* dataRef)
 						}
-//						if( data->io.gl.geolist[geoId].geometryId
 					}
 
 					node->geometry = geoHigh;
-//					node->textureID = npExtTexToIntTexId( data->io.gl.geolist[geoId].textureId, dataRef);
-
-//					while( data->io.gl.geolist[geoId].geometryId == 0 )
-//						geoId--;
-
-					/*
-					if(geoId == 0)
-						node->geometry = data->io.gl.numPrimitives;
-					else
-						node->geometry = geoId;
-					*/
-
-
+					node->textureID = npGeoTexId( geoHigh, dataRef );
 				} 
 				else if( (node->geometry > data->io.gl.numPrimitives) && (node->geometry < 2000) )
 				{
-					geoLast = node->geometry;
-//					geoHigh = 0;
-					geoId = 2000;
-					geoHigh = node->geometry; 
-					for(i = geoId; i > 0; i--)
-					{
-						geoLast = data->io.gl.geolist[i].geometryId;
-//						if(geoLast > geoHigh)
-						//if( (geoLast < geoHigh) && (geoLast >= 1000) )
-						if( (geoLast >= 1000) && (geoLast <= 2000) && (geoLast <= node->geometry) ) 
-						{
-//							geoHigh = geoLast;
-							node->geometry = geoLast;
-							node->textureID = npExtTexToIntTexId( data->io.gl.geolist[i].textureId, dataRef);
-						}
-//						if( data->io.gl.geolist[geoId].geometryId
-					}
-
-				//	node->geometry = geoHigh;
-
-
-					/*
-					geoId = node->geometry;
-					while( data->io.gl.geolist[geoId].geometryId != geoId )
-					{
-						geoId--;
-					}
-					node->geometry = geoId;
-					*/
+						// search the geolist for the next lowest geometryId
+						node->geometry = npGeoLessId(node->geometry, dataRef);
+						if( node->geometry > 20)
+							node->textureID = npGeoTexId( node->geometry, dataRef );
 				}
 			}
 			else
 			{
-				node->geometry++;
-				if( node->geometry > data->io.gl.numPrimitives && node->geometry < 2000)
-				{
-					if( node->geometry > 1000 )
+					node->geometry++;
+					if(node->geometry > 20)
 					{
-						node->geometry -= 979;	
+						node->geometry = npGeoMoreId(node->geometry, dataRef);
+						node->textureID = npGeoTexId(node->geometry, dataRef);
 					}
-
-					geoId = node->geometry - data->io.gl.numPrimitives;		
-					node->geometry = data->io.gl.geolist[geoId].geometryId;
-					node->textureID = npExtTexToIntTexId( data->io.gl.geolist[geoId].textureId, dataRef);
-					//geoId = node->geometry;
-					/*
-					while( data->io.gl.geolist[geoId].geometryId != geoId && geoId <= 2000 )
-						geoId++;
-
-					if(geoId > 2000)
-						node->geometry = 0;
-					else
-						node->geometry = geoId;
-					*/
-					
-
-				}
+						
+				//}
 			}	
 
 			npSetTagOffset (node);

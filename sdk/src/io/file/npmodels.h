@@ -77,17 +77,29 @@ void npGeolistLock(void* dataRef);
 void npGeolistUnlock(void* dataRef);
 
 bool npGeolistLockStatus(void* dataRef);
+int npGeoMoreId(int geometryId, void* dataRef);
+int npGeoLessId(int geometryId, void* dataRef);
 
 struct aiScene* npModelImport(char* filePath, void* dataRef);
 
+int npExtTexToIntTexId(int extTexId, void* dataRef);
+
 pNPgeolist npGetGeolist(void* dataRef);
+
 char* npModelNewGeoId(char* idVal, int* geoId, void* dataRef);
-char* npModelNewTextureId(char* idVal, int* textureId, void* dataRef);
+
+char* npModelNewTextureId(char* idVal, int* textureId, int* intId, void* dataRef);
+
 char* npModelNewTypeId(char* csv_typeId, int* typeId, void* dataRef);
+
 char* npModelNewObjectName(char* stringVal, int maxSize, char* objectName, void* dataRef);
+
 char* npModelNewFileName(char* stringVal, int maxSize, char* fileName, void* dataRef);
+
 char* npModelNewFilePath(char* stringVal, int maxSize, char* filePath, void* dataRef);
+
 void npSetSelectedNodeGeoId( int* geoId, void* dataRef );
+
 int npGeolistNewGeoId(void* dataRef);
 
 #endif

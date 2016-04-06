@@ -444,6 +444,7 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	char* cursor = (char*)buffer;
 	int nodeCount = 0;
 	int numExpected = 0;		//Expected number for scanNumRet returned from sscanf
+	int extTexId = 0; // lv model
 
 	//Group #1
 	int id, type, dataID, selected,	parentID, branchLevel, 
@@ -562,7 +563,8 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	node->color.a			= npstrtoi(&cursor);
 
 	node->colorFade			= npstrtoi(&cursor);
-	node->textureID			= npstrtoi(&cursor);
+	extTexId				= npstrtoi(&cursor);
+	node->textureID			= npExtTexToIntTexId(extTexId, dataRef); // @todo lv model 
 
 	node->hide				= npstrtoi(&cursor);
 	node->freeze			= npstrtoi(&cursor);	
@@ -2458,6 +2460,7 @@ int npWriteNode (const char* buffer, pNPnode node, int format, void* dataRef)
 	int n			= 0;
 	int parentID	= 0;
 	int childID		= 0;
+	int extTexId    = 0;
 
 	pNPnode parent = NULL;
 
@@ -2560,6 +2563,33 @@ int npWriteNode (const char* buffer, pNPnode node, int format, void* dataRef)
 		node->translateVec.z
 	);
 
+// lv models
+//	extTexId = npIntTexToExtTexId(
+	extTexId = npIntTexToExtTexId(node->textureID, dataRef);
+	if(extTexId == 0)
+	{
+		extTexId = node->textureID;
+	}
+
+	n += sprintf ((nodePtr + n), ",%d,%d,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d",
+		node->shader,
+		node->geometry,
+
+		node->lineWidth,
+		node->pointSize,
+		node->ratio,
+
+		node->colorIndex,
+		
+		node->color.r,
+		node->color.g,
+		node->color.b,
+		node->color.a,
+
+		node->colorFade,
+		extTexId
+	);
+	/*
 	n += sprintf ((nodePtr + n), ",%d,%d,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d",
 		node->shader,
 		node->geometry,
@@ -2578,6 +2608,7 @@ int npWriteNode (const char* buffer, pNPnode node, int format, void* dataRef)
 		node->colorFade,
 		node->textureID
 	);
+	*/
 
 	n += sprintf ((nodePtr + n), ",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
 		node->hide,

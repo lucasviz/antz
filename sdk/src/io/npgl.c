@@ -51,8 +51,9 @@ void npInitGL(void* dataRef)
 
 	npInitTexMap(dataRef);
 //	nposBeginThread (npLoadTextures, dataRef);	//zz debug, add thread worker func wrapper
-	npLoadTextures(dataRef);
 	npLoadGeos(dataRef);
+	npLoadTextures(dataRef); // lv temp
+
 
 //	glShadeModel (GL_FLAT);
 //	glDepthFunc (GL_LEQUAL);

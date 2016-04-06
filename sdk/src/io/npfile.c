@@ -837,10 +837,16 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	npPostMsg( msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
 
+	sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
+			npMapTypeName( kNPmapModels, data ), ".csv" );
+	sprintf( msg, "Loading: %s", filePath );
+	npPostMsg( msg, kNPmsgCtrl, data );
+	result += npFileOpenAuto( filePath, NULL, data );
+
 	return result;
 }
 
-void npGetFileNameFromPath(const char* filepath, char* filename, void* dataRef)
+void npGetFileNameFromPath(char* filepath, char* filename, void* dataRef)
 {
 	char* p_filepath = NULL; // lv, p_ prefix denotes pointer
 	char delimit[1] = "\\";
