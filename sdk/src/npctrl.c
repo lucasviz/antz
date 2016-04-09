@@ -1542,7 +1542,14 @@ void npCtrlProperty (int command, void* dataRef)
 						}
 					}
 
-					node->geometry = geoHigh;
+
+
+					printf("A g : %d\n", node->geometry);
+					if(node->geometry == -1 && (data->io.gl.numModels == 0) )
+						node->geometry = data->io.gl.numPrimitives;
+					else
+						node->geometry = geoHigh;					printf("B g : %d\n", node->geometry);
+
 					node->textureID = npGeoTexId( geoHigh, dataRef );
 				} 
 				else if( (node->geometry > data->io.gl.numPrimitives) && (node->geometry < 2000) )
