@@ -720,7 +720,8 @@ void npLoadTextures(void* dataRef)
 	fRef = nposNewFileRef( data );
 
 	/// Legacy support where we first load map*.jpg files then all others
-	result = nposFindFirstFile( fRef, "usr/images/", "map*.jpg", data );
+	//result = nposFindFirstFile( fRef, "usr/images/", "map*.jpg", data );
+	result = nposFindFirstFile( fRef, "usr/global/images/", "*.*", data );
 	if( result != 1 )
 		return;		// err or empty folder
 
@@ -734,7 +735,7 @@ void npLoadTextures(void* dataRef)
 		else if( i < 100 || i % 100 == 0 )
 			printf( "." );
 
-		sprintf(filename, "%susr\\images\\%s", data->io.file.appPath, fRef->name );
+		sprintf(filename, "%susr\\global\\images\\%s", data->io.file.appPath, fRef->name );
 		//printf("file : %s\n", filename);
 
 		// if Folder (not a file) then recursively call to create dir tree
@@ -755,7 +756,7 @@ void npLoadTextures(void* dataRef)
 
 	//------------------------------------------------------------------
 	/// Now we load all other textures
-	result = nposFindFirstFile( fRef, "usr/images/", "*.*", data );
+	result = nposFindFirstFile( fRef, "usr/global/images/", "*.*", data );
 	if( result != 1 )
 		return;		// err or empty folder
 
@@ -776,7 +777,7 @@ void npLoadTextures(void* dataRef)
 			printf( "." );
 
 //		printf("fRef->name : %s\n", fRef->name);
-		sprintf(filename, "%s%s%s", data->io.file.appPath ,"usr\\images\\", fRef->name );
+		sprintf(filename, "%s%s%s", data->io.file.appPath ,"usr\\global\\images\\", fRef->name );
 //		printf("2 filename : %s\n", filename);
 
 		// if Folder (not a file) then recursively call to create dir tree
@@ -786,6 +787,8 @@ void npLoadTextures(void* dataRef)
 		}
 		else
 		{
+			if( (strcmp(fRef->name, ".DS_Store") == 0) || (strcmp(fRef->name, "README") == 0) || ( strcmp(fRef->name, "images-notes.txt") == 0) )
+				continue;
 			
 			//npGetFileNameFromPath(filename, fName, dataRef);
 			//filename[strlen(filename) - strlen(fName)] = '\0';
