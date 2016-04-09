@@ -1492,6 +1492,7 @@ void npCtrlProperty (int command, void* dataRef)
 			if (node->textureID > data->io.gl.textureCount)
 				node->textureID = 0;
 
+			npIntTexToExtTexId(node->textureID, dataRef);
 			sprintf(msg, "textureID: %d", node->textureID);
 			npPostMsg (msg, kNPmsgCtrl, dataRef);
 			break;
@@ -1500,7 +1501,9 @@ void npCtrlProperty (int command, void* dataRef)
 			if (node->textureID < 0)
 				node->textureID = data->io.gl.textureCount;
 
+			npIntTexToExtTexId(node->textureID, dataRef); // lv temp
 			sprintf(msg, "textureID: %d", node->textureID);
+			
 			npPostMsg (msg, kNPmsgCtrl, dataRef);
 			break;
 

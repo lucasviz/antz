@@ -31,7 +31,7 @@
 void npInitTexMap (void* dataRef);
 void npUpdateTexMap (void* dataRef);
 int npGeoTexId( int geometryId, void* dataRef );
-pNPtexmap npAddTexMap(int extTexId, char* filename, char* path, void* dataRef);
+pNPtexmap npAddTexMap(int* extTexId, char* filename, char* path, void* dataRef);
 
 void npCloseTexMap (void* dataRef);
 
@@ -47,7 +47,9 @@ int npScreenGrab( char* filePath, int type, int x, int y, int w, int h, void* da
 
 int npScreenGrabThumb( char* name, int type, int x, int y, int w, int h, void* dataRef );
 
+pNPtexmap npTexTest(void* dataRef);
 
+int npGetUnusedExtTexId(void* dataRef);
 
 #endif
 

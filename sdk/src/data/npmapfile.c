@@ -33,6 +33,7 @@
 
 //#include "../io/gl/nptags.h"	//move the necessary functions to npdata, debug zz
 #include "../io/npgl.h"			//zz debug, added for npPostTool()
+#include "../io/file/npmodels.h"
 
 void npLoadChannelFile (char* buffer, int wordSize, int size, void* dataRef);
 
@@ -564,6 +565,7 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 
 	node->colorFade			= npstrtoi(&cursor);
 	extTexId				= npstrtoi(&cursor);
+	printf("reading in ext tex id %d from node->id %d\n", extTexId, node->id);
 	node->textureID			= npExtTexToIntTexId(extTexId, dataRef); // @todo lv model 
 
 	node->hide				= npstrtoi(&cursor);
@@ -1129,14 +1131,6 @@ void npCSVtoTexture(char** read, int size, int* scanNumRet, void* dataRef)
 	int match = 0;
 	
 	npTextureNew(read[0], dataRef);	
-//	geo = npModelNew(read[0], dataRef);
-
-//	match = npGeolistSearchGeo(geo, dataRef);
-
-//	if(match == 0)
-//		npGeolistAddModel(geo->geometryId, geo->modelId, geo->name, geo->modelFile, geo->modelPath, dataRef);
-
-	
 }
 
 

@@ -54,6 +54,7 @@ void npInitTexMap (void* dataRef)
 		texmap->image = NULL;
 		texmap->extTexId = 0;
 		texmap->intTexId = 0;
+		texmap->reserved = 0;
 	}
 
 	return;
@@ -114,7 +115,7 @@ pNPtexmap npTexlistSearchId(int var, void* val, void* dataRef)
 	return NULL;
 }
 
-int npGetUnusedExtTexId(void* dataRef);
+
 int npGetUnusedExtTexId(void* dataRef)
 {
 	pData data = (pData) dataRef;
@@ -122,6 +123,7 @@ int npGetUnusedExtTexId(void* dataRef)
 	int i = 1;
 	int extId = 1;
 
+	printf("NPgetUNUSEDextTEXid\n");
 	for(i = 1; i < kNPtexListMax; i++)
 	{
 		texmap = &data->io.gl.texmap[i];
@@ -141,9 +143,9 @@ int npGetUnusedExtTexId(void* dataRef)
 			break;
 	}
 
-	data->io.gl.texmap[i].extTexId = extId;
+//	data->io.gl.texmap[i].extTexId = extId; // lv, temp
 
-//	printf("New ext tex id : %d\n", extId);
+	printf("44 New ext tex id : %d\n", extId);
 
 	return extId;
 }
@@ -172,6 +174,265 @@ pNPtexmap npGetUnusedTexMap(void* dataRef)
 	return NULL;
 }
 
+pNPtexmap npTexTest(void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPtexmap t = NULL;
+	pNPgeolist geo = NULL;
+	int extId = 1;
+	int geoId = 0;
+	int i = 1;
+	int intTexId = 0;
+
+	t = npAddTexMap(&extId, "jeep1.jpg", "usr\\images\\", dataRef);
+	t = npAddTexMap(&extId, "m_rifl.bmp", "", dataRef);
+	extId = 2;
+	t = npAddTexMap(&extId, "house.jpg", "", dataRef);
+	t = npAddTexMap(&extId, "katze.jpg", "", dataRef);
+
+	npUpdateTexMap(dataRef);
+	
+	printf("S\n");
+
+	for(i=1; i <= 2; i++)
+		npExtTexToIntTexId(i, dataRef);
+
+	extId = 1;
+//	geo = npAddGeo(&geoId, &extId, 0, "", "jeep1.3ds", "usr\\model\\", dataRef);
+	geo = npAddGeo(&geoId, &extId, 0, "", "jeep1.3ds", "", dataRef);
+
+	npLoadModel(geo, dataRef);
+//	npUpdateGeoList(dataRef);
+
+	intTexId = npGeoTexId(geoId, dataRef);
+	printf("intTexId for %d is %d\n", geoId, intTexId);
+
+	extId = 0;
+	geo = npAddGeo(&geoId, &extId, 0, "", "mar_rifle.3ds", "", dataRef);
+	npLoadModel(geo, dataRef);
+
+	return t;
+}
+
+/*
+	npTexMapFind(0, fName, path, dataRef) 
+
+	pNPtexmap npTexFind(int* extId, char* fName, char* path, void* dataRef);
+	behavior:
+	- first searches for fName/path pair
+	- if found
+	    return tex;
+*/
+pNPtexmap npTexFind(int* extId, char* fName, char* path, void* dataRef);
+pNPtexmap npTexFind(int* extId, char* fName, char* path, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPtexmap t = &data->io.gl.texmap[0];
+	int i = 1;
+
+	if( (fName == NULL) && (path == NULL) )
+	{
+		for(i = 1; i < 2000; i++)
+		{
+			t = &data->io.gl.texmap[i];
+			if(t->extTexId == (*extId))
+				return t;
+		}
+
+		return NULL;
+	}
+
+	for(i = 1; i < 2000; i++)
+	{
+		t = &data->io.gl.texmap[i];
+
+		if( (t->filename[0] !=  '\0') && (t->path[0] != '\0') )
+		{
+			if( (strcmp(t->filename, fName) == 0) && (strcmp(t->path, path) == 0) )	
+			{
+				(*extId) = t->extTexId;
+				return t;
+			}
+		}	
+	}
+
+	for(i = 1; i < 2000; i++)
+	{
+		t = &data->io.gl.texmap[i];
+
+		if( t->filename[0] !=  '\0' )
+		{
+			if( strcmp(t->filename, fName) == 0 )
+			{
+				(*extId) = t->extTexId;
+				return t;
+			}
+		}	
+	}
+
+	return NULL;
+}
+
+// returns index into texlist :: if failure, then 0
+int npUsedTex(int extId, void* dataRef);
+int npUsedTex(int extId, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPtexmap t = NULL;
+	int i = 1;
+
+	for(i = 1; i < 2000; i++)
+	{
+		t = &data->io.gl.texmap[i];
+		if(t->extTexId == extId)
+			return i;
+	}
+
+	return 0;
+}
+
+int npLoadTex(pNPtexmap tex, void* dataRef);
+int npLoadTex(pNPtexmap tex, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPtexmap texA = NULL;
+	char filepath[256] = {'\0'};
+
+	printf("NPLOADTEX\n");
+
+	texA = npTexlistSearchId(kNPextId, &tex->extTexId, dataRef);
+	if(texA && (texA->intTexId > 0))
+	{
+		tex->intTexId = texA->intTexId;
+		return tex->intTexId;
+	}
+	
+	if(texA && (texA->intTexId == 0))
+	{
+		sprintf(filepath, "%s%s", tex->path, tex->filename);
+		printf("filepath : %s\n", filepath);
+		tex->intTexId = npLoadTexture(filepath, 0, dataRef);
+		if(tex->intTexId > 0)
+		{
+			printf("ext %d to int %d\n", tex->extTexId, tex->intTexId);
+			tex->loaded = 1;
+		}
+	}
+	
+
+	return tex->intTexId;
+}
+
+
+pNPtexmap npTexNew(int* extId, char* fName, char* path, void* dataRef);
+pNPtexmap npTexNew(int* extId, char* fName, char* path, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPtexmap t = NULL;
+	int i = 1;
+
+//	t = npGetUnusedTexMap(dataRef);
+
+	if( (*extId) > 0 )
+	{ // check if extId is used, if so, replace entry with new data
+		//t->extTexId = 
+		if( (i = npUsedTex((*extId), dataRef)) )
+		{
+			// replace
+			t = &data->io.gl.texmap[i];
+			t->filename[0] = '\0';
+			t->path[0] = '\0';
+			strcpy(t->filename, fName);
+			strcpy(t->path, path);
+			t->intTexId = 0;
+			t->loaded = 0;
+		}
+		else
+		{
+			// didn't find extId, safe to use
+			t = npGetUnusedTexMap(dataRef);
+			if(t)
+			{
+				t->extTexId = (*extId);
+				printf("Using t->extTexId : %d\n", t->extTexId);
+				t->filename[0] = '\0';
+				t->path[0] = '\0';
+				strcpy(t->filename, fName);
+				strcpy(t->path, path);
+				t->intTexId = 0;
+				t->loaded = 0;
+				npLoadTex(t, dataRef);
+				/*
+				if(geoAutoLoad)
+				{
+					npLoadTex(t, dataRef);
+				}
+				*/
+
+			}
+			else
+			{
+				printf("could not get texmap\n");
+			}
+		}
+
+	}
+	else if( (*extId) == 0 )
+	{
+		//t->extTexId
+		t = npGetUnusedTexMap(dataRef);
+		//	t->extTexId = (*extId);
+			t->extTexId = npGetUnusedExtTexId(dataRef);
+			(*extId) = t->extTexId;
+			t->filename[0] = '\0';
+			t->path[0] = '\0';
+			strcpy(t->filename, fName);
+			strcpy(t->path, path);
+			t->intTexId = 0;
+			t->loaded = 0;
+	}
+/*
+	if( (*extId) == 0 )
+	{
+		t->extTexId = npGetUnusedExtTexId(dataRef);
+	}
+*/
+//	t->
+
+	return t;
+}
+
+pNPtexmap npAddTexMap(int* extId, char* fName, char* path, void* dataRef);
+pNPtexmap npAddTexMap(int* extId, char* fName, char* path, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPtexmap t = NULL;
+	int i = 1;
+	int oldId = (*extId);
+	char* abs = NULL;
+	char intPath[256] = {'\0'};
+
+	if( npPathIsRel(path, dataRef) )
+	{
+		abs = npFilePathRelToAbs(path, dataRef);
+		strcpy(intPath, abs);
+	}
+	else
+		strcpy(intPath, path);
+
+	// check if filename / path pair already exists in list
+	// if npTexFind can't find pair then it looks for only an fName match
+	t = npTexFind(extId, fName, intPath, dataRef);
+	if(t)
+		return t;
+
+	t = npTexNew(extId, fName, intPath, dataRef);
+	
+
+	return t;
+}
+
+/*
 pNPtexmap npAddTexMap(int extTexId, char* filename, char* path, void* dataRef)
 {
 	pData data = (pData) dataRef;
@@ -186,22 +447,6 @@ pNPtexmap npAddTexMap(int extTexId, char* filename, char* path, void* dataRef)
 	if(!filename)
 		return NULL;
 
-	if(extTexId == 0)
-		extTexId = npGetUnusedExtTexId(dataRef);
-
-	texA = npTexlistSearchId(kNPextId, &extTexId, dataRef);
-	
-	if(texA)
-	{
-		if(texA->filename[0] == '\0' && filename[0] != '\0')
-			strcpy(texA->filename, filename);
-
-		if(texA->path[0] == '\0' && path[0] != '\0')
-			strcpy(texA->path, path);
-
-		return texA;
-	}
-
 	printf("TEXC 77383929012019\n");
 	texC = npTexlistSearchFile(filename, data->io.file.appPath, dataRef);
 	if(texC)
@@ -211,29 +456,36 @@ pNPtexmap npAddTexMap(int extTexId, char* filename, char* path, void* dataRef)
 		return texC;
 	}
 
+	if(extTexId == 0)
+		extTexId = npGetUnusedExtTexId(dataRef);
+	else
+		texA = npTexlistSearchId(kNPextId, &extTexId, dataRef);
+
+	printf("7L npAddTexMap(%d,%s,%s,void* dataRef)\n", extTexId, filename, path, dataRef);
+
+	
+	if(texA)
+	{
+		printf("--235----- replace texmap : %d\n", extTexId);
+		if(texA->filename[0] != '\0' && filename[0] != '\0')
+			strcpy(texA->filename, filename);
+
+		if(texA->path[0] != '\0' && path[0] != '\0')
+			strcpy(texA->path, path);
+
+		texA->loaded = 0;
+		texA->intTexId = 0;
+		return texA;
+	}
+
+
+
 	texB = npTexlistSearchFile(filename, path, dataRef);
 	
 	if(texB)
 	{
 		return texB;
 	}
-	
-
-
-
-	
-
-	/*
-	if(texA && texB)
-	{	
-		if(texA->extTexId == texB->extTexId)
-			return texA;
-		else
-			return texB;
-	}
-	*/
-
-
 
 	newTex = npGetUnusedTexMap(dataRef);
 	if(newTex)
@@ -270,6 +522,7 @@ pNPtexmap npAddTexMap(int extTexId, char* filename, char* path, void* dataRef)
 
 	return newTex;
 }
+*/
 
 //------------------------------------------------------------------------------
 void npCloseTexMap (void* dataRef)		//clean-up
@@ -277,30 +530,22 @@ void npCloseTexMap (void* dataRef)		//clean-up
 	return;
 }
 
-int npLoadTex(pNPtexmap tex, void* dataRef);
-int npLoadTex(pNPtexmap tex, void* dataRef)
+
+/// @todo lv
+pNPtexmap npTexReserve(int extId, void* dataRef)
 {
 	pData data = (pData) dataRef;
-	pNPtexmap texA = NULL;
-	char filepath[256] = {'\0'};
-
-	texA = npTexlistSearchId(kNPextId, &tex->extTexId, dataRef);
-	if(texA && (texA->intTexId > 0))
-	{
-		tex->intTexId = texA->intTexId;
-		return tex->intTexId;
-	}
+	pNPtexmap t = NULL;
 	
-	if(texA && (texA->intTexId == 0))
-	{
-		sprintf(filepath, "%s%s", tex->path, tex->filename);
-		tex->intTexId = npLoadTexture(filepath, 0, dataRef);
-		if(tex->intTexId > 0)
-			tex->loaded = 1;
-	}
-	
+	t = npTexFind(&extId, NULL, NULL, dataRef);
+	if(t)
+		return NULL;
 
-	return tex->intTexId;
+	t = npTexNew(&extId, NULL, NULL, dataRef);
+	//t->reserved =
+	t->reserved = 1;
+
+	
 }
 
 //------------------------------------------------------------------------------
@@ -313,12 +558,13 @@ void npUpdateTexMap (void* dataRef)							//add to ctrl loop, debug zz
 	int i = 0;
 
 //	printf("npUpdateTexMap\n");
-	for( i = 0; i < 2000; i++ )
+	for( i = 1; i < 2000; i++ )
 	{
 		texmap = &data->io.gl.texmap[i];
 		if(texmap->extTexId > 0 && texmap->intTexId == 0 && texmap->loaded == 0 &&
 			texmap->filename[0] != '\0' && texmap->path[0] != '\0')
 		{
+			printf("Loading extTexId : %d -- intTexId : %d -- %s%s\n", texmap->extTexId, texmap->intTexId, texmap->path, texmap->filename);
 			/*
 			printf("texmap->extTexId : %d\n", texmap->extTexId);
 			printf("texmap->path : %s\n", texmap->path);
@@ -457,6 +703,7 @@ void npLoadTextures(void* dataRef)
 	pNPfileRef fRef = NULL;
 
 	char* filename = (char*)malloc(4096);
+	char fName[256] = {'\0'};
 
 	unsigned int textureID;		//zz debug, allow loading textures at runtime
 									//detect changes to data->io.file.mapPath
@@ -498,6 +745,9 @@ void npLoadTextures(void* dataRef)
 		else
 		{
 			printf("filename : %s\n", filename);
+			///npGetFileNameFromPath(filename, fName, dataRef);
+			//filename[strlen(filename) - strlen(fName)] = '\0';
+			//npAddTexMap(0, fName, filename, dataRef);
 			textureID = npLoadTexture( filename, 0, data );
 		}
     }
@@ -535,8 +785,14 @@ void npLoadTextures(void* dataRef)
 		//	npLoadTextures( sPath, data );			// recursion
 		}
 		else
+		{
+			
+			//npGetFileNameFromPath(filename, fName, dataRef);
+			//filename[strlen(filename) - strlen(fName)] = '\0';
+			//npAddTexMap(0, fName, filename, dataRef);
 			textureID = npLoadTexture( filename, 0, data );
-    }
+		}
+	}
 	while( nposFindNextFile( fRef ) );	// next file within limits
 
     nposFindClose( fRef, data );		// always clean up!
@@ -555,6 +811,8 @@ void npLoadGeos(void* dataRef)
 	int fileType = 0;
 	int textureSize = 0;
 	int fileNumber = 1;
+	static int extTexId = 0;
+	int geoId = 0;
 
 	pNPfileRef fRef = NULL;
 
@@ -565,7 +823,7 @@ void npLoadGeos(void* dataRef)
 									//detect changes to data->io.file.mapPath
 	pData data = (pData) dataRef;
 
-	printf ("Loading Geos...\n");
+	printf ("Loading Geos... : %s\n", data->io.file.appPath);
 
 	fRef = nposNewFileRef( data );
 
@@ -599,8 +857,10 @@ void npLoadGeos(void* dataRef)
 			if( (strcmp(fRef->name, ".DS_Store") == 0) || (strcmp(fRef->name, "README") == 0) )
 				continue;
 
-			printf("\nnpAddGeo(0,0,0, NULL, %s, %s, dataRef)\n", fRef->name, path);
-			npAddGeo(0,0,0, NULL, fRef->name, path, dataRef);
+		//	printf("\nnpAddGeo(0,0,0, NULL, %s, %s, dataRef)\n", fRef->name, path);
+		//	npAddGeo(0,0,0, NULL, fRef->name, path, dataRef);
+			extTexId = npGetUnusedExtTexId(dataRef);
+			npAddGeo(&geoId, &extTexId, 0, NULL, fRef->name, path, dataRef);
 		}
     }
 	while( nposFindNextFile( fRef ) );	// next file within limits

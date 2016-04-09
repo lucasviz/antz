@@ -57,7 +57,7 @@ typedef struct NPgeo *pNPgeo;
 //------------------------------------------------------------------------------
 void npInitModels (void* dataRef);
 void npCloseModels (void* dataRef);
-pNPgeolist npAddGeo(int geoId, int extTexId, int type, char* object_name, char* file_name, char* path, void* dataRef);
+pNPgeolist npAddGeo(int* geoId, int* extTexId, int type, char* object_name, char* file_name, char* path, void* dataRef);
 //pNPmodels npLoadModel( const char* path, char* filename, void* dataRef );
 
 int npLoadModel(pNPgeolist geo, void* dataRef);
@@ -86,6 +86,10 @@ int npExtTexToIntTexId(int extTexId, void* dataRef);
 
 pNPgeolist npGetGeolist(void* dataRef);
 
+pNPgeo npModelNew(char* model_csvline, void* dataRef);
+
+int npSearchGeosId(int geoId, void* dataRef);
+
 char* npModelNewGeoId(char* idVal, int* geoId, void* dataRef);
 
 char* npModelNewTextureId(char* idVal, int* textureId, int* intId, void* dataRef);
@@ -101,6 +105,8 @@ char* npModelNewFilePath(char* stringVal, int maxSize, char* filePath, void* dat
 void npSetSelectedNodeGeoId( int* geoId, void* dataRef );
 
 int npGeolistNewGeoId(void* dataRef);
+
+int npIntTexToExtTexId(int intTexId, void* dataRef);
 
 #endif
 

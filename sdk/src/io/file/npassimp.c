@@ -100,7 +100,7 @@ struct aiString npAssimpGetTexturePath(int sceneIndex, void* dataRef)
 	if( assimp->scene[sceneIndex] == NULL)
 	{
 		printf("\nScene not loaded");
-		return;
+		return assimp->path;
 	}
 
 	scene = assimp->scene[sceneIndex]; /// assimp->scene[0] is dummy value (NULL) 

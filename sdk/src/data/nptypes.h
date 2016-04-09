@@ -1051,6 +1051,7 @@ struct NPtexmap {
 	int width;
 	int height;
 	int channels;
+	int reserved;
 };
 typedef struct NPtexmap NPtexmap;
 typedef NPtexmap* pNPtexmap;
