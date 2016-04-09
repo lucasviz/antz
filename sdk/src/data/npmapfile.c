@@ -2297,6 +2297,8 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 	int fileType = 0, fileCat = 0;
 	int textureId = 0;
 	int id = 0;
+	int geoId = 0;
+	int extId = 0;
 
 	pData data = (pData) dataRef;
 	pNPmodels models;
@@ -2344,7 +2346,7 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 			npGetFileNameFromPath( filePath, &fileName[0], dataRef );
 			strcpy(path, filePath);
 			path[strlen(filePath) - strlen(fileName)] = '\0';
-			npAddGeo(0, 0, 0, NULL, fileName, path, dataRef);
+			npAddGeo(&geoId, &extId, 0, NULL, fileName, path, dataRef);
 			
 			if( geo && (geo->geometryId >= 1000 && geo->geometryId <= 2000) )
 			{
