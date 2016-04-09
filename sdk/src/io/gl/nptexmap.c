@@ -827,7 +827,7 @@ void npLoadGeos(void* dataRef)
 
 	fRef = nposNewFileRef( data );
 
-	result = nposFindFirstFile( fRef, "usr/model/", "*.*", data );
+	result = nposFindFirstFile( fRef, "usr/global/models/", "*.*", data );
 	if( result != 1 )
 		return;		// err or empty folder
 
@@ -842,7 +842,7 @@ void npLoadGeos(void* dataRef)
 			printf( "." );
 
 		printf("fRef->name : %s\n", fRef->name);
-		sprintf(filename, "%s/%s", "usr/model/", fRef->name );
+		sprintf(filename, "%s/%s", "usr/global/models/", fRef->name );
 		printf("!!!!!!!-----filename : %s!!!!!!!!-------\n", filename);
 
 		// if Folder (not a file) then recursively call to create dir tree
@@ -852,9 +852,9 @@ void npLoadGeos(void* dataRef)
 		}
 		else
 		{
-			sprintf(path, "%s%s", data->io.file.appPath, "usr\\model\\");
+			sprintf(path, "%s%s", data->io.file.appPath, "usr\\global\\models\\");
 			printf("---------123 path : %s--------\n", path);
-			if( (strcmp(fRef->name, ".DS_Store") == 0) || (strcmp(fRef->name, "README") == 0) )
+			if( (strcmp(fRef->name, ".DS_Store") == 0) || (strcmp(fRef->name, "README") == 0) || ( strcmp(fRef->name, "models-notes.txt") == 0) )
 				continue;
 
 		//	printf("\nnpAddGeo(0,0,0, NULL, %s, %s, dataRef)\n", fRef->name, path);
