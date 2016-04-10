@@ -439,7 +439,7 @@ pNPgeolist npAddGeo(int* geoId, int* extTexId, int type, char* object_name, char
 	char intPath[256] = {'\0'};
 	int i = 0;
 
-	printf("npAddGeo(%d, %d, %d, NULL, %s, %s, void* dataRef)\n", (*geoId), (*extTexId), type, file_name, path);
+//	printf("npAddGeo(%d, %d, %d, NULL, %s, %s, void* dataRef)\n", (*geoId), (*extTexId), type, file_name, path);
 
 	if( npPathIsRel(path, dataRef) )
 	{
