@@ -123,7 +123,7 @@ int npGetUnusedExtTexId(void* dataRef)
 	int i = 1;
 	int extId = 1;
 
-	printf("NPgetUNUSEDextTEXid\n");
+//	printf("NPgetUNUSEDextTEXid\n");
 	for(i = 1; i < kNPtexListMax; i++)
 	{
 		texmap = &data->io.gl.texmap[i];
@@ -296,9 +296,8 @@ int npLoadTex(pNPtexmap tex, void* dataRef)
 {
 	pData data = (pData) dataRef;
 	pNPtexmap texA = NULL;
+	pNPgeolist geo = NULL;
 	char filepath[256] = {'\0'};
-
-	printf("NPLOADTEX\n");
 
 	texA = npTexlistSearchId(kNPextId, &tex->extTexId, dataRef);
 	if(texA && (texA->intTexId > 0))
@@ -310,12 +309,23 @@ int npLoadTex(pNPtexmap tex, void* dataRef)
 	if(texA && (texA->intTexId == 0))
 	{
 		sprintf(filepath, "%s%s", tex->path, tex->filename);
-		printf("filepath : %s\n", filepath);
+	//	printf("filepath : %s\n", filepath);
 		tex->intTexId = npLoadTexture(filepath, 0, dataRef);
 		if(tex->intTexId > 0)
 		{
-			printf("ext %d to int %d\n", tex->extTexId, tex->intTexId);
+	//		printf("ext %d to int %d\n", tex->extTexId, tex->intTexId);
 			tex->loaded = 1;
+		}
+		else if(tex->intTexId == 0)
+		{
+			geo = npSearchGeolistExtTexId(tex->extTexId, dataRef);
+			if(geo)
+			{
+				filepath[0] = '\0';
+				sprintf(filepath, "%s%s", geo->modelPath, tex->filename);
+				tex->loaded = 0;
+			}
+
 		}
 	}
 	
@@ -564,7 +574,7 @@ void npUpdateTexMap (void* dataRef)							//add to ctrl loop, debug zz
 		if(texmap->extTexId > 0 && texmap->intTexId == 0 && texmap->loaded == 0 &&
 			texmap->filename[0] != '\0' && texmap->path[0] != '\0')
 		{
-			printf("Loading extTexId : %d -- intTexId : %d -- %s%s\n", texmap->extTexId, texmap->intTexId, texmap->path, texmap->filename);
+		//	printf("Loading extTexId : %d -- intTexId : %d -- %s%s\n", texmap->extTexId, texmap->intTexId, texmap->path, texmap->filename);
 			/*
 			printf("texmap->extTexId : %d\n", texmap->extTexId);
 			printf("texmap->path : %s\n", texmap->path);
@@ -844,9 +854,9 @@ void npLoadGeos(void* dataRef)
 		else if(  i < 100 || i % 100 == 0 )
 			printf( "." );
 
-		printf("fRef->name : %s\n", fRef->name);
+		//printf("fRef->name : %s\n", fRef->name);
 		sprintf(filename, "%s/%s", "usr/global/models/", fRef->name );
-		printf("!!!!!!!-----filename : %s!!!!!!!!-------\n", filename);
+		//printf("!!!!!!!-----filename : %s!!!!!!!!-------\n", filename);
 
 		// if Folder (not a file) then recursively call to create dir tree
 		if( fRef->isDir )
@@ -856,8 +866,8 @@ void npLoadGeos(void* dataRef)
 		else
 		{
 			sprintf(path, "%s%s", data->io.file.appPath, "usr\\global\\models\\");
-			printf("---------123 path : %s--------\n", path);
-			if( (strcmp(fRef->name, ".DS_Store") == 0) || (strcmp(fRef->name, "README") == 0) || ( strcmp(fRef->name, "models-notes.txt") == 0) )
+		//	printf("---------123 path : %s--------\n", path);
+			if( ( strcmp(fRef->name, "models-notes.txt") == 0) || (strcmp(fRef->name, ".DS_Store") == 0) || (strcmp(fRef->name, "README") == 0)  )
 				continue;
 
 		//	printf("\nnpAddGeo(0,0,0, NULL, %s, %s, dataRef)\n", fRef->name, path);

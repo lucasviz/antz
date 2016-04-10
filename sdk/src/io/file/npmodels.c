@@ -587,8 +587,8 @@ int npExtTexToIntTexId(int extTexId, void* dataRef)
 		texmap = &data->io.gl.texmap[i];
 		if(texmap->extTexId == extTexId)
 		{
-			printf("---int %d to ext %d---\n", texmap->intTexId, extTexId);
-			printf("---%s%s---\n", texmap->path, texmap->filename);
+//			printf("---int %d to ext %d---\n", texmap->intTexId, extTexId);
+//			printf("---%s%s---\n", texmap->path, texmap->filename);
 			return texmap->intTexId;
 		}
 	}
@@ -604,15 +604,15 @@ int npIntTexToExtTexId(int intTexId, void* dataRef)
 	pNPtexmap texmap = &data->io.gl.texmap[0];
 	int i = 0;
 
-	printf("npIntTexToExtTexId\n");
+//	printf("npIntTexToExtTexId\n");
 	/// kNPtexListMax 2000
 	for(i = 1; i < 2000; i++)
 	{
 		texmap = &data->io.gl.texmap[i];
 		if(texmap->intTexId == intTexId)
 		{
-			printf("---int %d to ext %d---\n", intTexId, texmap->extTexId);
-			printf("---%s %s---\n", texmap->path, texmap->filename);
+//			printf("---int %d to ext %d---\n", intTexId, texmap->extTexId);
+//			printf("---%s %s---\n", texmap->path, texmap->filename);
 			return texmap->extTexId;
 		}
 	}
@@ -696,7 +696,7 @@ int npLoadModel(pNPgeolist geo, void* dataRef)
 	npGetFileNameFromPath(&assimp->path.data[0], fileName, dataRef);
 	strcpy(path, filePath);
 	path[strlen(filePath) - strlen(geo->modelFile)] = '\0';
-	printf("---------path : %s-------\n", path);
+//	printf("---------path : %s-------\n", path);
 	geo->modelTextureFile[0] = '\0';
 	geo->modelTexturePath[0] = '\0';
 	strcpy(geo->modelTextureFile, fileName);
