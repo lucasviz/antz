@@ -34,6 +34,103 @@
 #include "SOIL.h"					// used for DDS files and screengrab
 
 
+
+void npLoadTexturesLegacy(void* dataRef);
+void npLoadTexturesLegacy(void* dataRef) 
+{
+	int i = 0;
+	int result = 0;
+	int fileType = 0;
+	int textureSize = 0;
+	int fileNumber = 1;
+
+	pNPfileRef fRef = NULL;
+
+	char* filename = (char*)malloc(4096);
+
+	unsigned int textureID;		//zz debug, allow loading textures at runtime
+									//detect changes to data->io.file.mapPath
+	pData data = (pData) dataRef;
+
+
+	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &textureSize);
+	data->io.gl.maxTextureSize = textureSize;
+	printf ("\nMax Texture Size: %dx%d\n", textureSize, textureSize);
+	printf ("Loading Textures...\n");
+	//	printf ("Larger textures down converted\n", textureSize);
+
+	fRef = nposNewFileRef( data );
+
+	/// Legacy support where we first load map*.jpg files then all others
+	result = nposFindFirstFile( fRef, "usr/images/", "map*.jpg", data );
+	if( result != 1 )
+		return;		// err or empty folder
+
+	do
+    {
+		i++;
+
+		// print a few of the filenames then dots for every 100 files
+		if( i <= 5 )
+			printf( "%.70s\n", fRef->name );
+		else if( i < 100 || i % 100 == 0 )
+			printf( "." );
+
+		sprintf(filename, "%s/%s", "usr/images/", fRef->name );
+
+		// if Folder (not a file) then recursively call to create dir tree
+		if( fRef->isDir )
+		{
+		//	npLoadTextures( sPath, data );			// recursion
+		}
+		else
+			textureID = npLoadTexture( filename, 0, data );
+    }
+	while( nposFindNextFile( fRef ) );	// next file within limits
+
+	/// Now we load all other textures
+	result = nposFindFirstFile( fRef, "usr/images/", "*.*", data );
+	if( result != 1 )
+		return;		// err or empty folder
+
+	do
+    {
+		// handle legacy support by skipping the ones we just laoded
+		if( strncmp(fRef->name, "map", 3) == 0
+			&& npGetFileTypeCat(NULL, fRef->name, data) == kNPfileJPG )
+			continue;
+
+		i++;
+
+		// append current file/dir item to the basePath (parent dir)
+ //       sprintf(sPath, "%s/%s", basePath, fRef->fdFile.cFileName);
+
+		// print a few of the filenames then dots for every 100 files
+		if( i <= 5 )
+			printf( "%.70s\n", fRef->name );
+		else if(  i < 100 || i % 100 == 0 )
+			printf( "." );
+
+		sprintf(filename, "%s/%s", "usr/images/", fRef->name );
+
+		// if Folder (not a file) then recursively call to create dir tree
+		if( fRef->isDir )
+		{
+		//	npLoadTextures( sPath, data );			// recursion
+		}
+		else
+			textureID = npLoadTexture( filename, 0, data );
+    }
+	while( nposFindNextFile( fRef ) );	// next file within limits
+
+    nposFindClose( fRef, data );		// always clean up!
+
+	if( data->io.gl.textureCount )
+		printf ("\nDone Loading Textures\n\n");
+	else
+		printf ("No Textures Found!!!\n\n");
+}
+
 //------------------------------------------------------------------------------
 #define kNPtexListMax 2000
 void npInitTexMap (void* dataRef)
@@ -56,6 +153,9 @@ void npInitTexMap (void* dataRef)
 		texmap->intTexId = 0;
 		texmap->reserved = 0;
 	}
+
+	npLoadTexturesLegacy(dataRef);
+	npLoadTextures(dataRef); // lv temp
 
 	return;
 }
@@ -695,6 +795,8 @@ int npLoadTexture( const char* filePath, int fileType, void* dataRef)
 	return textureID;
 }
 
+
+
 //Textures, fonts, display lists, etc... can all be shared provided that:
 //All rendering contexts of a shared display list must use an identical pixel format.
 //http://www.opengl.org/discussion_boards/ubbthreads.php?ubb=showflat&Number=79299&page=1
@@ -709,6 +811,7 @@ void npLoadTextures(void* dataRef)
 	int fileType = 0;
 	int textureSize = 0;
 	int fileNumber = 1;
+	int fileCat = 0;
 
 	pNPfileRef fRef = NULL;
 
@@ -729,41 +832,6 @@ void npLoadTextures(void* dataRef)
 
 	fRef = nposNewFileRef( data );
 
-	/// Legacy support where we first load map*.jpg files then all others
-	//result = nposFindFirstFile( fRef, "usr/images/", "map*.jpg", data );
-	result = nposFindFirstFile( fRef, "usr/global/images/", "*.*", data );
-	if( result != 1 )
-		return;		// err or empty folder
-
-	do
-    {
-		i++;
-
-		// print a few of the filenames then dots for every 100 files
-		if( i <= 5 )
-			printf( "%.70s\n", fRef->name );
-		else if( i < 100 || i % 100 == 0 )
-			printf( "." );
-
-		sprintf(filename, "%susr\\global\\images\\%s", data->io.file.appPath, fRef->name );
-		//printf("file : %s\n", filename);
-
-		// if Folder (not a file) then recursively call to create dir tree
-		if( fRef->isDir )
-		{
-		//	npAddTexMap(dataRef); // recursion
-		}
-		else
-		{
-			printf("filename : %s\n", filename);
-			///npGetFileNameFromPath(filename, fName, dataRef);
-			//filename[strlen(filename) - strlen(fName)] = '\0';
-			//npAddTexMap(0, fName, filename, dataRef);
-			textureID = npLoadTexture( filename, 0, data );
-		}
-    }
-	while( nposFindNextFile( fRef ) );	// next file within limits
-
 	//------------------------------------------------------------------
 	/// Now we load all other textures
 	result = nposFindFirstFile( fRef, "usr/global/images/", "*.*", data );
@@ -774,8 +842,10 @@ void npLoadTextures(void* dataRef)
     {
 		// legacy support by skipping the ones we just laoded
 		if( strncmp(fRef->name, "map", 3) == 0
-			&& npGetFileTypeCat(NULL, fRef->name, data) == kNPfileJPG )
+			&& npGetFileTypeCat(&fileCat, fRef->name, data) == kNPfileJPG )
 			continue;
+
+		npGetFileTypeCat(&fileCat, fRef->name, data);
 
 		i++;
 
@@ -797,13 +867,14 @@ void npLoadTextures(void* dataRef)
 		}
 		else
 		{
-			if( (strcmp(fRef->name, ".DS_Store") == 0) || (strcmp(fRef->name, "README") == 0) || ( strcmp(fRef->name, "images-notes.txt") == 0) )
-				continue;
+//			if( (strcmp(fRef->name, ".DS_Store") == 0) || (strcmp(fRef->name, "README") == 0) || ( strcmp(fRef->name, "images-notes.txt") == 0) )
+//				continue;
 			
 			//npGetFileNameFromPath(filename, fName, dataRef);
 			//filename[strlen(filename) - strlen(fName)] = '\0';
 			//npAddTexMap(0, fName, filename, dataRef);
-			textureID = npLoadTexture( filename, 0, data );
+			if(fileCat == kNPfileCatImage)
+				textureID = npLoadTexture( filename, 0, data );
 		}
 	}
 	while( nposFindNextFile( fRef ) );	// next file within limits

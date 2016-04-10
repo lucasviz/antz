@@ -56,6 +56,7 @@ void npGeolistUnlock(void* dataRef)
 void npInitModels (void* dataRef)
 {
 	npInitGeoList(dataRef);
+	npLoadGeos(dataRef);
 	return;
 }
 
