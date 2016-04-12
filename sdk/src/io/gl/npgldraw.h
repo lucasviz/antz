@@ -30,12 +30,12 @@
 
 struct NPbox
 {
-	int xH;
-	int xL;
-	int yH;
-	int yL;
-	int zH;
-	int zL;
+	float xH;
+	float xL;
+	float yH;
+	float yL;
+	float zH;
+	float zL;
 };
 typedef struct NPbox NPbox;
 typedef NPbox* pNPbox;

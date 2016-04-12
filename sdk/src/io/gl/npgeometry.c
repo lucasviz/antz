@@ -89,13 +89,49 @@ void npModelStoreDL(struct aiScene* scene, int dlOffset, void* dataRef)
 	pData data = (pData) dataRef;
 	pNPgl gl = &data->io.gl;
 	pNPassimp assimp = (pNPassimp)data->io.assimp;
-	pNPbox bBox = NULL;
+	NPbox bBox;
+	float dX, dY, dZ = 0;
 
 	printf("npModelStoreDL\n");
 	//printf("Offset %d\n", dlOffset);
 	glNewList(gl->dl + dlOffset, GL_COMPILE);
-	bBox = npDrawAssimpModel(scene, scene->mRootNode, dataRef);
+//	bBox = npDrawAssimpModel(scene, scene->mRootNode, dataRef);
+//	void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dataRef)
+	npBoxGen(scene, scene->mRootNode, &bBox, dataRef);
+
+	printf("xL %f -- xH %f -- yL %f -- yH %f -- zL %f -- zH %f\n", bBox.xL, bBox.xH, bBox.yL, bBox.yH, bBox.zL, bBox.zH);
+
+	dX = (float)abs(bBox.xH - bBox.xL);
+	dY = (float)abs(bBox.yH - bBox.yL);
+	dZ = (float)abs(bBox.zH - bBox.zL);
+
+	if( (dX > dY) && (dX > dZ) )
+	{
+		printf("dX largest magnitude\n");
+		printf("scaling factor %f\n", 2/dX);
+		glScalef((2/dX),(2/dX),(2/dX));
+	}
+
+	if( (dY > dX) && (dY > dZ) )
+	{
+		printf("dY largest magnitude\n");
+		printf("scaling factor %f\n", 2/dY);
+		glScalef((2/dY),(2/dY),(2/dY));
+	}
+	
+	if( (dZ > dY) && (dZ > dX) )
+	{
+		printf("dZ largest magnitude\n");
+		printf("scaling factor %f\n", 2/dZ);
+		glScalef((2/dZ),(2/dZ),(2/dZ));
+	}
+
+	npDrawAssimpModel(scene, scene->mRootNode, dataRef);
 	glEndList();
+
+
+
+
 }
 
 void npAddPrimitiveAssimpModelDL(struct aiScene* scene, void* dataRef)

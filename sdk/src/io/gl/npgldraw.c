@@ -328,7 +328,87 @@ void npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef
 */
 
 //void npvX
+void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dataRef);
+void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dataRef)
+{
+	struct aiMesh* mesh = NULL;
+	struct aiVector3D v;
+	
+	int m = 0;
+	int vNum = 0;
+	int vI;
 
+	if(!node)
+		return;
+
+	if(scene->mRootNode == node && node->mMeshes)
+	{
+		bBox->xH = scene->mMeshes[node->mMeshes[m]]->mVertices[0].x;
+		bBox->yH = scene->mMeshes[node->mMeshes[m]]->mVertices[0].y;
+		bBox->zH = scene->mMeshes[node->mMeshes[m]]->mVertices[0].z;
+		
+		bBox->xL = scene->mMeshes[node->mMeshes[m]]->mVertices[0].x;
+		bBox->yL = scene->mMeshes[node->mMeshes[m]]->mVertices[0].y;
+		bBox->zL = scene->mMeshes[node->mMeshes[m]]->mVertices[0].z;
+	}
+	else if(scene->mRootNode == node && node && (node->mMeshes == NULL))
+	{
+		for(m = 0; m < node->mNumChildren; m++)
+		{
+			if(node->mChildren[m]->mNumMeshes > 0)
+			{
+				bBox->xH = scene->mMeshes[node->mChildren[m]->mMeshes[0]]->mVertices[0].x;
+				bBox->yH = scene->mMeshes[node->mChildren[m]->mMeshes[0]]->mVertices[0].y;
+				bBox->zH = scene->mMeshes[node->mChildren[m]->mMeshes[0]]->mVertices[0].z;
+				
+				bBox->xL = scene->mMeshes[node->mChildren[m]->mMeshes[0]]->mVertices[0].x;
+				bBox->yL = scene->mMeshes[node->mChildren[m]->mMeshes[0]]->mVertices[0].y;
+				bBox->zL = scene->mMeshes[node->mChildren[m]->mMeshes[0]]->mVertices[0].z;
+				break;
+			}
+		}
+
+	}
+
+	for(m = 0; m < node->mNumMeshes; m++)
+	{
+		mesh = scene->mMeshes[node->mMeshes[m]];
+		vNum = mesh->mNumVertices;
+		for(vI = 0; vI < vNum; vI++)
+		{
+			v = mesh->mVertices[vI];
+			if(v.x > bBox->xH)
+				bBox->xH = v.x;
+
+			if(v.y > bBox->yH)
+				bBox->yH = v.y;
+
+			if(v.z > bBox->zH)
+				bBox->zH = v.z;
+
+			if(v.x < bBox->xL)
+				bBox->xL = v.x;
+
+			if(v.y < bBox->yL)
+				bBox->yL = v.y;
+
+			if(v.z < bBox->zL)
+				bBox->zL = v.z;
+			//vec->
+		}
+	//	node->mT
+	}
+
+	if(node->mChildren)
+	{
+		for(m = 0; m < node->mNumChildren; m++)
+			npBoxGen(scene, node->mChildren[m], bBox, dataRef);
+	}
+		
+//	for(m = 0; m < node->mNumMeshes
+
+}
+/*
 pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef)
 {
 	pData data = (pData) dataRef;
@@ -343,7 +423,8 @@ pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataR
 	static int u = 0;
 	int xH, yH, zH = 0;
 	int xL, yL, zL = 0;
-	int vX, vY, vZ = 0;
+	float vX, vY, vZ = 0;
+	float dX, dY, dZ = 0;
 	pNPbox bBox;
 	pNPbox bChild[10];
 
@@ -352,7 +433,7 @@ pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataR
 	if(!bBox)
 	{
 		printf("Could not allocate NPbox\n");
-		return;
+		return NULL;
 	}
 
 
@@ -362,31 +443,22 @@ pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataR
 
 
 	glDisable (GL_LIGHTING);	//draw 100% ambient white
-//	glEnable (GL_TEXTURE_2D);
 
 	printf("000 npDrawAssimpModel\n");
 
-	
+	if(scene->mNumMeshes > 0 && node->mMeshes)
+		mesh = scene->mMeshes[node->mMeshes[0]];
+	else
+		return NULL;
+
+	bBox->xL = bBox->xH = mesh->mVertices[0].x;
+	bBox->yL = bBox->yH = mesh->mVertices[0].y;
+	bBox->zL = bBox->zH = mesh->mVertices[0].z;
+
 	for(z = 0; z < node->mNumMeshes; z++)
 	{
 		mesh = scene->mMeshes[node->mMeshes[z]];
-	
-		
-		bBox->xL = bBox->xH = mesh->mVertices[0].x;
-		bBox->yL = bBox->yH = mesh->mVertices[0].y;
-		bBox->zL = bBox->zH = mesh->mVertices[0].z;
 
-/*
-		xL = xH = mesh->mVertices[0].x;
-		yL = yH = mesh->mVertices[0].y;
-		zL = zH = mesh->mVertices[0].z;
-*/
-	/// Unitize models center rotate scale
-//		xL, xH, yL, yH, zL, zH = 0;
-
-//		foreach vert, i
-//			---Highest
-//			if( (vert[i].x > xH) )
 		printf("mesh vert num : %d\n", mesh->mNumVertices);
 		for(i = 0; i < mesh->mNumVertices; i++)
 		{
@@ -414,61 +486,120 @@ pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataR
 				bBox->zL = vZ;
 
 
+		}		
+	
+	}
+
+	
+	dX = abs(bBox->xH - bBox->xL);
+	dY = abs(bBox->yH - bBox->yL);
+	dZ = abs(bBox->zH - bBox->zL);
+
+//	glDisable(GL_TEXTURE_2D);
+	//	glVertexPointer(3, GL_FLOAT, 0, vertices);
+
+		if( (dX > dY) && (dX > dZ) )
+		{
+			printf("dX largest magnitude\n");
+			printf("scaling factor %f\n", 2/dX);
+			glScalef( (float)(2/dX), (float)(2/dX), (float)(2/dX) );
 		}
-//		printf("xH : %d\n", xH);
-		
-//		printf("X - %d %d\n", xL, xH);
-//		printf("Y - %d %d\n", yL, yH);
-//		printf("Z - %d %d\n", zL, zH);
 
-//		printf("(%d,%d)\n", xL,yL);
-//		printf("(%d,%d)\n", x
-
-		
-		/*
-		xLpH2 = abs(xL+xH)/2;
-		xLmH2 = abs(xL-xH)/2;
-
-		if(
-
-		*/
-/*
-
-			if( (vert[i].y > yH) )
-			{
-				yH = vert[i].y;
-			}
-
-			if( (vert[i].z > zH) )
-			{
-				zH = vert[i].z;
-			}
-//			----Lowest
-
-			if( (vert[i].x < xL) )
-			{
-				xL = vert[i].x;
-			}
-
-			if( (vert[i].y < yL) )
-			{
-				yL = vert[i].y;
-			}
-
-			if( (vert[i].z < zL) )
-			{
-				zL = vert[i].z;
-			}
-*/			
-
-
+		if( (dY > dX) && (dY > dZ) )
+		{
+			printf("dY largest magnitude\n");
+			printf("scaling factor %f\n", 2/dY);
+			glScalef( (float)(2/dY), (float)(2/dY), (float)(2/dY) );
+		}
+	
+		if( (dZ > dY) && (dZ > dX) )
+		{
+			printf("dZ largest magnitude\n");
+			printf("scaling factor %f\n", 2/dZ);
+			glScalef( (float)(2/dZ) , (float)(2/dZ) , (float)(2/dZ) );
+		}
+	
+	for(z = 0; z < node->mNumMeshes; z++)
+	{
+		mesh = scene->mMeshes[node->mMeshes[z]];
+	
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glVertexPointer(3, GL_FLOAT, 0, mesh->mVertices);
 	 	glTexCoordPointer(3, GL_FLOAT, 0, mesh->mTextureCoords[0]);
+		//glScale(
+	
+
 		glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisableClientState(GL_VERTEX_ARRAY);		
+	}
+		
+
+	glEnable( GL_LIGHTING );
+
+	for (i = 0; i < (int)node->mNumChildren; ++i) {
+		printf("Child Num : %d\n", i);
+		bChild[i] = npDrawAssimpModel(scene, node->mChildren[i], dataRef);
+		// compare bBox[u] with bBox[u-1]
+
+	return bBox; 
+}
+*/
+// lv models end
+
+pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPassimp assimp = data->io.assimp;
+	struct aiMatrix4x4 m = node->mTransformation;
+	struct aiFace* face = NULL;
+	struct aiMesh* mesh = NULL;
+	struct aiVector3D v;
+	GLenum face_mode = 0;
+	int index = 0;
+	int z = 0, x = 0, i = 0;
+	static int u = 0;
+	int xH, yH, zH = 0;
+	int xL, yL, zL = 0;
+	float vX, vY, vZ = 0;
+	float dX, dY, dZ = 0;
+	pNPbox bBox;
+	pNPbox bChild[10];
+
+//	u++;
+	bBox = malloc(sizeof(NPbox));
+	if(!bBox)
+	{
+		printf("Could not allocate NPbox\n");
+		return;
+	}
+
+
+
+	//	mesh->mV
+
+
+
+	glDisable (GL_LIGHTING);	//draw 100% ambient white
+
+	printf("000 npDrawAssimpModel\n");
+
+	
+	for(z = 0; z < node->mNumMeshes; z++)
+	{
+		mesh = scene->mMeshes[node->mMeshes[z]];
+			
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		//glTexCoordPointer(3, GL_FLOAT, 0, mesh->mVertices);
+		glVertexPointer(3, GL_FLOAT, 0, mesh->mVertices);
+		glTexCoordPointer(3, GL_FLOAT, 0, mesh->mTextureCoords[0]);
+
+		glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);		
+		
 	}
 
 //	glDisable(GL_TEXTURE_2D);
@@ -483,44 +614,9 @@ pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataR
 		// compare bBox[u] with bBox[u-1]
 	}
 
-	for(i = 1; i < (int)node->mNumChildren; i++)
-	{
-		if( bChild[i]->xH > bBox->xH )
-			bBox->xH = bChild[i]->xH;
-
-		if( bChild[i]->yH > bBox->yH )
-			bBox->yH = bChild[i]->yH;
-
-		if( bChild[i]->zH > bBox->zH )
-			bBox->zH = bChild[i]->zH;
-
-		//----
-
-		if( bChild[i]->xL < bBox->xL )
-			bBox->xL = bChild[i]->xL;
-
-		if( bChild[i]->yL < bBox->yL )
-			bBox->yL = bChild[i]->yL;
-
-		if( bChild[i]->zL < bBox->zL )
-			bBox->zL = bChild[i]->yL;
-	}
-	
-	printf("xL %d\n", bBox->xL);
-	printf("xH %d\n", bBox->xH);
-	printf("\n");
-	printf("yL %d\n", bBox->yL);
-	printf("yH %d\n", bBox->yH);
-	printf("\n");
-	printf("zL %d\n", bBox->zL);
-	printf("zH %d\n", bBox->zH);
-	printf("\n");
-
-
 	return bBox; 
 }
 
-// lv models end
 
 //------------------------------------------------------------------------------
 void DrawPin (int selectedRootNode, pNPnode node, void* dataRef)
