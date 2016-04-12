@@ -89,10 +89,12 @@ void npModelStoreDL(struct aiScene* scene, int dlOffset, void* dataRef)
 	pData data = (pData) dataRef;
 	pNPgl gl = &data->io.gl;
 	pNPassimp assimp = (pNPassimp)data->io.assimp;
+	pNPbox bBox = NULL;
 
+	printf("npModelStoreDL\n");
 	//printf("Offset %d\n", dlOffset);
 	glNewList(gl->dl + dlOffset, GL_COMPILE);
-	npDrawAssimpModel(scene, scene->mRootNode, dataRef);
+	bBox = npDrawAssimpModel(scene, scene->mRootNode, dataRef);
 	glEndList();
 }
 

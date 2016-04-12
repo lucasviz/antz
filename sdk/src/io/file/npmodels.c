@@ -588,8 +588,8 @@ int npExtTexToIntTexId(int extTexId, void* dataRef)
 		texmap = &data->io.gl.texmap[i];
 		if(texmap->extTexId == extTexId)
 		{
-//			printf("---int %d to ext %d---\n", texmap->intTexId, extTexId);
-//			printf("---%s%s---\n", texmap->path, texmap->filename);
+			printf("---int %d to ext %d---\n", texmap->intTexId, extTexId);
+			printf("---%s%s---\n", texmap->path, texmap->filename);
 			return texmap->intTexId;
 		}
 	}

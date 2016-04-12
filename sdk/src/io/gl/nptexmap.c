@@ -858,7 +858,7 @@ void npLoadTextures(void* dataRef)
 
 //		printf("fRef->name : %s\n", fRef->name);
 		sprintf(filename, "%s%s%s", data->io.file.appPath ,"usr\\global\\images\\", fRef->name );
-//		printf("2 filename : %s\n", filename);
+//		printf("2 filename :F %s\n", filename);
 
 		// if Folder (not a file) then recursively call to create dir tree
 		if( fRef->isDir )
