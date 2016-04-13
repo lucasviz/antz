@@ -91,19 +91,28 @@ void npModelStoreDL(struct aiScene* scene, int dlOffset, void* dataRef)
 	pNPassimp assimp = (pNPassimp)data->io.assimp;
 	NPbox bBox;
 	float dX, dY, dZ = 0;
+	float cX, cY, cZ = 0;
 
 	printf("npModelStoreDL\n");
 	//printf("Offset %d\n", dlOffset);
-	glNewList(gl->dl + dlOffset, GL_COMPILE);
 //	bBox = npDrawAssimpModel(scene, scene->mRootNode, dataRef);
 //	void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dataRef)
 	npBoxGen(scene, scene->mRootNode, &bBox, dataRef);
 
-	printf("xL %f -- xH %f -- yL %f -- yH %f -- zL %f -- zH %f\n", bBox.xL, bBox.xH, bBox.yL, bBox.yH, bBox.zL, bBox.zH);
+	printf("xL %0.0f -- xH %0.0f -- yL %0.0f -- yH %0.0f -- zL %0.0f -- zH %0.0f\n", bBox.xL, bBox.xH, bBox.yL, bBox.yH, bBox.zL, bBox.zH);
 
 	dX = (float)abs(bBox.xH - bBox.xL);
 	dY = (float)abs(bBox.yH - bBox.yL);
 	dZ = (float)abs(bBox.zH - bBox.zL);
+
+	cX = (bBox.xH + bBox.xL) / -2.0f;
+	cY = (bBox.yH + bBox.yL) / -2.0f;
+	cZ = (bBox.zH + bBox.zL) / -2.0f;
+
+	printf("cX %f || cY %f || cZ %f\n", cX, cY, cZ); 
+
+	glNewList(gl->dl + dlOffset, GL_COMPILE);
+	// (H + L)/2
 
 	if( (dX > dY) && (dX > dZ) )
 	{
@@ -125,6 +134,8 @@ void npModelStoreDL(struct aiScene* scene, int dlOffset, void* dataRef)
 		printf("scaling factor %f\n", 2/dZ);
 		glScalef((2/dZ),(2/dZ),(2/dZ));
 	}
+	glTranslatef(cX, cY, cZ);
+
 
 	npDrawAssimpModel(scene, scene->mRootNode, dataRef);
 	glEndList();
