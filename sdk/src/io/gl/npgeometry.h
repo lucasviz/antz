@@ -41,7 +41,7 @@ void npGLPrimitive (int geometry, float ratio);
 void npGLTexture(pNPnode node, void* dataRef);
 void npInitGeoList(void* dataRef); // lv geolist
 void npInitGeoListPrimitives(void* dataRef); // lv geolist 
-void npModelStoreDL(struct aiScene* scene, int dlOffset, void* dataRef); // lv geolist
+void npModelStoreDL(struct aiScene* scene, pNPgeolist geolist, void* dataRef); // lv geolist
 
 
 #endif

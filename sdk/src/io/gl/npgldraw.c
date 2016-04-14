@@ -592,13 +592,16 @@ pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataR
 			
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
 		//glTexCoordPointer(3, GL_FLOAT, 0, mesh->mVertices);
 		glVertexPointer(3, GL_FLOAT, 0, mesh->mVertices);
 		glTexCoordPointer(3, GL_FLOAT, 0, mesh->mTextureCoords[0]);
+		glNormalPointer(GL_FLOAT, 0, mesh->mNormals);
 
 		glDrawArrays(GL_TRIANGLES, 0, mesh->mNumVertices);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_VERTEX_ARRAY);		
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_NORMAL_ARRAY);
 		
 	}
 

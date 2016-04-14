@@ -2348,7 +2348,7 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 			npGetFileNameFromPath( filePath, &fileName[0], dataRef );
 			strcpy(path, filePath);
 			path[strlen(filePath) - strlen(fileName)] = '\0';
-			geo = npAddGeo(&geoId, &extId, 0, NULL, fileName, path, dataRef);
+			geo = npAddGeo(&geoId, &extId, 0, NULL, NULL, NULL, NULL, fileName, path, dataRef);
 			npUpdateGeoList(dataRef);
 
 	//		if( geo && (geo->geometryId >= 1000 && geo->geometryId <= 2000) )

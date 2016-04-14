@@ -1031,8 +1031,11 @@ struct NPgeolist {
 	char name[kNPmodelNameMax];
 	char modelFile[kNPmodelFileNameMax];
 	char modelPath[kNPmodelFilePathMax];
-	char modelTextureFile[kNPmodelFilePathMax]; // new lv 
+	char modelTextureFile[kNPmodelFilePathMax]; // new lv
 	char modelTexturePath[kNPmodelFilePathMax]; // new lv
+	NPfloatXYZ center;
+	NPfloatXYZ rotate;
+	NPfloatXYZ scale;
 	unsigned int textureId;
 };
 typedef struct NPgeolist NPgeolist;
@@ -2602,6 +2605,15 @@ enum kNP_NATIVE_DATA_TYPES
 	kNPfileName,	//!< lv model
 	kNPpath,	//!< lv model
 	kNPobjName,
+	kNPcenterX,
+	kNPcenterY,
+	kNPcenterZ,
+	kNProtateX,
+	kNProtateY,
+	kNProtateZ,
+	kNPscaleX,
+	kNPscaleY,
+	kNPscaleZ,
 
 	kNPmousePickMode,
 	kNPmouseCamMode,

@@ -283,7 +283,7 @@ pNPgeolist npSearchGeolistFile(char* fn, void* dataRef)
 	return NULL;
 }
 
-pNPgeolist npNewGeo(int* geoId, int* extTexId, char* geoname, char* filename, char* path, void* dataRef)
+pNPgeolist npNewGeo(int* geoId, int* extTexId, char* geoname, pNPfloatXYZ center, pNPfloatXYZ rotate, pNPfloatXYZ scale ,char* filename, char* path, void* dataRef)
 {
 	pData data = (pData) dataRef;
 	pNPgeolist geo = NULL;
@@ -336,7 +336,21 @@ pNPgeolist npNewGeo(int* geoId, int* extTexId, char* geoname, char* filename, ch
 	geo->modelId = 0;
 	geo->modelTextureFile[0] = '\0';
 	geo->modelTexturePath[0] = '\0';
+
+	if(center && rotate && scale)
+	{
+		geo->center.x = center->x;
+		geo->center.y = center->y;
+		geo->center.z = center->z;
+
+		geo->rotate.x = rotate->x;
+		geo->rotate.y = rotate->y;
+		geo->rotate.z = rotate->z;
 	
+		geo->scale.x = scale->x;
+		geo->scale.y = scale->y;
+		geo->scale.z = scale->z;
+	}
 
 	return geo;
 }
@@ -430,7 +444,7 @@ char* npFilePathAbsToRel(char* abs, void* dataRef)
 // lv model end
 
 
-pNPgeolist npAddGeo(int* geoId, int* extTexId, int type, char* object_name, char* file_name, char* path, void* dataRef)
+pNPgeolist npAddGeo(int* geoId, int* extTexId, int type, pNPfloatXYZ center, pNPfloatXYZ rotate, pNPfloatXYZ scale, char* object_name, char* file_name, char* path, void* dataRef)
 {
 	pData data = (pData) dataRef;
 	pNPgeolist geolist = &data->io.gl.geolist[0];
@@ -454,7 +468,7 @@ pNPgeolist npAddGeo(int* geoId, int* extTexId, int type, char* object_name, char
 	if(geo)
 		return geo;
 
-	geo = npNewGeo(geoId, extTexId, object_name, file_name, intPath, dataRef);
+	geo = npNewGeo(geoId, extTexId, object_name, center, rotate, scale, file_name, intPath, dataRef);
 
 	//npTexReserve(extTexId, dataRef);
 	//npTexReserve(
@@ -1000,6 +1014,20 @@ void npTextureNew(char* tex_csvline, void* dataRef)
 	return;
 }
 
+char* npModelNewCenter(char* curs, float* x, float* y, float* z, void* dataRef);
+char* npModelNewCenter(char* curs, float* x, float* y, float* z, void* dataRef)
+{
+//	pNPgeolist geolist = npGetGeolist(dataRef);
+	pNPgeolist geolist = NULL;
+
+	//(*geoId) = npstrtoi(&idVal); // lv, if letter, returns 0
+	(*x) = npstrtof(&curs);
+	(*y) = npstrtof(&curs);
+	(*z) = npstrtof(&curs);
+
+	return curs;
+}
+
 /// @todo : npModelNew
 pNPgeo npModelNew(char* model_csvline, void* dataRef)
 {	
@@ -1014,11 +1042,57 @@ pNPgeo npModelNew(char* model_csvline, void* dataRef)
 	int textureId = 0;
 	int intId = 0;
 	int typeId = 0;
+	int cx,cy,cz = 0;
+	int rx,ry,rz = 0;
+	int sx,sy,sz = 0;
+	NPfloatXYZ center;
+	NPfloatXYZ rotate;
+	NPfloatXYZ scale;
 
 	curs = npModelNewGeoId( curs, &geometryId, dataRef );
 	curs = npModelNewTextureId( curs, &textureId, &intId, dataRef ); // lv, temp
 	curs = npModelNewTypeId( curs, &typeId, dataRef );
+	
+	curs = npModelNewCenter( curs, &center.x, &center.y, &center.z, dataRef);
+	curs = npModelNewCenter( curs, &rotate.x, &rotate.y, &rotate.z, dataRef);
+	curs = npModelNewCenter( curs, &scale.x,  &scale.y,  &scale.z,  dataRef);
+/*
+	curs = npModelNewCenter( curs, &cx, &cy, &cz, dataRef);
+	curs = npModelNewCenter( curs, &rx, &ry, &rz, dataRef);
+	curs = npModelNewCenter( curs, &sx, &sy, &sz, dataRef);
+*/
+	/*
+	center
+	scale
+	rotate
 
+
+	void npModelNewCSR(int* cx, int* cy, int* cz, int* rx, int* ry, int* rz, int* sx, int* sy, int* sz, void* dataRef)
+		npModelNewXYZ(kNPcenter, cx, cy, cz, dataRef);
+		npModelNewXYZ(kNPscale, sx, sy, sz, dataRef);
+		npModelNewXYZ(kNProtate, rx, ry, rz, dataRef);
+
+
+
+	npModelNewXYZ(int type, int* x, int* y, int* z, void* dataRef);
+	{
+		switch(type)
+		{
+			case:kNPcenter
+				npModelNewCenter(char* curs, int* x, int* y, int* z, void* dataRef);
+				break;
+			case:kNPscale
+				npModelNewScale(char* curs, int* x, int* y, int* z, void* dataRef);
+				break;
+			case:kNProtate
+				npModelNewRotate(char* curs, int* x, int* y, int* z, void* dataRef);
+				break;
+			npModelNewRotate(char* curs, int* x, int* y, int* z, void* dataRef);
+		}
+	}
+
+
+	*/
 
 	curs = npModelNewObjectName(curs, 200, &objectName[0], dataRef);
 	curs =  npModelNewFileName(curs, 200, &fileName[0], dataRef);
@@ -1034,7 +1108,7 @@ pNPgeo npModelNew(char* model_csvline, void* dataRef)
 		}
 	}
 	/// @todo npGeoMalloc(dataRef)
-	npAddGeo(&geometryId, &textureId, 0, objectName, fileName, filePath, dataRef);
+	npAddGeo(&geometryId, &textureId, 0, &center, &rotate, &scale, objectName, fileName, filePath, dataRef);
 	
 	return geo;
 }
@@ -1363,7 +1437,7 @@ void npUpdateGeoList( void* dataRef )
 			modelId = npLoadModel(geolist, dataRef);
 			if(modelId)
 			{
-				npModelStoreDL(assimp->scene[modelId], geolist->geometryId, dataRef);
+				npModelStoreDL(assimp->scene[modelId], geolist, dataRef);
 				geolist->loaded = 1;
 				data->io.gl.numModels++;
 			}

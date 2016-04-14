@@ -299,7 +299,7 @@ pNPtexmap npTexTest(void* dataRef)
 
 	extId = 1;
 //	geo = npAddGeo(&geoId, &extId, 0, "", "jeep1.3ds", "usr\\model\\", dataRef);
-	geo = npAddGeo(&geoId, &extId, 0, "", "jeep1.3ds", "", dataRef);
+//	geo = npAddGeo(&geoId, &extId, 0, NULL, NULL, NULL, "", "jeep1.3ds", "", dataRef);
 
 	npLoadModel(geo, dataRef);
 //	npUpdateGeoList(dataRef);
@@ -308,7 +308,7 @@ pNPtexmap npTexTest(void* dataRef)
 	printf("intTexId for %d is %d\n", geoId, intTexId);
 
 	extId = 0;
-	geo = npAddGeo(&geoId, &extId, 0, "", "mar_rifle.3ds", "", dataRef);
+//	geo = npAddGeo(&geoId, &extId, 0, "", "mar_rifle.3ds", "", dataRef);
 	npLoadModel(geo, dataRef);
 
 	return t;
@@ -906,6 +906,12 @@ void npLoadGeos(void* dataRef)
 	unsigned int textureID;		//zz debug, allow loading textures at runtime
 									//detect changes to data->io.file.mapPath
 	pData data = (pData) dataRef;
+	NPfloatXYZ center, rotate, scale;
+	
+	center.x = 0; rotate.x = 0; scale.x = 0;
+	center.y = 0; rotate.y = 0; scale.y = 0;
+	center.z = 0; rotate.z = 0; scale.z = 0;
+
 
 	printf ("Loading Geos... : %s\n", data->io.file.appPath);
 
@@ -944,7 +950,7 @@ void npLoadGeos(void* dataRef)
 		//	printf("\nnpAddGeo(0,0,0, NULL, %s, %s, dataRef)\n", fRef->name, path);
 		//	npAddGeo(0,0,0, NULL, fRef->name, path, dataRef);
 			extTexId = npGetUnusedExtTexId(dataRef);
-			npAddGeo(&geoId, &extTexId, 0, NULL, fRef->name, path, dataRef);
+			npAddGeo(&geoId, &extTexId, 0, &center, &rotate, &scale, NULL, fRef->name, path, dataRef);
 		}
     }
 	while( nposFindNextFile( fRef ) );	// next file within limits

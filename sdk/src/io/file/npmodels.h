@@ -57,7 +57,9 @@ typedef struct NPgeo *pNPgeo;
 //------------------------------------------------------------------------------
 void npInitModels (void* dataRef);
 void npCloseModels (void* dataRef);
-pNPgeolist npAddGeo(int* geoId, int* extTexId, int type, char* object_name, char* file_name, char* path, void* dataRef);
+//pNPgeolist npAddGeo(int* geoId, int* extTexId, int type, char* object_name, char* file_name, char* path, void* dataRef);
+pNPgeolist npAddGeo(int* geoId, int* extTexId, int type, pNPfloatXYZ center, pNPfloatXYZ rotate, pNPfloatXYZ scale, char* object_name, char* file_name, char* path, void* dataRef);
+
 //pNPmodels npLoadModel( const char* path, char* filename, void* dataRef );
 
 int npLoadModel(pNPgeolist geo, void* dataRef);
