@@ -92,23 +92,28 @@ pNPgeo npModelNew(char* model_csvline, void* dataRef);
 
 int npSearchGeosId(int geoId, void* dataRef);
 
-char* npModelNewGeoId(char* idVal, int* geoId, void* dataRef);
+//char* npModelNewGeoId(char* idVal, int* geoId, void* dataRef);
+char* npModelNewGeoId(char* idVal, int* geoId, int* x, void* dataRef);
 
-char* npModelNewTextureId(char* idVal, int* textureId, int* intId, void* dataRef);
+char* npModelNewTextureId(char* idVal, int* textureId, int i, void* dataRef);
 
 char* npModelNewTypeId(char* csv_typeId, int* typeId, void* dataRef);
 
 char* npModelNewObjectName(char* stringVal, int maxSize, char* objectName, void* dataRef);
 
-char* npModelNewFileName(char* stringVal, int maxSize, char* fileName, void* dataRef);
+char* npModelNewFileName(char* stringVal, int maxSize, char* fileName, int i, void* dataRef);
 
-char* npModelNewFilePath(char* stringVal, int maxSize, char* filePath, void* dataRef);
+char* npModelNewFilePath(char* stringVal, int maxSize, char* filePath, int i, void* dataRef);
 
 void npSetSelectedNodeGeoId( int* geoId, void* dataRef );
 
 int npGeolistNewGeoId(void* dataRef);
 
 int npIntTexToExtTexId(int intTexId, void* dataRef);
+
+int npPathIsRel(char* path, void* dataRef);
+
+void npTextureNew(char* tex_csvline, void* dataRef);
 
 #endif
 

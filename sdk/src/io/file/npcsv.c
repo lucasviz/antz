@@ -1241,8 +1241,12 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 
 				printf("i %d texture rel path : %s\n", i, rel);
 
+				printf("7G tex ext id : %d\n", texmap->extTexId);
+				printf("7G tex int id : %d\n", texmap->intTexId);
+
 				n += sprintf((curs + n), "%d,%d,\"%s\",\"%s\"\n",	
-					texmap->extTexId,
+					texmap->extTexId
+					,
 					0,
 					texmap->filename,
 					rel

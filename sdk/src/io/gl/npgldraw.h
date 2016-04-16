@@ -54,6 +54,6 @@ int npRGBtoID (int r, int g, int b);						//MB-PICK
 float npDistance (NPfloatXYZ vecA, NPfloatXYZ vecB);		//MB-TRANS
 
 pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef);
-
+void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dataRef);
 #endif
 

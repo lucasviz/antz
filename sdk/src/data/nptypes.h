@@ -1046,6 +1046,7 @@ typedef pNPgeolist pNPgeo;
 
 struct NPtexmap {
 	int loaded;
+	int type;
 	int extTexId;
 	int intTexId;
 	char path[256];
@@ -1096,6 +1097,9 @@ struct NPgl {
 	int			alphaMode;
 	
 	NPtexmap texmap[2000]; // lv geolist
+	int			texmapCount;
+	int			extMap[100];
+	pNPtexmap	extMapMe[100];
 	int			textureCount;
 	int			tAutoCount; // lv geolist 
 	int			maxTextureSize;
@@ -2408,6 +2412,7 @@ enum kNP_NATIVE_DATA_TYPES
 	kNPgrid,
 	kNPpin,			//!< @todo zz remove this, too easily confused with kNodePin
 	kNPchMap,		//!< @todo remove this, should not be here //!<zzsql
+	kNPmodels,
 
 	//!< fundamental C types
 	kNPfloat,

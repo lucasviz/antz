@@ -325,6 +325,7 @@ void npInitMap (void* dataRef)
 	data->map.typeMap[kNPpin]	= pin;
 	data->map.typeMap[kNPcamera]= camera;
 	data->map.typeMap[kNPgrid]	= grid;
+	data->map.typeMap[kNPmodels] = models;
 
 
 	data->map.selectSet.x		= false;

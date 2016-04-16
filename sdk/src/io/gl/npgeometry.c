@@ -106,9 +106,9 @@ void npModelStoreDL(struct aiScene* scene, pNPgeolist geolist, void* dataRef)
 
 		printf("xL %0.0f -- xH %0.0f -- yL %0.0f -- yH %0.0f -- zL %0.0f -- zH %0.0f\n", bBox.xL, bBox.xH, bBox.yL, bBox.yH, bBox.zL, bBox.zH);
 
-		dX = (float)abs(bBox.xH - bBox.xL);
-		dY = (float)abs(bBox.yH - bBox.yL);
-		dZ = (float)abs(bBox.zH - bBox.zL);
+		dX = (float)fabs(bBox.xH - bBox.xL);
+		dY = (float)fabs(bBox.yH - bBox.yL);
+		dZ = (float)fabs(bBox.zH - bBox.zL);
 
 		cX = (bBox.xH + bBox.xL) / -2.0f;
 		cY = (bBox.yH + bBox.yL) / -2.0f;
@@ -1097,6 +1097,13 @@ void npInitGeoList(void* dataRef)
 	gl->numPrimitives = 0;
 
 	npInitGeoListPrimitives(dataRef);
+
+	gl->texmapCount = 0;
+	for(i = 0; i < 100; i++)
+	{
+		gl->extMap[i] = 0;
+		gl->extMapMe[i] = NULL;
+	}
 
 //	geoList->DL = glGenLists(kNPgeoListMax);
 	for(i = 0; i < kNPgeoListMax; i++)

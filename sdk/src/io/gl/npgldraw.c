@@ -328,7 +328,6 @@ void npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef
 */
 
 //void npvX
-void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dataRef);
 void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dataRef)
 {
 	struct aiMesh* mesh = NULL;
@@ -353,7 +352,7 @@ void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dat
 	}
 	else if(scene->mRootNode == node && node && (node->mMeshes == NULL))
 	{
-		for(m = 0; m < node->mNumChildren; m++)
+		for(m = 0; m < (int)node->mNumChildren; m++)
 		{
 			if(node->mChildren[m]->mNumMeshes > 0)
 			{
@@ -370,7 +369,7 @@ void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dat
 
 	}
 
-	for(m = 0; m < node->mNumMeshes; m++)
+	for(m = 0; m < (int)node->mNumMeshes; m++)
 	{
 		mesh = scene->mMeshes[node->mMeshes[m]];
 		vNum = mesh->mNumVertices;
@@ -401,7 +400,7 @@ void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dat
 
 	if(node->mChildren)
 	{
-		for(m = 0; m < node->mNumChildren; m++)
+		for(m = 0; m < (int)node->mNumChildren; m++)
 			npBoxGen(scene, node->mChildren[m], bBox, dataRef);
 	}
 		
@@ -552,18 +551,18 @@ pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataR
 {
 	pData data = (pData) dataRef;
 	pNPassimp assimp = data->io.assimp;
-	struct aiMatrix4x4 m = node->mTransformation;
+//	struct aiMatrix4x4 m = node->mTransformation;
 	struct aiFace* face = NULL;
 	struct aiMesh* mesh = NULL;
-	struct aiVector3D v;
+//	struct aiVector3D v;
 	GLenum face_mode = 0;
 	int index = 0;
 	int z = 0, x = 0, i = 0;
 	static int u = 0;
-	int xH, yH, zH = 0;
-	int xL, yL, zL = 0;
-	float vX, vY, vZ = 0;
-	float dX, dY, dZ = 0;
+//	int xH, yH, zH = 0;
+//	int xL, yL, zL = 0;
+//	float vX, vY, vZ = 0;
+//	float dX, dY, dZ = 0;
 	pNPbox bBox;
 	pNPbox bChild[10];
 
@@ -572,7 +571,7 @@ pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataR
 	if(!bBox)
 	{
 		printf("Could not allocate NPbox\n");
-		return;
+		return NULL;
 	}
 
 
@@ -586,7 +585,7 @@ pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataR
 	printf("000 npDrawAssimpModel\n");
 
 	
-	for(z = 0; z < node->mNumMeshes; z++)
+	for(z = 0; z < (int)node->mNumMeshes; z++)
 	{
 		mesh = scene->mMeshes[node->mMeshes[z]];
 			

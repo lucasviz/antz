@@ -818,30 +818,68 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 
 	//zz could list directory contents and/or display dir node tree
 
+
+
 	sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
 			npMapTypeName( kNPmapGlobals, data ), ".csv" );
 	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg( msg, kNPmsgCtrl, data );
 	//result += npFileOpenAuto( filePath, NULL, data );	// fullscreen issue #111
 	result += npOpenGlobalsCSV( filePath, 1, 0, data );
+	printf("88 texs\n");
+		sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
+			npMapTypeName( kNPmapTextures, data ), ".csv" );
+	sprintf( msg, "Loading: %s", filePath );
+	npPostMsg( msg, kNPmsgCtrl, data );
+	result += npFileOpenAuto( filePath, NULL, data );
 
+	npLoadExtTexMaps(dataRef);
+
+
+	printf("88 models\n");
+		sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
+			npMapTypeName( kNPmapModels, data ), ".csv" );
+	sprintf( msg, "289374238974987234978234978 Loading: %s", filePath );
+	npPostMsg( msg, kNPmsgCtrl, data );
+	result += npFileOpenAuto( filePath, NULL, data );
+	
+
+	printf("88 nodes\n");
 	sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
 			npMapTypeName( kNPmapNode, data ), ".csv" );
 	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg (msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
-
+/*	
+	printf("88 tags\n");
+	
 	sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
 			npMapTypeName( kNPmapTag, data ), ".csv" );
 	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg( msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
+	*/
+	printf("88 done\n");
+	/// @todo : lv npSyncTex
+//	npSyncTex(
+/*
+	if(extTexId != 0 && data->io.gl.extMapMe[extTexId] != NULL)
+	{	
+		if(data->io.gl.extMapMe[extTexId]->intTexId == 0)
+		{
+			//node->textureID		= data->io.gl.extMapMe[extTexId]->intTexId;
+			sprintf(texfp, "%s%s", data->io.gl.extMapMe[extTexId]->path, data->io.gl.extMapMe[extTexId]->filename);
+			node->textureID = npLoadTexture(texfp, 0, dataRef);
+		}
+		else
+			node->textureID		= data->io.gl.extMapMe[extTexId]->intTexId;
+	
 
-	sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
-			npMapTypeName( kNPmapModels, data ), ".csv" );
-	sprintf( msg, "Loading: %s", filePath );
-	npPostMsg( msg, kNPmsgCtrl, data );
-	result += npFileOpenAuto( filePath, NULL, data );
+		printf("999 (Ext %d) / (Int %d)\n", extTexId, node->textureID);
+	}
+	else
+		node->textureID = 0;
+*/
 
 	return result;
 }

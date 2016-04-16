@@ -99,6 +99,10 @@ int npGetFileTypeCat( int* fileCategory, const char* filePath, void* dataRef);
 int npLoadModelCSV (const char* buffer, int size, void* dataRef);
 
 void npCSVtoModel(char** read, int size, int* scanNumRet, void* dataRef);
+
+int npLoadTextureCSV(const char* buffer, int size, void* dataRef);
+
+int npCSVstrncpy(char* cstrout, char** csvstr, int size);
 // lv model end
 
 #endif
