@@ -843,13 +843,14 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	npPostMsg( msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
 	
-
+/*
 	printf("88 nodes\n");
 	sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
 			npMapTypeName( kNPmapNode, data ), ".csv" );
 	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg (msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
+*/
 /*	
 	printf("88 tags\n");
 	

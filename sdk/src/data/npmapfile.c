@@ -1193,7 +1193,8 @@ void npCSVtoTexture(char** read, int size, int* scanNumRet, void* dataRef)
 	pNPgeo geo = NULL;
 	int match = 0;
 	
-	npTextureNew(read[0], dataRef);	
+//	npTextureNew(read[0], dataRef);	
+	npTextureNewB(read[0], dataRef);	
 }
 
 
