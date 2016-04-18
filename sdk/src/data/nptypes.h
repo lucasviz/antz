@@ -1036,6 +1036,7 @@ struct NPgeolist {
 	NPfloatXYZ center;
 	NPfloatXYZ rotate;
 	NPfloatXYZ scale;
+	int extTexId;
 	unsigned int textureId;
 };
 typedef struct NPgeolist NPgeolist;
@@ -1065,6 +1066,7 @@ struct NPgl {
 	void* coreNode; ///< core nodes tie global structures to the scene graph
 						//!< each global struct has a corresponding base node.
 	NPgeolist geolist[2000]; // lv geolist
+	pNPgeolist 	geoMap[2000]; // lv geoMap
 	int			geoX; // lv geolist
 	int			geoLen; // lv geolist
 	bool		geoLock; // lv, geolist lock flag, if true: don't access, if false: safe to access 

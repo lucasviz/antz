@@ -50,12 +50,31 @@ void npGeolistUnlock(void* dataRef)
 	data->io.gl.geoLock = false;
 }
 
+void npInitGeoMap(void* dataRef);
+void npInitGeoMap(void* dataRef)
+{
+	pData data = (pData) dataRef;
+	//pNPgeolist geo = data->io.gl.geoMa;
+	int i = 0;
+
+//	data->io.gl.geoMap[0] = &data->io.gl.geolist[0];
+	
+
+	for(i = 0; i < 2000; i++)
+	{
+	//	geo = data->io.gl.geoMap[i];
+		data->io.gl.geoMap[i] = NULL;
+
+	}
+}
+
 /** Inits the Geolist 
 	@param dataRef is a global map reference instance.
 */
 void npInitModels (void* dataRef)
 {
 	npInitGeoList(dataRef);
+	npInitGeoMap(dataRef);
 	//npLoadGeos(dataRef);
 	return;
 }
@@ -335,9 +354,11 @@ pNPgeolist npNewGeo(int* geoId, int* extTexId, char* geoname, pNPfloatXYZ center
 		{
 		//	geo->textureId = npGetUnusedExtTexId(dataRef);
 		//	geo->textureId = 0;
+			/*
 			sprintf(fileP, "%s%s", path, filename);
 			geo->textureId = npLoadTexture(fileP, 0, dataRef);
 			printf("32 npNewGeo textureId : %d", geo->textureId);
+			*/
 		}
 	}
 	else
@@ -672,6 +693,12 @@ int npLoadModel(pNPgeolist geo, void* dataRef)
 	{
 		printf("-=-=-=-=-=-=- geo test npTexlistSearchFile -=-=-=-=-=\n");
 		sprintf(texfp, "%s%s", geo->modelTexturePath, geo->modelTextureFile);
+		
+		if(tex->loaded == 1)
+			geo->textureId = tex->intTexId;
+		else
+			geo->textureId = tex->intTexId = npLoadTexture(texfp, 0, dataRef);
+
 		//return modelId;
 	}
 
@@ -687,9 +714,10 @@ int npLoadModel(pNPgeolist geo, void* dataRef)
 
 	if(tex == NULL)
 	{
-		tex = npAddTexMap(&geo->textureId, fileName, path, dataRef);
-		path[0] = '\0';
-		assimp->path.data[0] = '\0';
+		//tex = npAddTexMap(&geo->textureId, fileName, path, dataRef);
+	//	tex = npLoadTexture(texfp, 0, dataRef);
+	//	path[0] = '\0';
+	//	assimp->path.data[0] = '\0';
 	}
 	else
 	{
@@ -924,6 +952,7 @@ char* npTextureNewFilePathC(char* idVal, int maxSize, char* filePath, void* data
 	char* curs = idVal;
 	char** read = NULL;
 	char* dslash = NULL;
+	char* abs = NULL;
 	int strLength = 0;
 	int len = 0;
 	int i = 0;
@@ -1000,6 +1029,15 @@ char* npTextureNewFilePathC(char* idVal, int maxSize, char* filePath, void* data
 	*/
 //	data->io.gl.texmap[index].path[0] = '\0';
 //	strcpy(data->io.gl.texmap[index].path, path);
+
+//char* npFilePathRelToAbs(char* rel, void* dataRef)
+	if( npPathIsRel(filePath, dataRef) )
+	{
+		abs = npFilePathRelToAbs(filePath, dataRef);
+		filePath[0] = '\0';
+		strcpy(filePath, abs);
+		free(abs);
+	}
 
 	return curs;
 }
@@ -1522,6 +1560,156 @@ char* npModelNewTextureIdB(char* idVal, int* textureId, void* dataRef)
 	return idVal;
 }
 
+
+pNPgeolist npGeoId(int action, int* xGeoId, char* path, char* file, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPgeolist geoMap = NULL;
+//	pNPgeolist geoMap = data->io.gl.geoMap[(*xGeoId)];
+	int geoCount = data->io.gl.geoLen;
+	static int gGeoId = 999;
+	char fp[256] = {'\0'};
+	pNPgeolist geo = &data->io.gl.geolist[geoCount];
+	
+	geoMap = data->io.gl.geoMap[(*xGeoId)];
+
+	if(action == kNPgeoLoad)
+	{
+		npLoadModel(geoMap, dataRef);
+	}
+
+	if(action == kNPgeoLoadTex)
+	{
+		if(geoMap && geoMap->loaded == 0
+			&& geoMap->geometryId > 0)
+		{
+			sprintf(fp, "%s%s", geoMap->modelTexturePath, geoMap->modelTextureFile);
+			geoMap->textureId = npLoadTexture(fp, 0, dataRef);
+			return geoMap;
+		}
+		
+		return geoMap;
+	}
+	
+
+	if( action == kNPgetGeoId)
+	{
+		///@todo check file/path match
+		if(geoMap)
+		{
+			if(  (strcmp(geoMap->modelPath, path) == 0) &&
+				 (strcmp(geoMap->modelFile, file) == 0) )
+					return geoMap;
+			else
+				(*xGeoId++); return NULL;
+		}
+			
+		return NULL;
+	}
+			
+	if( action == kNPsetGeoId )
+	{
+		// check if already mapped
+		if( !(geo = npGeoId(kNPgetGeoId, xGeoId, path, file, dataRef)) )
+		{
+			// geo not set, set npSetGeo
+			geoCount = (++data->io.gl.geoLen);
+			geo = &data->io.gl.geolist[geoCount];
+			
+			strcpy(geo->modelPath, path); strcpy(geo->modelFile, file);
+			
+			if( (*xGeoId) <= 0 )
+				geo->geometryId = (*xGeoId) = (++gGeoId);
+			else
+				geo->geometryId = (++gGeoId);
+
+			data->io.gl.geoMap[(*xGeoId)] = geo;
+			return geo;
+		}
+		else
+		{
+			
+		}
+
+	}
+
+	return NULL;
+
+	/*
+		pNPgeolist npGeoId(int action, int xGeoId, char* path, char* filename, void* dataRef)
+			vars: pNPgeolist geo
+			- actions
+				Get
+				{
+					if(geoMap[xGeoId])
+						return geoMap[xGeoId];
+					else
+						return NULL;
+				}
+
+				Set
+				{
+					/// check if exists
+					if( geo = npGeoId(kNPgeoGet, xGeoId, path, filename, dataRef) )
+					{
+						return
+					}
+
+					geoMap[xGeoId].extId = xGeoId;
+					
+
+				}
+
+		pNPgeolist geoMap[2000]
+			geoMap[xGeoId]
+			*/
+}
+
+void npLoadExtGeos(void* dataRef)
+{
+	pData data = (pData) dataRef;
+	char fp[256] = {'\0'};
+	int i;
+
+	
+	for(i = 1000; i < 2000; i++)
+	{
+		if( data->io.gl.geoMap[i] &&
+			data->io.gl.geoMap[i]->loaded == 0
+			&&
+			data->io.gl.geoMap[i]->modelFile[0] != '\0'
+			&&
+			data->io.gl.geoMap[i]->modelPath[0] != '\0'
+			&&
+			data->io.gl.geoMap[i]->textureId == 0)
+		{
+			printf("924 loading geoMap[%d]\n", i);
+			npLoadModel(data->io.gl.geoMap[i], dataRef);
+		}
+	}
+	/*
+	for(i = 1; i < 100; i++)
+	{
+		if( data->io.gl.extMapMe[i] &&
+			data->io.gl.extMapMe[i]->loaded == 0
+			&&
+			data->io.gl.extMapMe[i]->filename[0] != '\0'
+			&&
+			data->io.gl.extMapMe[i]->path[0] != '\0'
+			&&
+			data->io.gl.extMapMe[i]->intTexId == 0)
+		{
+			sprintf(fp, "%s%s", data->io.gl.extMapMe[i]->path, data->io.gl.extMapMe[i]->filename);
+			data->io.gl.extMapMe[i]->intTexId = npLoadTexture(fp, 0, dataRef);
+			if(data->io.gl.extMapMe[i]->intTexId > 0)
+				data->io.gl.extMapMe[i]->loaded = 1;
+		}
+	}
+	*/
+
+}
+
+
 pNPgeo npModelNew(char* model_csvline, void* dataRef)
 {	
 	pData data = (pData) dataRef;
@@ -1567,39 +1755,32 @@ pNPgeo npModelNew(char* model_csvline, void* dataRef)
 	curs =  npModelNewFileName(curs, 200, &fileName[0], x, dataRef);
 	curs = npModelNewFilePath(curs, 200, &filePath[0], x, dataRef); 
 
+//	pNPgeolist npGeoId(int action, int xGeoId, char* path, char* file, void* dataRef)
+	geo = npGeoId(kNPsetGeoId, &geometryId, filePath, fileName, dataRef); // generalize
+	if(!geo)
+		return NULL;
+	else
+	{
+		geo->center.x = center.x; geo->center.y = center.y; geo->center.z = center.z;
+		geo->rotate.x = rotate.x; geo->rotate.y = rotate.y; geo->rotate.z = rotate.z;
+		geo->scale.x = scale.x; geo->scale.y = scale.y; geo->scale.z = scale.z;
+		
+		if( data->io.gl.extMapMe[textureId] && (data->io.gl.extMapMe[textureId]->extTexId > 0) )
+		{
+			geo->extTexId = textureId;	
+			/*
+			if(data->io.gl.extMapMe[textureId]->intTexId > 0)
+				geo->textureId = data->io.gl.extMapMe[textureId]->intTexId;
+			else
+				data->io.gl.extMapMe[textureId]->extTexId = geo->textureId;
+			*/
+		}
+	}
+
 	/// @todo geoMap like extMap
-	/*
-		npInitGeoMap(void* dataRef);
-		pNPgeolist npGeoId(int action, int xGeoId, char* path, char* filename, void* dataRef)
-			vars: pNPgeolist geo
-			- actions
-				Get
-				{
-					if(geoMap[xGeoId])
-						return geoMap[xGeoId];
-					else
-						return NULL;
-				}
-
-				Set
-				{
-					/// check if exists
-					if( geo = npGeoId(kNPgeoGet, xGeoId, path, filename, dataRef) )
-					{
-						return
-					}
-
-					geoMap[xGeoId].extId = xGeoId;
-					
-
-				}
-
-		pNPgeolist geoMap[2000]
-			geoMap[xGeoId]
-
-	*/
 
 	// check geolist
+	/*
 	for(i = 1; i < 2000; i++)
 	{
 		geo = &data->io.gl.geolist[i];
@@ -1617,6 +1798,7 @@ pNPgeo npModelNew(char* model_csvline, void* dataRef)
 				i++;
 			}
 		}
+		*/
 		/*
 		if(geo->geometryId == geometryId &&
 			strcmp(geo->modelFile, fileName) == 0 &&
@@ -1626,7 +1808,7 @@ pNPgeo npModelNew(char* model_csvline, void* dataRef)
 			return geo;
 		}
 		*/
-	}
+	//}
 
 	if(i == 2000)
 	{
@@ -1732,7 +1914,7 @@ char* npModelNewFilePath(char* stringVal, int maxSize, char* filePath, int i, vo
 char* npModelNewFileName(char* stringVal, int maxSize, char* fileName, int i, void* dataRef)
 {
 	pData data = (pData) dataRef;
-//	pNPgeolist geo = &data->io.gl.geolist[i];
+	pNPgeolist geo = &data->io.gl.geolist[i];
 	char* curs = stringVal;
 	char** read = NULL;
 	int strLength = 0;

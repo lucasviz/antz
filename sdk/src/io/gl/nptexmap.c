@@ -179,6 +179,13 @@ pNPtexmap npTexlistSearchFile(char* filename, char* path, void* dataRef)
 			return tex;
 	}
 
+	for(i = 0; i < kNPtexListMax; i++)
+	{
+		tex = &data->io.gl.texmap[i];
+		if( ( strcmp(tex->filename, filename) == 0 ) )
+			return tex;
+	}
+
 	return NULL;
 }
 
@@ -791,6 +798,8 @@ int npLoadTexture( char* filePath, int fileType, void* dataRef)
 		{
 			/// tex search found
 			printf("----235 found texture 235----\n");
+			tex->path[0] = '\0';
+			strcpy(tex->path, path);
 		//	return tex->intTexId;
 		}
 	}

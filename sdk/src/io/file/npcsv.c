@@ -1193,7 +1193,7 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 		for( i=1; i < 2000; i++ )
 		{
 			geolist = &data->io.gl.geolist[i];
-			if( geolist->geometryId != 0 )
+			if( geolist->geometryId != 0 && geolist->loaded == 1 )
 			{
 				rel = npFilePathAbsToRel(geolist->modelPath, dataRef);
 
@@ -1245,7 +1245,7 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 				printf("7G tex int id : %d\n", texmap->intTexId);
 
 				n += sprintf((curs + n), "%d,%d,\"%s\",\"%s\"\n",	
-					texmap->extTexId
+					texmap->intTexId
 					,
 					0,
 					texmap->filename,

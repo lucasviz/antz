@@ -114,6 +114,15 @@ int npIntTexToExtTexId(int intTexId, void* dataRef);
 int npPathIsRel(char* path, void* dataRef);
 
 void npTextureNew(char* tex_csvline, void* dataRef);
+void npTextureNewB(char* tex_csvline, void* dataRef);
+
+void npLoadExtGeos(void* dataRef);
+
+#define kNPgetGeoId 0
+#define kNPsetGeoId 1
+#define kNPgeoLoadTex 2
+#define kNPgeoLoad 3
+pNPgeolist npGeoId(int action, int* xGeoId, char* path, char* file, void* dataRef);
 
 #endif
 

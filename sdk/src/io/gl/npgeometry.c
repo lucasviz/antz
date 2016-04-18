@@ -1095,6 +1095,7 @@ void npInitGeoList(void* dataRef)
 	npGeolistSetX(0, dataRef);
 	gl->numModels = 0;
 	gl->numPrimitives = 0;
+	
 
 	npInitGeoListPrimitives(dataRef);
 
@@ -1105,10 +1106,12 @@ void npInitGeoList(void* dataRef)
 		gl->extMapMe[i] = NULL;
 	}
 
+	
 //	geoList->DL = glGenLists(kNPgeoListMax);
 	for(i = 0; i < kNPgeoListMax; i++)
 	{
 		p_geo = &data->io.gl.geolist[i];
+		p_geo->extTexId = 0;
 		p_geo->loaded = 0;
 		p_geo->geometryId = 0;
 		p_geo->modelFile[0] = '\0';

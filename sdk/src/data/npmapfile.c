@@ -446,6 +446,7 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	int nodeCount = 0;
 	int numExpected = 0;		//Expected number for scanNumRet returned from sscanf
 	int extTexId = 0; // lv model
+	int extGeoId = 0; // lv model
 	char texfp[256] = {'\0'}; // lv model
 	int i = 1;
 
@@ -552,7 +553,19 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	node->translateVec.z	= npstrtof(&cursor);
 	
 	node->shader			= npstrtoi(&cursor);
-	node->geometry			= npstrtoi(&cursor);
+	extGeoId				= npstrtoi(&cursor);
+	
+	node->textureID = -1;
+	if( data->io.gl.geoMap[extGeoId] )
+	{
+		node->geometry = data->io.gl.geoMap[extGeoId]->geometryId;
+		node->textureID = data->io.gl.geoMap[extGeoId]->textureId;
+	}
+	else
+		node->geometry = extGeoId;
+
+	//node->geometry			= 
+	//node->geometry			= npstrtoi(&cursor);
 
 	node->lineWidth			= npstrtof(&cursor);
 	node->pointSize			= npstrtof(&cursor);
@@ -568,7 +581,7 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	node->colorFade			= npstrtoi(&cursor);
 	
 	extTexId				= npstrtoi(&cursor);
-	if(extTexId && data->io.gl.extMapMe[extTexId])
+	if(extTexId && (node->textureID == -1) && data->io.gl.extMapMe[extTexId])
 	{
 		node->textureID = data->io.gl.extMapMe[extTexId]->intTexId;
 		printf("11111111 assigning texture id %d (ext id %d) to node id %d\n", node->textureID, extTexId, node->id);
@@ -590,7 +603,7 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 		}
 
 	//	node->textureID = 1;
-		node->textureID = extTexId;
+	//	node->textureID = 0;
 	}
 
 	// data->io.gl.extMapMe[extTexId]->intTexId; @todo
@@ -2370,13 +2383,14 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 	int fileType = 0, fileCat = 0;
 	int textureId = 0;
 	int id = 0;
+	int xGeoId = 0;
 	int geoId = 0;
 	int extId = 0;
 	int intId = 0;
 
 
 	pData data = (pData) dataRef;
-	pNPmodels models;
+//	pNPmodels models;
 	pNPgeolist geo = NULL;
 
 	//pData data = (pData) dataRef;
@@ -2421,15 +2435,26 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 			npGetFileNameFromPath( filePath, &fileName[0], dataRef );
 			strcpy(path, filePath);
 			path[strlen(filePath) - strlen(fileName)] = '\0';
-			geo = npAddGeo(&geoId, &extId, 0, NULL, NULL, NULL, NULL, fileName, path, dataRef);
-			npUpdateGeoList(dataRef);
-			npUpdateTexMap(dataRef);
+			/*
+		#define kNPgetGeoId 0
+#define kNPsetGeoId 1
+pNPgeolist npGeoId(int action, int* xGeoId, char* path, char* file, void* dataRef)
+*/
+			// xGeoId = 0;
+		//	npGeoId(kNPsetGeoId, &xGeoId, 0, NULL, NULL, NULL, NULL, path, fileName, dataRef);
+			npGeoId(kNPsetGeoId, &xGeoId, path, fileName, dataRef);
+			npGeoId(kNPgeoLoad, &xGeoId, path, fileName, dataRef);
+			npGeoId(kNPgeoLoadTex, &xGeoId, path, fileName, dataRef);
+	//		npLoadModel(data->io.gl.geoMap[xGeoId], dataRef);
+			//	geo = npAddGeo(&geoId, &extId, 0, NULL, NULL, NULL, NULL, fileName, path, dataRef);
+		//	npUpdateGeoList(dataRef);
+//			npUpdateTexMap(dataRef);
 
 	//		if( geo && (geo->geometryId >= 1000 && geo->geometryId <= 2000) )
 	//		{
-				npSetSelectedNodes( kNPgeometry, &geoId, data );
-				intId = npExtTexToIntTexId( geo->textureId, dataRef);
-				npSetSelectedNodes( kNPtextureID, &intId, data );
+			npSetSelectedNodes( kNPgeometry, &data->io.gl.geoMap[xGeoId]->geometryId, data );
+	//			intId = npExtTexToIntTexId( geo->textureId, dataRef);
+			npSetSelectedNodes( kNPtextureID, &data->io.gl.geoMap[xGeoId]->textureId , data );
 	//		}
 
 			break;

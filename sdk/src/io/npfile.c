@@ -827,6 +827,8 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	//result += npFileOpenAuto( filePath, NULL, data );	// fullscreen issue #111
 	result += npOpenGlobalsCSV( filePath, 1, 0, data );
 	printf("88 texs\n");
+
+	
 		sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
 			npMapTypeName( kNPmapTextures, data ), ".csv" );
 	sprintf( msg, "Loading: %s", filePath );
@@ -834,7 +836,7 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	result += npFileOpenAuto( filePath, NULL, data );
 
 	npLoadExtTexMaps(dataRef);
-
+	
 
 	printf("88 models\n");
 		sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
@@ -842,16 +844,18 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	sprintf( msg, "289374238974987234978234978 Loading: %s", filePath );
 	npPostMsg( msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
-	
-/*
+
+	npLoadExtGeos(dataRef); // lv model
+
+
 	printf("88 nodes\n");
 	sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
 			npMapTypeName( kNPmapNode, data ), ".csv" );
 	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg (msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
-*/
-/*	
+
+
 	printf("88 tags\n");
 	
 	sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
@@ -859,7 +863,7 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg( msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
-	*/
+	
 	printf("88 done\n");
 	/// @todo : lv npSyncTex
 //	npSyncTex(
