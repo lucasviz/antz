@@ -1089,6 +1089,7 @@ void npInitGeoList(void* dataRef)
 	int i = 0;
 
 	gl->modelId = 0;
+	gl->loadGeos = 0;
 //	gl->geoLock = true;
 	npGeolistLock(dataRef);
 	npGeolistSetLen(0, dataRef);

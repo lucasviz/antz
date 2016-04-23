@@ -833,9 +833,10 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 			npMapTypeName( kNPmapTextures, data ), ".csv" );
 	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg( msg, kNPmsgCtrl, data );
-	result += npFileOpenAuto( filePath, NULL, data );
+	result += npFileOpenAuto( filePath, NULL, data ); // set flag
 
-	npLoadExtTexMaps(dataRef);
+// race condition 
+//	npLoadExtTexMaps(dataRef);
 	
 
 	printf("88 models\n");
@@ -845,7 +846,8 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	npPostMsg( msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
 
-	npLoadExtGeos(dataRef); // lv model
+// race condition
+//	npLoadExtGeos(dataRef); // lv model
 
 
 	printf("88 nodes\n");
@@ -854,7 +856,7 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg (msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
-
+/*
 
 	printf("88 tags\n");
 	
@@ -863,7 +865,7 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg( msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
-	
+*/	
 	printf("88 done\n");
 	/// @todo : lv npSyncTex
 //	npSyncTex(
@@ -889,6 +891,31 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	return result;
 }
 
+
+void npFilenameFromPath(char* path, char* filename, void* dataRef)
+{
+	int i = strlen(path);
+	int x = 0;
+	filename[x] = '\0';
+
+	printf("79877 npFilenameFromPath : %s\n", path);
+	for(; 0 < i; i--)
+	{
+		printf("%c", path[i]);
+		if( path[i] == '\\' || path[i] == '/' )
+		{
+			i++; 
+			break;
+		}
+	}
+	
+	strcpy(filename, &path[i]);
+
+	printf("\nnpFilenameFromPath filename : %s\n", filename);
+
+}
+
+// obs
 void npGetFileNameFromPath(char* filepath, char* filename, void* dataRef)
 {
 	char* p_filepath = NULL; // lv, p_ prefix denotes pointer

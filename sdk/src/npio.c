@@ -30,6 +30,7 @@
 #include "io/npmouse.h"
 #include "io/npconsole.h"
 #include "io/net/nposc.h"
+#include "io/gl/nptexmap.h" // lv model
 
 #include "io/db/npdb.h"
 
@@ -200,10 +201,6 @@ void npUpdateIO (void* dataRef)
 
 	data->io.cycleCount++;
 
-#ifdef NP_ADDON_SCAN
-	npScanNetworkIP3( "127.0.0.1", dataRef ); /// lv, temp
-#endif
-
 	//we double buffer the mouse delta movement to maintain engine cycle sync
 	npUpdateMouse (dataRef);
 	
@@ -218,8 +215,8 @@ void npUpdateIO (void* dataRef)
 #endif
 
 	//lv models begin 
-	npUpdateGeoList( dataRef );
 	npUpdateTexMap( dataRef );
+	npUpdateGeoList( dataRef );
 	//lv models end
 
 }

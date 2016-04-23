@@ -1188,7 +1188,7 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 	else if(mapType == kNPmapModels)
 	{
 		//printf("kNPmapModels\n");
-		n += sprintf (curs, "np_geo_id,np_texture_id,type,center_x,center_y,center_z,rotate_x,rotate_y,rotate_z,scale_x,scale_y,scale_z,object_name,file_name,path\n");
+		n += sprintf (curs, "np_geo_id,topo_id,np_texture_id,center_x,center_y,center_z,rotate_x,rotate_y,rotate_z,scale_x,scale_y,scale_z,object_name,file_name,path\n");
 		geolist = &data->io.gl.geolist[0];
 		for( i=1; i < 2000; i++ )
 		{
@@ -1200,8 +1200,8 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 				printf(" i : %d \n tex id : %d\n\n", i, geolist->textureId); 
 				n += sprintf((curs + n), "%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,\"%s\",\"%s\",\"%s\"\n",	
 					geolist->geometryId,
-					geolist->textureId,
 					0,
+					geolist->textureId,
 					geolist->center.x,
 					geolist->center.y,
 					geolist->center.z,
@@ -1229,7 +1229,7 @@ int npMapToCSV (char* csvStr, int mapType, int size, int* index, void* dataRef)
 		{
 			texmap = &data->io.gl.texmap[i];	
 
-			if(texmap->extTexId != 0 && texmap->filename[0] != '\0')
+			if(texmap->extTexId != 0 && texmap->intTexId != 0 && texmap->filename[0] != '\0')
 			{
 				rel = npFilePathAbsToRel(texmap->path, dataRef);
 				if( (rel[strlen(rel)-1] == '\\') && (rel[strlen(rel)-2] == '\\') )

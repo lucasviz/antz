@@ -76,7 +76,8 @@ void npLoadTexturesLegacy(void* dataRef)
 		else if( i < 100 || i % 100 == 0 )
 			printf( "." );
 
-		sprintf(filename, "%s/%s", "usr/images/", fRef->name );
+		sprintf(filename, "%s%s/%s", data->io.file.appPath ,"usr/images/", fRef->name );
+		printf("1454554npLoadTexturesLegacy filename : %s\n", filename);
 
 		// if Folder (not a file) then recursively call to create dir tree
 		if( fRef->isDir )
@@ -111,7 +112,8 @@ void npLoadTexturesLegacy(void* dataRef)
 		else if(  i < 100 || i % 100 == 0 )
 			printf( "." );
 
-		sprintf(filename, "%s/%s", "usr/images/", fRef->name );
+		sprintf(filename, "%s%s/%s", data->io.file.appPath ,"usr/images/", fRef->name );
+		printf("filepath 138902 : %s\n", filename);;
 
 		// if Folder (not a file) then recursively call to create dir tree
 		if( fRef->isDir )
@@ -138,6 +140,8 @@ void npInitTexMap (void* dataRef)
 	pData data = (pData) dataRef;
 	pNPtexmap texmap = NULL;
 	int i = 0;
+
+	data->io.gl.loadExtTexs = 0;
 	data->io.gl.texmapCount = 0;
 
 	for(i = 0; i < kNPtexListMax; i++)
@@ -411,6 +415,7 @@ int npUsedTex(int extId, void* dataRef)
 	return 0;
 }
 
+/*
 int npLoadTex(pNPtexmap tex, void* dataRef);
 int npLoadTex(pNPtexmap tex, void* dataRef)
 {
@@ -452,6 +457,7 @@ int npLoadTex(pNPtexmap tex, void* dataRef)
 
 	return tex->intTexId;
 }
+*/
 
 
 pNPtexmap npTexNew(int* extId, char* fName, char* path, void* dataRef);
@@ -491,13 +497,13 @@ pNPtexmap npTexNew(int* extId, char* fName, char* path, void* dataRef)
 				strcpy(t->path, path);
 				t->intTexId = 0;
 				t->loaded = 0;
-				npLoadTex(t, dataRef);
-				/*
-				if(geoAutoLoad)
-				{
-					npLoadTex(t, dataRef);
-				}
-				*/
+				//npLoadTex(t, dataRef); // lv temp
+
+//				if(geoAutoLoad)
+//				{
+//					npLoadTex(t, dataRef);
+//				}
+
 
 			}
 			else
@@ -521,12 +527,12 @@ pNPtexmap npTexNew(int* extId, char* fName, char* path, void* dataRef)
 			t->intTexId = 0;
 			t->loaded = 0;
 	}
-/*
+
 	if( (*extId) == 0 )
 	{
 		t->extTexId = npGetUnusedExtTexId(dataRef);
 	}
-*/
+
 //	t->
 
 	return t;
@@ -697,39 +703,57 @@ void npUpdateTexMap (void* dataRef)							//add to ctrl loop, debug zz
 	char* foundPath = NULL;
 	int i = 0;
 
-//	printf("npUpdateTexMap\n");
-	for( i = 1; i < 2000; i++ )
+	/*
+	if(data->io.gl.loadExtTexs)
 	{
-		texmap = &data->io.gl.texmap[i];
-		if(texmap->intTexId == 0 && texmap->loaded == 0 &&
-			texmap->filename[0] != '\0' && texmap->path[0] != '\0')
-		{
-		//	printf("Loading extTexId : %d -- intTexId : %d -- %s%s\n", texmap->extTexId, texmap->intTexId, texmap->path, texmap->filename);
-			/*
-			printf("texmap->extTexId : %d\n", texmap->extTexId);
-			printf("texmap->path : %s\n", texmap->path);
-			printf("texmap->filename : %s\n", texmap->filename);
-			*/
-			sprintf(filepath, "%s%s", texmap->path, texmap->filename);
-			texmap->intTexId = npLoadTexture(filepath, 0, dataRef);
-			//texmap->intTexId = npLoadTex(texmap, dataRef);
+		printf("2130894019283089210892921 loadExtTexs ----!!!--!!!!!!\n");
+		npLoadExtTexMaps(dataRef);
+		data->io.gl.loadExtTexs = 0;
+		return;
+	}
+	*/
 
-			if(texmap->intTexId > 0)
-				texmap->loaded = 1;
-			else if(texmap->intTexId == 0)
+	if(data->io.gl.loadExtTexs == 1 && data->io.gl.loadExtTexs != 2)
+	{
+	//	printf("npUpdateTexMap\n");
+		for( i = 1; i < 2000; i++ )
+		{
+			texmap = &data->io.gl.texmap[i];
+			if(texmap->intTexId == 0 && texmap->loaded == 0 &&
+				texmap->filename[0] != '\0' && texmap->path[0] != '\0')
 			{
-				texmap->loaded = 0;
-				foundPath = npSearchPathsForFile(texmap->filename, dataRef);
-				if(foundPath != NULL)
+			//	printf("Loading extTexId : %d -- intTexId : %d -- %s%s\n", texmap->extTexId, texmap->intTexId, texmap->path, texmap->filename);
+				/*
+				printf("texmap->extTexId : %d\n", texmap->extTexId);
+				printf("texmap->path : %s\n", texmap->path);
+				printf("texmap->filename : %s\n", texmap->filename);
+				*/
+				sprintf(filepath, "%s%s", texmap->path, texmap->filename);
+				texmap->intTexId = npLoadTexture(filepath, 0, dataRef);
+				//texmap->intTexId = npLoadTex(texmap, dataRef);
+
+				if(texmap->intTexId > 0)
+					texmap->loaded = 1;
+				else if(texmap->intTexId == 0)
 				{
-					foundPath[strlen(foundPath)-strlen(texmap->filename)] = '\0';
-					texmap->path[0] = '\0';
-					strcpy(texmap->path, foundPath);
-					free(foundPath);
+					texmap->loaded = 0;
+					foundPath = npSearchPathsForFile(texmap->filename, dataRef);
+					if(foundPath != NULL)
+					{
+						foundPath[strlen(foundPath)-strlen(texmap->filename)] = '\0';
+						texmap->path[0] = '\0';
+						strcpy(texmap->path, foundPath);
+						free(foundPath);
+					}
 				}
 			}
-		}
 	}
+			data->io.gl.loadExtTexs = 2;
+			return;
+	}
+
+//	if(data->io.gl.loadExtTexs
+//	data->io.gl.loadExtTexs = 0;
 
 	return;
 }
@@ -741,7 +765,7 @@ void npLoadExtTexMaps(void* dataRef)
 	int i;
 
 	
-	for(i = 1; i < 100; i++)
+	for(i = 1; i < 2000; i++)
 	{
 		if( data->io.gl.extMapMe[i] &&
 			data->io.gl.extMapMe[i]->loaded == 0
@@ -789,9 +813,13 @@ int npLoadTexture( char* filePath, int fileType, void* dataRef)
 			free(abs);
 		}
 
-		npGetFileNameFromPath( filePath, &filename[0], dataRef);
+		printf("22211 filePath : %s\n", filePath);
+//		npGetFileNameFromPath( filePath, &filename[0], dataRef);
+		npFilenameFromPath( filePath, filename, dataRef);
 		strcpy(path, filePath);
 		path[( strlen(filePath) - strlen(filename) )] = '\0';
+		printf("22212 path : %s\n", path);
+		printf("22213 filename : %s\n", filename);;
 		tex = npTexlistSearchFile(filename, path, dataRef);
 
 		if(tex != NULL && tex->intTexId > 0)
@@ -968,7 +996,7 @@ void npLoadTextures(void* dataRef)
 
 //		printf("fRef->name : %s\n", fRef->name);
 		sprintf(filename, "%s%s%s", data->io.file.appPath ,"usr\\global\\images\\", fRef->name );
-//		printf("2 filename :F %s\n", filename);
+		printf("2 filename :F %s\n", filename);
 
 		// if Folder (not a file) then recursively call to create dir tree
 		if( fRef->isDir )

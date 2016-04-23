@@ -1067,6 +1067,7 @@ struct NPgl {
 						//!< each global struct has a corresponding base node.
 	NPgeolist geolist[2000]; // lv geolist
 	pNPgeolist 	geoMap[2000]; // lv geoMap
+	int			loadGeos; // lv models dont(0), do(1), done(2)
 	int			geoX; // lv geolist
 	int			geoLen; // lv geolist
 	bool		geoLock; // lv, geolist lock flag, if true: don't access, if false: safe to access 
@@ -1103,6 +1104,7 @@ struct NPgl {
 	int			extMap[100];
 	pNPtexmap	extMapMe[100];
 	int			textureCount;
+	int			loadExtTexs;
 	int			tAutoCount; // lv geolist 
 	int			maxTextureSize;
 	int			subsample;		//!<zzhp

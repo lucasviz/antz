@@ -270,8 +270,8 @@ void npInitMap (void* dataRef)
 	static NPmapType models[] = {
 
 		{ kNPid,			kNPint,				"np_geo_id",	"Geometry ID" },
+		{ kNPtype,			kNPint,				"topo_id",			"Type: Mesh, Terrain, etc." },
 		{ kNPid,			kNPint,				"np_texture_id",	"Texture ID" },
-		{ kNPtype,			kNPint,				"type",			"Type: Mesh, Terrain, etc." },
 		{ kNPcenterX,		kNPfloat,			"center_x", "Geometric Center X"},
 		{ kNPcenterY,		kNPfloat,			"center_y", "Geometric Center Y"},
 		{ kNPcenterZ,		kNPfloat,			"center_z", "Geometric Center Z"},

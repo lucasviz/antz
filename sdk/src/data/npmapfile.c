@@ -555,6 +555,14 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	node->shader			= npstrtoi(&cursor);
 	extGeoId				= npstrtoi(&cursor);
 	
+	while(data->io.gl.loadGeos != 2)
+	{
+		if(data->io.gl.loadGeos == 1)
+		{
+			printf("geos loading\n");
+		}
+	}
+
 	node->textureID = -1;
 	if( data->io.gl.geoMap[extGeoId] )
 	{
@@ -581,6 +589,10 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	node->colorFade			= npstrtoi(&cursor);
 	
 	extTexId				= npstrtoi(&cursor);
+
+	// #define kNPextTexsLoaded 2
+	while(data->io.gl.loadExtTexs != 2);
+
 	if(extTexId && (node->textureID == -1) && data->io.gl.extMapMe[extTexId])
 	{
 		node->textureID = data->io.gl.extMapMe[extTexId]->intTexId;
@@ -588,22 +600,7 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	}
 	else if(extTexId && data->io.gl.extMapMe[extTexId] == NULL)
 	{
-		if(node->type == 6)
-		{
-			/*
-			for(i = 1; i < 100; i++)
-			{
-				if( strncmp(data->io.gl.extMapMe[extTexId]->filename, "map", 3) == 0 )
-				{
-					printf("2345678 map found\n");
-				}
-			}
-			*/
 
-		}
-
-	//	node->textureID = 1;
-	//	node->textureID = 0;
 	}
 
 	// data->io.gl.extMapMe[extTexId]->intTexId; @todo
@@ -1169,7 +1166,7 @@ int npCSVstrncpy(char* cstrout, char** csvstr, int size)
 	}
 //	cstrout[i] = '\0';
 
-	//recordTag->title[count] = '\0';
+	//recordTag->title[\\count] = '\0';
 
 					//zz debug, does not handle line returns...
 //	if (*csvstr[0] == '"') *csvstr = &csvPtr[curs + 1];
@@ -1450,6 +1447,8 @@ int npLoadTextureCSV(const char* buffer, int size, void* dataRef)
 		}
 
 	} //end loop
+
+//	data->io.gl.loadExtTexs = 1;
 
 
 
@@ -2188,7 +2187,13 @@ void npFileOpenThread (void* threadData)
 		data->io.file.loading = true;
 
 	if (type == kNPmapModels)
+	{
 		data->io.file.loading = true;
+		data->io.gl.loadGeos = 0;
+	}
+
+	if (type == kNPmapTextures)
+		data->io.gl.loadExtTexs = 0;
 
 //start csv format specific methods, agnostic to table data type
 	//search from end of buffer to find end of the last complete row
@@ -2290,10 +2295,16 @@ endPoint:
 		data->io.file.loading = false;
 
 	if (type == kNPmapModels)
+	{
 		data->io.file.loading = false;
+		data->io.gl.loadGeos = 1;
+	}
 
 	if (type == kNPmapTextures)
+	{
 		data->io.file.loading = false;
+		data->io.gl.loadExtTexs = 1;
+	}
 
 	//free read buffers and threadFile structure
 	npFree (splitBlock, data);
@@ -2424,7 +2435,7 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 			nposBeginThread( npFileOpenThread, threadFile );
 			printf("\nloading = %d", data->io.file.loading);
 			data->io.gl.geoLock = false;
-			while(data->io.file.loading == true);
+//			while(data->io.file.loading == true);
 /// @todo:	npTextureGeoModel(pNPgeo p_geo, void* dataRef);
 //			printf("\nModel CSV File Loaded : numOfScenes (%d)", ((pNPassimp)data->io.assimp)->numOfScenes);
 			break;
