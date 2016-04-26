@@ -75,7 +75,7 @@ void npInitModels (void* dataRef)
 {
 	npInitGeoList(dataRef);
 	npInitGeoMap(dataRef);
-	//npLoadGeos(dataRef);
+	npLoadGeos(dataRef);
 	return;
 }
 

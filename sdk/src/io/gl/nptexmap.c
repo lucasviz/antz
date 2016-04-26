@@ -1090,7 +1090,13 @@ void npLoadGeos(void* dataRef)
 		//	extTexId = npGetUnusedExtTexId(dataRef);
 			
 			extTexId = 0;
-			npAddGeo(&geoId, &extTexId, 0, &center, &rotate, &scale, NULL, fRef->name, path, dataRef);
+
+			// func deped
+			//npAddGeo(&geoId, &extTexId, 0, &center, &rotate, &scale, NULL, fRef->name, path, dataRef);
+	//		npGeoId(
+			npGeoId(kNPsetGeoId, &geoId, path, fRef->name, dataRef);
+			npGeoId(kNPgeoLoad, &geoId, path, fRef->name, dataRef);
+			npGeoId(kNPgeoLoadTex, &geoId, path, fRef->name, dataRef);
 			
 		}
     }

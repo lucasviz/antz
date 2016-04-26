@@ -842,7 +842,7 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	printf("88 models\n");
 		sprintf( filePath, "%s%s%s%s", dirPath, datasetName, 
 			npMapTypeName( kNPmapModels, data ), ".csv" );
-	sprintf( msg, "289374238974987234978234978 Loading: %s", filePath );
+	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg( msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
 
@@ -856,7 +856,7 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg (msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
-/*
+
 
 	printf("88 tags\n");
 	
@@ -865,7 +865,7 @@ int npLoadScene( int format, char* datasetName, void* dataRef)
 	sprintf( msg, "Loading: %s", filePath );
 	npPostMsg( msg, kNPmsgCtrl, data );
 	result += npFileOpenAuto( filePath, NULL, data );
-*/	
+
 	printf("88 done\n");
 	/// @todo : lv npSyncTex
 //	npSyncTex(

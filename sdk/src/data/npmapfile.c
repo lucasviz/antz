@@ -2446,13 +2446,7 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 			npGetFileNameFromPath( filePath, &fileName[0], dataRef );
 			strcpy(path, filePath);
 			path[strlen(filePath) - strlen(fileName)] = '\0';
-			/*
-		#define kNPgetGeoId 0
-#define kNPsetGeoId 1
-pNPgeolist npGeoId(int action, int* xGeoId, char* path, char* file, void* dataRef)
-*/
-			// xGeoId = 0;
-		//	npGeoId(kNPsetGeoId, &xGeoId, 0, NULL, NULL, NULL, NULL, path, fileName, dataRef);
+
 			npGeoId(kNPsetGeoId, &xGeoId, path, fileName, dataRef);
 			npGeoId(kNPgeoLoad, &xGeoId, path, fileName, dataRef);
 			npGeoId(kNPgeoLoadTex, &xGeoId, path, fileName, dataRef);
