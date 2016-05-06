@@ -31,6 +31,57 @@
 
 #include "../../npdata.h"
 
+void npSyncGeos (void* dataRef)
+{
+	pData data = (pData) dataRef;
+
+	int i = 0, j = 0;
+	int count = 0;
+	void** nodes;
+	pNPnode node;
+
+	data->map.syncNodes = false;		//reset sync flags
+//	data->map.syncTagsReady = false;
+
+						
+	//allocate a pair of destination buffers for the nodes and tags
+	nodes = npMalloc(0, sizeof(pNPnode) * kNPnodeMax, data);			//data->map.nodeCount
+	if (!nodes) return;
+//	tags = npMalloc(0, sizeof(pNPnode) * kNPnodeMax, data);			//update to use tag count //zz debug
+//	if (!tags) return;
+
+	//populate the sort lists, skip over null nodes
+	for (i=0; i < kNPnodeMax; i++)	//data->map.nodeCount; i++)
+		if (data->map.nodeID[i] != NULL)
+			nodes[j++] = data->map.nodeID[i];
+
+	//sort nodes and tags grouped first by table_id and second by record_id
+	/*
+	npSort(nodes, j, sizeof(void*), npCompareNodes, data);
+	npSort(data->io.gl.hud.tags.list,
+			data->io.gl.hud.tags.count,
+			sizeof(void*), npCompareTags, data);	//update to use tag count //zz debug
+	*/
+
+	//loop through all nodes and update with tag
+//	tagsIndex = 0;	//reset the index, takes advantage of sorted lists, zzhp
+	for (i=0; i < j; i++)
+	{	//npTagNode(nodes[i], data);
+	node = (pNPnode)nodes[i];
+	if(node->geometry > 1000)
+	{
+		printf("geo > 1000\n");
+	//	data->io.gl.geoMap[node->geometry]->textureId
+	}
+	//printf("id: %d  tag: %s\n",  node->id, node->tag->title);
+	}
+	printf("tag count J: %d\n", j);
+	//loop through all nodes and attach tagPtr based on recordID and tableID
+//	for (i=0; i < data->map.nodeRootCount; i++)
+//		npNodeTraverseTree (npTagNode, data->map.node[i], dataRef);
+
+	npFree(nodes, data);
+}
 
 /** Locks the Geolist, no models can be added to the list (if locked/true) 
 	@param dataRef is a global map reference instance.

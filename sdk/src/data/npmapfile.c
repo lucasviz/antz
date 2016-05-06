@@ -1378,6 +1378,8 @@ int npLoadNodesCSV (const char* buffer, int size, int type, void* dataRef)
 	else
 		npPostMsg("err 2350 - last node loaded from file is NULL", kNPmsgErr, data);
 
+	//npSyncGeos(dataRef); // lv, models
+
 	return nodeCount;
 }
 
@@ -2311,8 +2313,10 @@ postProcess:
 
 endPoint:
 	//flag other processess that loading is done, resume z-sort draw
-	if (type == kNPmapNode)												//zzhp
+	if (type == kNPmapNode){												//zzhp
 		data->io.file.loading = false;
+		
+	}
 
 	if (type == kNPmapModels)
 	{
