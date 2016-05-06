@@ -38,6 +38,7 @@ void npCloseTexMap (void* dataRef);
 pNPtexmap npTexlistSearchFile(char* filename, char* path, void* dataRef);
 void npUpdateTexMap (void* dataRef);
 
+void npLoadGeos(void* dataRef);
 void npLoadTextures(void* dataRef);
 
 int npLoadTexture( char* filePath, int fileType, void* dataRef);

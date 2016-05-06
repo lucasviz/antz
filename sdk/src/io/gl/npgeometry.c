@@ -83,7 +83,84 @@ void DeleteCircle (NPcirclePtr circle);
 
 GLuint npCreatePrimitiveDL (void);
 
+void npModelStoreDL(struct aiScene* scene, pNPgeolist geolist, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPgl gl = &data->io.gl;
+	pNPassimp assimp = (pNPassimp)data->io.assimp;
+	NPbox bBox;
+	float dX, dY, dZ = 0;
+	float cX, cY, cZ = 0;
 
+	printf("npModelStoreDL\n");
+	//printf("Offset %d\n", dlOffset);
+//	bBox = npDrawAssimpModel(scene, scene->mRootNode, dataRef);
+//	void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dataRef)
+	npBoxGen(scene, scene->mRootNode, &bBox, dataRef);
+
+	glNewList(gl->dl + geolist->geometryId, GL_COMPILE);
+
+	if(geolist->scale.x == 0.0f &&
+	   geolist->scale.y == 0.0f && 
+	   geolist->scale.z == 0.0f )
+	{
+		// use bBox
+		printf("xL %0.0f -- xH %0.0f -- yL %0.0f -- yH %0.0f -- zL %0.0f -- zH %0.0f\n", bBox.xL, bBox.xH, bBox.yL, bBox.yH, bBox.zL, bBox.zH);
+
+		dX = (float)fabs(bBox.xH - bBox.xL);
+		dY = (float)fabs(bBox.yH - bBox.yL);
+		dZ = (float)fabs(bBox.zH - bBox.zL);
+
+		if(geolist->center.x == 0 && geolist->center.y == 0 && geolist->center.z == 0)
+		{
+			geolist->center.x = cX = (bBox.xH + bBox.xL) / -2.0f;
+			geolist->center.y = cY = (bBox.yH + bBox.yL) / -2.0f;
+			geolist->center.z = cZ = (bBox.zH + bBox.zL) / -2.0f;
+		}
+
+		//printf("cX %f || cY %f || cZ %f\n", cX, cY, cZ); 
+		
+		if( (dX > dY) && (dX > dZ) )
+		{
+		//	printf("dX largest magnitude\n");
+		//	printf("scaling factor %f\n", 2/dX);
+			glScalef((2/dX),(2/dX),(2/dX));
+		}
+
+		if( (dY > dX) && (dY > dZ) )
+		{
+		//	printf("dY largest magnitude\n");
+		//	printf("scaling factor %f\n", 2/dY);
+			glScalef((2/dY),(2/dY),(2/dY));
+		}
+	
+		if( (dZ > dY) && (dZ > dX) )
+		{
+		//	/printf("dZ largest magnitude\n");
+		//	printf("scaling factor %f\n", 2/dZ);
+			glScalef((2/dZ),(2/dZ),(2/dZ));
+		}
+	}
+	else
+	{
+		printf("Scale from Model CSV\n");
+		glScalef(geolist->scale.x, geolist->scale.y, geolist->scale.z);
+	}
+		glTranslatef(geolist->center.x, geolist->center.y, geolist->center.z);
+
+	glRotatef(geolist->rotate.x, 1, 0, 0);
+	glRotatef(geolist->rotate.y, 0, 1, 0);
+	glRotatef(geolist->rotate.z, 0, 0, 1);
+
+	npDrawAssimpModel(scene, scene->mRootNode, dataRef);
+	glEndList();
+
+
+
+
+}
+
+/*
 void npModelStoreDL(struct aiScene* scene, pNPgeolist geolist, void* dataRef)
 {
 	pData data = (pData) dataRef;
@@ -147,6 +224,7 @@ void npModelStoreDL(struct aiScene* scene, pNPgeolist geolist, void* dataRef)
 		printf("Scale and Translate from Model CSV\n");
 		glNewList(gl->dl + geolist->geometryId, GL_COMPILE);
 		glScalef(geolist->scale.x, geolist->scale.y, geolist->scale.z);
+	//	glScalef(1.0f, 1.0f, 1.0f);
 		glTranslatef(geolist->center.x, geolist->center.y, geolist->center.z);
 	}
 
@@ -157,6 +235,7 @@ void npModelStoreDL(struct aiScene* scene, pNPgeolist geolist, void* dataRef)
 
 
 }
+*/
 
 void npAddPrimitiveAssimpModelDL(struct aiScene* scene, void* dataRef)
 {

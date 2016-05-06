@@ -666,6 +666,9 @@ int npSaveScene( int format, char* datasetName, void* dataRef)
 //		sprintf( msg, "Saving: %s", filePath );
 //		npPostMsg( msg, kNPmsgCtrl, data );
 
+//	npScreenGrabThumb( datasetName, kNPformatJPG,
+//					0, 0, kNPthumbWidth, kNPthumbHeight, data );
+
 	npScreenGrabThumb( datasetName, kNPformatDDS,
 						0, 0, kNPthumbWidth, kNPthumbHeight, data );
 

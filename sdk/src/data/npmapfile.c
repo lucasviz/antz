@@ -555,19 +555,41 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	node->shader			= npstrtoi(&cursor);
 	extGeoId				= npstrtoi(&cursor);
 	
+	// #define kNPextTexsLoaded 2
+	while(data->io.gl.loadExtTexs != 2)
+	{
+		if(data->io.gl.loadExtTexs == 1)
+		{
+		//	printf("ext texs loading\n");
+		}
+		else
+		{
+			// loadExtTexs == 0
+		//	extTexId = 0;
+			break;
+		}
+	}
+
 	while(data->io.gl.loadGeos != 2)
 	{
 		if(data->io.gl.loadGeos == 1)
 		{
-			printf("geos loading\n");
+		//	printf("geos loading\n");
+		}
+		else
+		{
+			// loadGeos == 0
+		//	extGeoId = 0;
+			break;
 		}
 	}
 
-	node->textureID = -1;
+//	node->textureID = -1;
 	if( data->io.gl.geoMap[extGeoId] )
 	{
 		node->geometry = data->io.gl.geoMap[extGeoId]->geometryId;
 		node->textureID = data->io.gl.geoMap[extGeoId]->textureId;
+		printf("node->textureID : %d\n with extGeoId %d", node->textureID, extGeoId);
 	}
 	else
 		node->geometry = extGeoId;
@@ -590,17 +612,15 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	
 	extTexId				= npstrtoi(&cursor);
 
-	// #define kNPextTexsLoaded 2
-	while(data->io.gl.loadExtTexs != 2);
-
 	if(extTexId && (node->textureID == -1) && data->io.gl.extMapMe[extTexId])
 	{
 		node->textureID = data->io.gl.extMapMe[extTexId]->intTexId;
-		printf("11111111 assigning texture id %d (ext id %d) to node id %d\n", node->textureID, extTexId, node->id);
+		printf("111 assigning texture id %d (ext id %d) to node id %d\n", node->textureID, extTexId, node->id);
 	}
 	else if(extTexId && data->io.gl.extMapMe[extTexId] == NULL)
 	{
-
+		printf("22292 other ---\n");
+		node->extTexID = extTexId;
 	}
 
 	// data->io.gl.extMapMe[extTexId]->intTexId; @todo
@@ -2189,7 +2209,7 @@ void npFileOpenThread (void* threadData)
 	if (type == kNPmapModels)
 	{
 		data->io.file.loading = true;
-		data->io.gl.loadGeos = 0;
+//		data->io.gl.loadGeos = 0;
 	}
 
 	if (type == kNPmapTextures)

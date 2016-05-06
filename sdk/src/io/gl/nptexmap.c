@@ -1025,7 +1025,7 @@ void npLoadTextures(void* dataRef)
 		printf ("No Textures Found!!!\n\n");
 }
 
-void npLoadGeos(void* dataRef);
+
 void npLoadGeos(void* dataRef)
 {
 	int i = 0;

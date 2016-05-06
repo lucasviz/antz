@@ -699,6 +699,7 @@ struct NPnode
 	NPubyteRGBA	color;						//!<color assigned to new data
 
 	int			colorFade;					//!<cycles to fade color alpha, 0=off
+	int			extTexID;					//!<lv, External Texture ID
 	int			textureID;					//!<GL texture ID
 
 	bool			hide;						//!<hide the node, data stays active

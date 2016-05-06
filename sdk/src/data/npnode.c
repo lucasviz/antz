@@ -778,6 +778,7 @@ void npInitNodeDefault (pNPnode node)
 	node->color.a		= 255;				//fully opaque
 
 	node->colorFade		= false;
+	node->extTexID      = 0;				//lv, zero for no external texture
 	node->textureID		= 0;				//zero for no texture
 
 	node->hide			= false;			//hide the node, data stays active
