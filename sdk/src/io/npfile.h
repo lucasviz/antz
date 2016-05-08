@@ -116,6 +116,7 @@ char* npSearchPathsForFile(char* filename, void* dataRef);
 void npGetFileNameFromPath(char* filepath, char* filename, void* dataRef);
 char* npFilePathAbsToRel(char* abs, void* dataRef);
 char* npFilePathRelToAbs(char* rel, void* dataRef);
+void npFilenameFromPath(char* path, char* filename, void* dataRef);
 // lv model end
 //void npGetFolderDelimiterChar(
 

@@ -32,14 +32,16 @@ void npInitTexMap (void* dataRef);
 void npUpdateTexMap (void* dataRef);
 int npGeoTexId( int geometryId, void* dataRef );
 pNPtexmap npAddTexMap(int* extTexId, char* filename, char* path, void* dataRef);
-
+void npLoadExtTexMaps(void* dataRef);
 void npCloseTexMap (void* dataRef);
 
+pNPtexmap npTexlistSearchFile(char* filename, char* path, void* dataRef);
 void npUpdateTexMap (void* dataRef);
 
+void npLoadGeos(void* dataRef);
 void npLoadTextures(void* dataRef);
 
-int npLoadTexture( const char* filePath, int fileType, void* dataRef);
+int npLoadTexture( char* filePath, int fileType, void* dataRef);
 
 int npSetTexture( int textureID, void* dataRef);
 

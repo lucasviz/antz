@@ -28,6 +28,18 @@
 
 #include "../../npdata.h"
 
+struct NPbox
+{
+	float xH;
+	float xL;
+	float yH;
+	float yL;
+	float zH;
+	float zL;
+};
+typedef struct NPbox NPbox;
+typedef NPbox* pNPbox;
+
 //------------------------------------------------------------------------------
 
 void npInitGLDraw (void* dataRef);
@@ -41,7 +53,7 @@ int npRGBtoID (int r, int g, int b);						//MB-PICK
 
 float npDistance (NPfloatXYZ vecA, NPfloatXYZ vecB);		//MB-TRANS
 
-void npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef);
-
+pNPbox npDrawAssimpModel(struct aiScene* scene, struct aiNode* node, void* dataRef);
+void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dataRef);
 #endif
 

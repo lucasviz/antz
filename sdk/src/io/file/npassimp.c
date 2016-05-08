@@ -112,7 +112,7 @@ struct aiString npAssimpGetTexturePath(int sceneIndex, void* dataRef)
 		for(idx = 0; AI_SUCCESS==aiGetMaterialString(scene->mMaterials[0],
 			AI_MATKEY_TEXTURE(types[type],idx),&assimp->path); idx++)
 		{
-//				printf("%s\n    \'%s\'",(total++?"":"\nTexture Refs:" ),assimp->path.data);
+				printf("%s\n    \'%s\'",(total++?"":"\nTexture Refs:" ),assimp->path.data);
 			total++;
 		}
 	}
@@ -155,7 +155,7 @@ int npAssimpLoadModel(char* filePath, int* geolistIndexMatch, void* dataRef)
 	int modelPathLen = 0;
 	char* foundPath = NULL;
 	char* endOfModelPath = NULL;
-	char delimit = NULL;
+	char delimit = '\0';
 	char* result = NULL;
 	struct aiScene *scene = NULL;
 	struct aiMaterial *material = NULL;
@@ -277,7 +277,7 @@ int npAssimpLoadModel(char* filePath, int* geolistIndexMatch, void* dataRef)
 			return modelId;
 		}
 
-		for(i = 0; i < strlen(assimp->path.data); i++)
+		for(i = 0; i < (int)strlen(assimp->path.data); i++)
 		{
 			assimp->path.data[i] = tolower(assimp->path.data[i]);
 		}

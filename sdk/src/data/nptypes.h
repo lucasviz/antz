@@ -699,6 +699,7 @@ struct NPnode
 	NPubyteRGBA	color;						//!<color assigned to new data
 
 	int			colorFade;					//!<cycles to fade color alpha, 0=off
+	int			extTexID;					//!<lv, External Texture ID
 	int			textureID;					//!<GL texture ID
 
 	bool			hide;						//!<hide the node, data stays active
@@ -1031,8 +1032,12 @@ struct NPgeolist {
 	char name[kNPmodelNameMax];
 	char modelFile[kNPmodelFileNameMax];
 	char modelPath[kNPmodelFilePathMax];
-	char modelTextureFile[kNPmodelFilePathMax]; // new lv 
+	char modelTextureFile[kNPmodelFilePathMax]; // new lv
 	char modelTexturePath[kNPmodelFilePathMax]; // new lv
+	NPfloatXYZ center;
+	NPfloatXYZ rotate;
+	NPfloatXYZ scale;
+	int extTexId;
 	unsigned int textureId;
 };
 typedef struct NPgeolist NPgeolist;
@@ -1043,6 +1048,7 @@ typedef pNPgeolist pNPgeo;
 
 struct NPtexmap {
 	int loaded;
+	int type;
 	int extTexId;
 	int intTexId;
 	char path[256];
@@ -1061,6 +1067,8 @@ struct NPgl {
 	void* coreNode; ///< core nodes tie global structures to the scene graph
 						//!< each global struct has a corresponding base node.
 	NPgeolist geolist[2000]; // lv geolist
+	pNPgeolist 	geoMap[2000]; // lv geoMap
+	int			loadGeos; // lv models dont(0), do(1), done(2)
 	int			geoX; // lv geolist
 	int			geoLen; // lv geolist
 	bool		geoLock; // lv, geolist lock flag, if true: don't access, if false: safe to access 
@@ -1093,7 +1101,11 @@ struct NPgl {
 	int			alphaMode;
 	
 	NPtexmap texmap[2000]; // lv geolist
+	int			texmapCount;
+	int			extMap[100];
+	pNPtexmap	extMapMe[100];
 	int			textureCount;
+	int			loadExtTexs;
 	int			tAutoCount; // lv geolist 
 	int			maxTextureSize;
 	int			subsample;		//!<zzhp
@@ -2405,6 +2417,7 @@ enum kNP_NATIVE_DATA_TYPES
 	kNPgrid,
 	kNPpin,			//!< @todo zz remove this, too easily confused with kNodePin
 	kNPchMap,		//!< @todo remove this, should not be here //!<zzsql
+	kNPmodels,
 
 	//!< fundamental C types
 	kNPfloat,
@@ -2602,6 +2615,15 @@ enum kNP_NATIVE_DATA_TYPES
 	kNPfileName,	//!< lv model
 	kNPpath,	//!< lv model
 	kNPobjName,
+	kNPcenterX,
+	kNPcenterY,
+	kNPcenterZ,
+	kNProtateX,
+	kNProtateY,
+	kNProtateZ,
+	kNPscaleX,
+	kNPscaleY,
+	kNPscaleZ,
 
 	kNPmousePickMode,
 	kNPmouseCamMode,

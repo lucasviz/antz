@@ -57,7 +57,9 @@ typedef struct NPgeo *pNPgeo;
 //------------------------------------------------------------------------------
 void npInitModels (void* dataRef);
 void npCloseModels (void* dataRef);
-pNPgeolist npAddGeo(int* geoId, int* extTexId, int type, char* object_name, char* file_name, char* path, void* dataRef);
+//pNPgeolist npAddGeo(int* geoId, int* extTexId, int type, char* object_name, char* file_name, char* path, void* dataRef);
+pNPgeolist npAddGeo(int* geoId, int* extTexId, int type, pNPfloatXYZ center, pNPfloatXYZ rotate, pNPfloatXYZ scale, char* object_name, char* file_name, char* path, void* dataRef);
+
 //pNPmodels npLoadModel( const char* path, char* filename, void* dataRef );
 
 int npLoadModel(pNPgeolist geo, void* dataRef);
@@ -90,23 +92,45 @@ pNPgeo npModelNew(char* model_csvline, void* dataRef);
 
 int npSearchGeosId(int geoId, void* dataRef);
 
-char* npModelNewGeoId(char* idVal, int* geoId, void* dataRef);
+//char* npModelNewGeoId(char* idVal, int* geoId, void* dataRef);
+char* npModelNewGeoId(char* idVal, int* geoId, int* x, void* dataRef);
 
-char* npModelNewTextureId(char* idVal, int* textureId, int* intId, void* dataRef);
+char* npModelNewTextureId(char* idVal, int* textureId, int i, void* dataRef);
 
 char* npModelNewTypeId(char* csv_typeId, int* typeId, void* dataRef);
 
 char* npModelNewObjectName(char* stringVal, int maxSize, char* objectName, void* dataRef);
 
-char* npModelNewFileName(char* stringVal, int maxSize, char* fileName, void* dataRef);
+char* npModelNewFileName(char* stringVal, int maxSize, char* fileName, int i, void* dataRef);
 
-char* npModelNewFilePath(char* stringVal, int maxSize, char* filePath, void* dataRef);
+char* npModelNewFilePath(char* stringVal, int maxSize, char* filePath, int i, void* dataRef);
 
 void npSetSelectedNodeGeoId( int* geoId, void* dataRef );
 
 int npGeolistNewGeoId(void* dataRef);
 
 int npIntTexToExtTexId(int intTexId, void* dataRef);
+
+int npPathIsRel(char* path, void* dataRef);
+
+char* npTextureNewFilenameC(char* stringVal, int maxSize, char* fileName, void* dataRef);
+void npTextureNew(char* tex_csvline, void* dataRef);
+void npTextureNewB(char* tex_csvline, void* dataRef);
+
+void npLoadExtGeos(void* dataRef);
+
+#define kNPgetGeoId 0
+#define kNPsetGeoId 1
+#define kNPgeoLoadTex 2
+#define kNPgeoLoad 3
+pNPgeolist npGeoId(int action, int* xGeoId, char* path, char* file, void* dataRef);
+
+/*
+
+//pNPtexmap npTexId(int action, int* xTexId, char* path, char* file, void* dataRef);
+
+	essentially the same as npGeoId	
+*/
 
 #endif
 

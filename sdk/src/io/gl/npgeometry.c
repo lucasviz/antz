@@ -83,18 +83,159 @@ void DeleteCircle (NPcirclePtr circle);
 
 GLuint npCreatePrimitiveDL (void);
 
-
-void npModelStoreDL(struct aiScene* scene, int dlOffset, void* dataRef)
+void npModelStoreDL(struct aiScene* scene, pNPgeolist geolist, void* dataRef)
 {
 	pData data = (pData) dataRef;
 	pNPgl gl = &data->io.gl;
 	pNPassimp assimp = (pNPassimp)data->io.assimp;
+	NPbox bBox;
+	float dX, dY, dZ = 0;
+	float cX, cY, cZ = 0;
 
+	printf("npModelStoreDL\n");
 	//printf("Offset %d\n", dlOffset);
-	glNewList(gl->dl + dlOffset, GL_COMPILE);
+//	bBox = npDrawAssimpModel(scene, scene->mRootNode, dataRef);
+//	void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dataRef)
+	npBoxGen(scene, scene->mRootNode, &bBox, dataRef);
+
+	glNewList(gl->dl + geolist->geometryId, GL_COMPILE);
+
+	if(geolist->scale.x == 0.0f &&
+	   geolist->scale.y == 0.0f && 
+	   geolist->scale.z == 0.0f )
+	{
+		// use bBox
+		printf("xL %0.0f -- xH %0.0f -- yL %0.0f -- yH %0.0f -- zL %0.0f -- zH %0.0f\n", bBox.xL, bBox.xH, bBox.yL, bBox.yH, bBox.zL, bBox.zH);
+
+		dX = (float)fabs(bBox.xH - bBox.xL);
+		dY = (float)fabs(bBox.yH - bBox.yL);
+		dZ = (float)fabs(bBox.zH - bBox.zL);
+
+		if(geolist->center.x == 0 && geolist->center.y == 0 && geolist->center.z == 0)
+		{
+			geolist->center.x = cX = (bBox.xH + bBox.xL) / -2.0f;
+			geolist->center.y = cY = (bBox.yH + bBox.yL) / -2.0f;
+			geolist->center.z = cZ = (bBox.zH + bBox.zL) / -2.0f;
+		}
+
+		//printf("cX %f || cY %f || cZ %f\n", cX, cY, cZ); 
+		
+		if( (dX > dY) && (dX > dZ) )
+		{
+		//	printf("dX largest magnitude\n");
+		//	printf("scaling factor %f\n", 2/dX);
+			glScalef((2/dX),(2/dX),(2/dX));
+		}
+
+		if( (dY > dX) && (dY > dZ) )
+		{
+		//	printf("dY largest magnitude\n");
+		//	printf("scaling factor %f\n", 2/dY);
+			glScalef((2/dY),(2/dY),(2/dY));
+		}
+	
+		if( (dZ > dY) && (dZ > dX) )
+		{
+		//	/printf("dZ largest magnitude\n");
+		//	printf("scaling factor %f\n", 2/dZ);
+			glScalef((2/dZ),(2/dZ),(2/dZ));
+		}
+	}
+	else
+	{
+		printf("Scale from Model CSV\n");
+		glScalef(geolist->scale.x, geolist->scale.y, geolist->scale.z);
+	}
+		glTranslatef(geolist->center.x, geolist->center.y, geolist->center.z);
+
+	glRotatef(geolist->rotate.x, 1, 0, 0);
+	glRotatef(geolist->rotate.y, 0, 1, 0);
+	glRotatef(geolist->rotate.z, 0, 0, 1);
+
 	npDrawAssimpModel(scene, scene->mRootNode, dataRef);
 	glEndList();
+
+
+
+
 }
+
+/*
+void npModelStoreDL(struct aiScene* scene, pNPgeolist geolist, void* dataRef)
+{
+	pData data = (pData) dataRef;
+	pNPgl gl = &data->io.gl;
+	pNPassimp assimp = (pNPassimp)data->io.assimp;
+	NPbox bBox;
+	float dX, dY, dZ = 0;
+	float cX, cY, cZ = 0;
+
+	printf("npModelStoreDL\n");
+	//printf("Offset %d\n", dlOffset);
+//	bBox = npDrawAssimpModel(scene, scene->mRootNode, dataRef);
+//	void npBoxGen(struct aiScene* scene, struct aiNode* node, pNPbox bBox ,void* dataRef)
+	if(geolist->center.x == 0 && geolist->center.y == 0 && geolist->center.z == 0
+		&& geolist->rotate.x == 0 && geolist->rotate.y == 0 && geolist->rotate.z == 0
+		&& geolist->scale.x == 0 && geolist->scale.y == 0 && geolist->scale.z == 0)
+	{
+		printf("Either not set in CSV or loaded from file dialogue and lacks info\n");
+		npBoxGen(scene, scene->mRootNode, &bBox, dataRef);
+
+		printf("xL %0.0f -- xH %0.0f -- yL %0.0f -- yH %0.0f -- zL %0.0f -- zH %0.0f\n", bBox.xL, bBox.xH, bBox.yL, bBox.yH, bBox.zL, bBox.zH);
+
+		dX = (float)fabs(bBox.xH - bBox.xL);
+		dY = (float)fabs(bBox.yH - bBox.yL);
+		dZ = (float)fabs(bBox.zH - bBox.zL);
+
+		cX = (bBox.xH + bBox.xL) / -2.0f;
+		cY = (bBox.yH + bBox.yL) / -2.0f;
+		cZ = (bBox.zH + bBox.zL) / -2.0f;
+
+		printf("cX %f || cY %f || cZ %f\n", cX, cY, cZ); 
+
+		glNewList(gl->dl + geolist->geometryId, GL_COMPILE);
+		// (H + L)/2
+
+		if( (dX > dY) && (dX > dZ) )
+		{
+			printf("dX largest magnitude\n");
+			printf("scaling factor %f\n", 2/dX);
+			glScalef((2/dX),(2/dX),(2/dX));
+		}
+
+		if( (dY > dX) && (dY > dZ) )
+		{
+			printf("dY largest magnitude\n");
+			printf("scaling factor %f\n", 2/dY);
+			glScalef((2/dY),(2/dY),(2/dY));
+		}
+	
+		if( (dZ > dY) && (dZ > dX) )
+		{
+			printf("dZ largest magnitude\n");
+			printf("scaling factor %f\n", 2/dZ);
+			glScalef((2/dZ),(2/dZ),(2/dZ));
+		}
+		glTranslatef(cX, cY, cZ);
+		
+	}
+	else
+	{
+		printf("Scale and Translate from Model CSV\n");
+		glNewList(gl->dl + geolist->geometryId, GL_COMPILE);
+		glScalef(geolist->scale.x, geolist->scale.y, geolist->scale.z);
+	//	glScalef(1.0f, 1.0f, 1.0f);
+		glTranslatef(geolist->center.x, geolist->center.y, geolist->center.z);
+	}
+
+	npDrawAssimpModel(scene, scene->mRootNode, dataRef);
+	glEndList();
+
+
+
+
+}
+*/
 
 void npAddPrimitiveAssimpModelDL(struct aiScene* scene, void* dataRef)
 {
@@ -1027,19 +1168,30 @@ void npInitGeoList(void* dataRef)
 	int i = 0;
 
 	gl->modelId = 0;
+	gl->loadGeos = 0;
 //	gl->geoLock = true;
 	npGeolistLock(dataRef);
 	npGeolistSetLen(0, dataRef);
 	npGeolistSetX(0, dataRef);
 	gl->numModels = 0;
 	gl->numPrimitives = 0;
+	
 
 	npInitGeoListPrimitives(dataRef);
 
+	gl->texmapCount = 0;
+	for(i = 0; i < 100; i++)
+	{
+		gl->extMap[i] = 0;
+		gl->extMapMe[i] = NULL;
+	}
+
+	
 //	geoList->DL = glGenLists(kNPgeoListMax);
 	for(i = 0; i < kNPgeoListMax; i++)
 	{
 		p_geo = &data->io.gl.geolist[i];
+		p_geo->extTexId = 0;
 		p_geo->loaded = 0;
 		p_geo->geometryId = 0;
 		p_geo->modelFile[0] = '\0';

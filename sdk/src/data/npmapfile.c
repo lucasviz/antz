@@ -446,6 +446,9 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	int nodeCount = 0;
 	int numExpected = 0;		//Expected number for scanNumRet returned from sscanf
 	int extTexId = 0; // lv model
+	int extGeoId = 0; // lv model
+	char texfp[256] = {'\0'}; // lv model
+	int i = 1;
 
 	//Group #1
 	int id, type, dataID, selected,	parentID, branchLevel, 
@@ -550,7 +553,49 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	node->translateVec.z	= npstrtof(&cursor);
 	
 	node->shader			= npstrtoi(&cursor);
-	node->geometry			= npstrtoi(&cursor);
+	extGeoId				= npstrtoi(&cursor);
+	
+	// #define kNPextTexsLoaded 2
+	while(data->io.gl.loadExtTexs != 2)
+	{
+		if(data->io.gl.loadExtTexs == 1)
+		{
+		//	printf("ext texs loading\n");
+		}
+		else
+		{
+			// loadExtTexs == 0
+		//	extTexId = 0;
+			break;
+		}
+	}
+
+	while(data->io.gl.loadGeos != 2)
+	{
+		if(data->io.gl.loadGeos == 1)
+		{
+		//	printf("geos loading\n");
+		}
+		else
+		{
+			// loadGeos == 0
+		//	extGeoId = 0;
+			break;
+		}
+	}
+
+//	node->textureID = -1;
+	if( data->io.gl.geoMap[extGeoId] )
+	{
+		node->geometry = data->io.gl.geoMap[extGeoId]->geometryId;
+		node->textureID = data->io.gl.geoMap[extGeoId]->textureId;
+		printf("node->textureID : %d\n with extGeoId %d", node->textureID, extGeoId);
+	}
+	else
+		node->geometry = extGeoId;
+
+	//node->geometry			= 
+	//node->geometry			= npstrtoi(&cursor);
 
 	node->lineWidth			= npstrtof(&cursor);
 	node->pointSize			= npstrtof(&cursor);
@@ -564,9 +609,57 @@ void* npReadMapNodeCSV (const char* buffer, int wordSize, int size,
 	node->color.a			= npstrtoi(&cursor);
 
 	node->colorFade			= npstrtoi(&cursor);
+	
 	extTexId				= npstrtoi(&cursor);
-	printf("reading in ext tex id %d from node->id %d\n", extTexId, node->id);
-	node->textureID			= npExtTexToIntTexId(extTexId, dataRef); // @todo lv model 
+
+	if(extTexId && (node->textureID == -1) && data->io.gl.extMapMe[extTexId])
+	{
+		node->textureID = data->io.gl.extMapMe[extTexId]->intTexId;
+		printf("111 assigning texture id %d (ext id %d) to node id %d\n", node->textureID, extTexId, node->id);
+	}
+	else if(extTexId && data->io.gl.extMapMe[extTexId] == NULL)
+	{
+		printf("22292 other ---\n");
+		node->extTexID = extTexId;
+	}
+
+	// data->io.gl.extMapMe[extTexId]->intTexId; @todo
+	/*
+	for(i = 1; i < 100; i++)
+	{
+		if( data->io.gl.extMapMe[i] && data->io.gl.extMapMe[i]->extTexId == extTexId)
+		{
+			printf("555 Match Found in extMapMe\n");
+		}
+	}
+	*/
+
+//	printf("reading in ext tex id %d from node->id %d\n", extTexId, node->id);
+//	node->textureID			= npExtTexToIntTexId(extTexId, dataRef);
+	
+
+//	if(extTexId != 0 && data->io.gl.extMapMe[extTexId] != NULL)
+//	{	
+		/*
+		if(data->io.gl.extMapMe[extTexId]->intTexId == 0)
+		{
+			//node->textureID		= data->io.gl.extMapMe[extTexId]->intTexId;
+			sprintf(texfp, "%s%s", data->io.gl.extMapMe[extTexId]->path, data->io.gl.extMapMe[extTexId]->filename);
+			node->textureID = npLoadTexture(texfp, 0, dataRef);
+		}
+		else
+		{
+			node->textureID		= data->io.gl.extMapMe[extTexId]->intTexId;
+		}
+		*/
+
+//		printf("999 (Ext %d) / (Int %d)\n", extTexId, node->textureID);
+//	}
+//	else
+//		node->textureID = 0;
+
+
+//	node->textureID			= npstrtoi(&cursor);
 
 	node->hide				= npstrtoi(&cursor);
 	node->freeze			= npstrtoi(&cursor);	
@@ -1093,7 +1186,7 @@ int npCSVstrncpy(char* cstrout, char** csvstr, int size)
 	}
 //	cstrout[i] = '\0';
 
-	//recordTag->title[count] = '\0';
+	//recordTag->title[\\count] = '\0';
 
 					//zz debug, does not handle line returns...
 //	if (*csvstr[0] == '"') *csvstr = &csvPtr[curs + 1];
@@ -1130,7 +1223,8 @@ void npCSVtoTexture(char** read, int size, int* scanNumRet, void* dataRef)
 	pNPgeo geo = NULL;
 	int match = 0;
 	
-	npTextureNew(read[0], dataRef);	
+//	npTextureNew(read[0], dataRef);	
+	npTextureNewB(read[0], dataRef);	
 }
 
 
@@ -1284,6 +1378,8 @@ int npLoadNodesCSV (const char* buffer, int size, int type, void* dataRef)
 	else
 		npPostMsg("err 2350 - last node loaded from file is NULL", kNPmsgErr, data);
 
+	//npSyncGeos(dataRef); // lv, models
+
 	return nodeCount;
 }
 
@@ -1320,7 +1416,6 @@ int npCSVtoC (pNPrecordSet recSet, const char* read, int size, void* dataRef)
 }
 
 
-int npLoadTextureCSV(const char* buffer, int size, void* dataRef);
 int npLoadTextureCSV(const char* buffer, int size, void* dataRef)
 {
 	pData data = (pData) dataRef;
@@ -1375,6 +1470,8 @@ int npLoadTextureCSV(const char* buffer, int size, void* dataRef)
 
 	} //end loop
 
+//	data->io.gl.loadExtTexs = 1;
+
 
 
 	return 0;
@@ -1406,10 +1503,13 @@ int npLoadModelCSV (const char* buffer, int size, void* dataRef)
 		read = &read[curs];
 	}
 
+	printf("29387498234 npLoadModelCSV count : %d\n", count);
 	while( count < size )
 	{		
 		//processes a single model record, one line in the CSV file
+		printf("756 npCSVtoModel\n");
 		npCSVtoModel(&read, size - count, &scanNumRet, dataRef);
+		printf("756 npCSVtoModel After\n");
 		if (!tag)
 			printf("err 2340 - record tag is null\n");
 
@@ -2108,6 +2208,15 @@ void npFileOpenThread (void* threadData)
 	if (type == kNPmapNode)												//zzhp
 		data->io.file.loading = true;
 
+	if (type == kNPmapModels)
+	{
+		data->io.file.loading = true;
+//		data->io.gl.loadGeos = 0;
+	}
+
+	if (type == kNPmapTextures)
+		data->io.gl.loadExtTexs = 0;
+
 //start csv format specific methods, agnostic to table data type
 	//search from end of buffer to find end of the last complete row
 	lastEOL = npLastEOL(read, count);
@@ -2125,7 +2234,11 @@ void npFileOpenThread (void* threadData)
 	//load records for current read block, passes in start of first row
 	cropSize = lastEOL - firstRow;
 	if (cropSize > 0)
+	{
+		printf("6524 npCSVtoC\n");
 		records += npCSVtoC (recordSet, &read[firstRow], cropSize, data);
+		printf("6524 npCSVtoC after\n");
+	}
 
 	//read next block, handle leftover from previous block
 	while (count >= kNPfileBlockSize)
@@ -2200,14 +2313,22 @@ postProcess:
 
 endPoint:
 	//flag other processess that loading is done, resume z-sort draw
-	if (type == kNPmapNode)												//zzhp
+	if (type == kNPmapNode){												//zzhp
 		data->io.file.loading = false;
+		
+	}
 
 	if (type == kNPmapModels)
+	{
 		data->io.file.loading = false;
+		data->io.gl.loadGeos = 1;
+	}
 
 	if (type == kNPmapTextures)
+	{
 		data->io.file.loading = false;
+		data->io.gl.loadExtTexs = 1;
+	}
 
 	//free read buffers and threadFile structure
 	npFree (splitBlock, data);
@@ -2297,11 +2418,14 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 	int fileType = 0, fileCat = 0;
 	int textureId = 0;
 	int id = 0;
+	int xGeoId = 0;
 	int geoId = 0;
 	int extId = 0;
+	int intId = 0;
+
 
 	pData data = (pData) dataRef;
-	pNPmodels models;
+//	pNPmodels models;
 	pNPgeolist geo = NULL;
 
 	//pData data = (pData) dataRef;
@@ -2335,7 +2459,7 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 			nposBeginThread( npFileOpenThread, threadFile );
 			printf("\nloading = %d", data->io.file.loading);
 			data->io.gl.geoLock = false;
-			while(data->io.file.loading == true);
+//			while(data->io.file.loading == true);
 /// @todo:	npTextureGeoModel(pNPgeo p_geo, void* dataRef);
 //			printf("\nModel CSV File Loaded : numOfScenes (%d)", ((pNPassimp)data->io.assimp)->numOfScenes);
 			break;
@@ -2346,13 +2470,21 @@ int npFileOpenAuto (const char* filePath, FILE* file, void* dataRef)
 			npGetFileNameFromPath( filePath, &fileName[0], dataRef );
 			strcpy(path, filePath);
 			path[strlen(filePath) - strlen(fileName)] = '\0';
-			npAddGeo(&geoId, &extId, 0, NULL, fileName, path, dataRef);
-			
-			if( geo && (geo->geometryId >= 1000 && geo->geometryId <= 2000) )
-			{
-				npSetSelectedNodes( kNPgeometry, &geo->geometryId, data );
-				//npSetSelectedNodes( kNPtextureID, &geo->textureId, data );
-			}
+
+			npGeoId(kNPsetGeoId, &xGeoId, path, fileName, dataRef);
+			npGeoId(kNPgeoLoad, &xGeoId, path, fileName, dataRef);
+			npGeoId(kNPgeoLoadTex, &xGeoId, path, fileName, dataRef);
+	//		npLoadModel(data->io.gl.geoMap[xGeoId], dataRef);
+			//	geo = npAddGeo(&geoId, &extId, 0, NULL, NULL, NULL, NULL, fileName, path, dataRef);
+		//	npUpdateGeoList(dataRef);
+//			npUpdateTexMap(dataRef);
+
+	//		if( geo && (geo->geometryId >= 1000 && geo->geometryId <= 2000) )
+	//		{
+			npSetSelectedNodes( kNPgeometry, &data->io.gl.geoMap[xGeoId]->geometryId, data );
+	//			intId = npExtTexToIntTexId( geo->textureId, dataRef);
+			npSetSelectedNodes( kNPtextureID, &data->io.gl.geoMap[xGeoId]->textureId , data );
+	//		}
 
 			break;
 		default :
@@ -2560,12 +2692,14 @@ int npWriteNode (const char* buffer, pNPnode node, int format, void* dataRef)
 	);
 
 // lv models
-//	extTexId = npIntTexToExtTexId(
+	/*
 	extTexId = npIntTexToExtTexId(node->textureID, dataRef);
 	if(extTexId == 0)
 	{
 		extTexId = node->textureID;
 	}
+	*/
+	printf("6699 node tex id : %d\n", node->textureID);
 
 	n += sprintf ((nodePtr + n), ",%d,%d,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d",
 		node->shader,
@@ -2583,7 +2717,7 @@ int npWriteNode (const char* buffer, pNPnode node, int format, void* dataRef)
 		node->color.a,
 
 		node->colorFade,
-		extTexId
+		node->textureID // lv model
 	);
 	/*
 	n += sprintf ((nodePtr + n), ",%d,%d,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d",

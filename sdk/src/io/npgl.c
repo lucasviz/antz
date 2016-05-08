@@ -43,18 +43,16 @@ void npInitGL(void* dataRef)
 
 	npInitGLPrimitive (dataRef);
 
-	printf("before npInitGeoList(dataRef)");
 	npInitModels(dataRef);
-	printf("after npInitGeoList(dataRef)");
 
-	npInitTags (dataRef);		//do this before loading textures
 
 	npInitTexMap(dataRef);
 //	npTexTest(dataRef);
 	
 //	nposBeginThread (npLoadTextures, dataRef);	//zz debug, add thread worker func wrapper
-	npLoadGeos(dataRef);
-	npLoadTextures(dataRef); // lv temp
+
+
+	npInitTags (dataRef);		//do this before loading textures
 
 
 

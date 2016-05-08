@@ -1567,6 +1567,7 @@ void npCtrlProperty (int command, void* dataRef)
 					{
 						node->geometry = npGeoMoreId(node->geometry, dataRef);
 						node->textureID = npGeoTexId(node->geometry, dataRef);
+						printf("NODE->TEXTUREID : %d\n", node->textureID);
 					}
 						
 				//}

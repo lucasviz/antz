@@ -270,8 +270,17 @@ void npInitMap (void* dataRef)
 	static NPmapType models[] = {
 
 		{ kNPid,			kNPint,				"np_geo_id",	"Geometry ID" },
+		{ kNPtype,			kNPint,				"topo_id",			"Type: Mesh, Terrain, etc." },
 		{ kNPid,			kNPint,				"np_texture_id",	"Texture ID" },
-		{ kNPtype,			kNPint,				"type",			"Type: Mesh, Terrain, etc." },
+		{ kNPcenterX,		kNPfloat,			"center_x", "Geometric Center X"},
+		{ kNPcenterY,		kNPfloat,			"center_y", "Geometric Center Y"},
+		{ kNPcenterZ,		kNPfloat,			"center_z", "Geometric Center Z"},
+		{ kNProtateX,		kNPfloat,			"rotate_x", ""},
+		{ kNProtateY,		kNPfloat,			"rotate_y", ""},
+		{ kNProtateZ,		kNPfloat,			"rotate_z", ""},
+		{ kNPscaleX,		kNPfloat,			"scale_x", ""},
+		{ kNPscaleY,		kNPfloat,			"scale_y", ""},
+		{ kNPscaleZ,		kNPfloat,			"scale_z", ""},
 		{ kNPobjName,		kNPcharArray,		"object_name",		"3D Scene Object Name" },
 		{ kNPfile,			kNPcharArray,		"name",			"Texture name" },
 		{ kNPpath,			kNPcharArray,		"path",			"Path" }
@@ -316,6 +325,7 @@ void npInitMap (void* dataRef)
 	data->map.typeMap[kNPpin]	= pin;
 	data->map.typeMap[kNPcamera]= camera;
 	data->map.typeMap[kNPgrid]	= grid;
+	data->map.typeMap[kNPmodels] = models;
 
 
 	data->map.selectSet.x		= false;
